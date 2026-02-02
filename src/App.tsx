@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import DemoHome from "./pages/DemoHome";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Profile from "./pages/Profile";
 
 /* NEW IMPORTS: Layout and pages for demo */
 import { AppLayout } from "./components/layout/AppLayout";
@@ -18,6 +19,7 @@ import { SearchInterface } from "./components/SearchInterface";
 import { PitchBuilder } from "./components/PitchBuilder";
 import { MusicCatalog } from "./components/MusicCatalog";
 import { MusicPlayerProvider, useMusicPlayer } from "./contexts/MusicPlayerContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -95,6 +97,9 @@ const AppContent = () => {
 
                 {/* CATALOG: Music catalog browser */}
                 <Route path="catalog" element={<MusicCatalog />} />
+
+                {/* PROFILE: User profile page */}
+                <Route path="profile" element={<Profile />} />
               </Routes>
             </AppLayout>
           }
@@ -110,13 +115,15 @@ const AppContent = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <MusicPlayerProvider>
+      <AuthProvider>
+        <MusicPlayerProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
           <AppContent />
         </BrowserRouter>
-      </MusicPlayerProvider>
+        </MusicPlayerProvider>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

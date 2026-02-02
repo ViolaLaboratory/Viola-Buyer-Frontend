@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/context-menu";
 import { getChatHistory, deleteChatSession, type ChatSession } from "@/services/chatHistoryService";
 import { getSidebarCollapsed, setSidebarCollapsed } from "@/services/sidebarStateService";
+import { useAuth } from "@/contexts/AuthContext";
+import { normalizeProfileImageUrl } from "@/utils/profileImage";
 
 /* V LOGO COMPONENT: Extracted from original Navigation.tsx */
 const VLogo = () => (
@@ -69,6 +71,7 @@ const NAV_ITEMS = [
 export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
   /* STATE: Sidebar collapse/expand */
   const [isCollapsed, setIsCollapsed] = useState(() => getSidebarCollapsed());
@@ -283,9 +286,10 @@ export const Sidebar = () => {
 
       <div className="px-3 pb-6 pt-2">
         <button
+          onClick={() => navigate("/demo/profile")}
           className={`flex items-center ${
             isCollapsed ? "justify-center" : "justify-start gap-3"
-          } w-full`}
+          } w-full rounded-xl py-1 transition-colors hover:bg-white/5`}
           aria-label="User profile"
         >
           <div
@@ -294,15 +298,22 @@ export const Sidebar = () => {
             }`}
           >
             <img
-              src="/michael.png"
+              src={normalizeProfileImageUrl(user?.profile_image)}
               alt="User profile"
               className="h-full w-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/michael.png";
+              }}
             />
           </div>
           {!isCollapsed && (
             <div className="text-left">
-              <div className="text-sm font-dm text-white">Michael Smith</div>
-              <div className="text-xs text-white/50">Pro plan</div>
+              <div className="text-sm font-dm text-white">
+                {user?.username || "Guest"}
+              </div>
+              <div className="text-xs text-white/50">
+                {user?.plan || "Free plan"}
+              </div>
             </div>
           )}
         </button>

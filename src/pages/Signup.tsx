@@ -1,5 +1,7 @@
 import { useState, FormEvent, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { normalizeProfileImageUrl } from "@/utils/profileImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,6 +36,7 @@ const LogoMark = () => (
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -74,10 +77,15 @@ const Signup = () => {
         body: JSON.stringify({ email }),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get('content-type');
+      if (!contentType?.includes('application/json')) {
+        setError('Server connection failed. Make sure the Django backend is running (python3 manage.py runserver).');
+        return;
+      }
+      const data = (await response.json()) as Record<string, unknown>;
 
       if (!response.ok) {
-        throw new Error(data.error || data.email?.[0] || 'Failed to send verification code');
+        throw new Error((data.error as string) || (data.email as string[])?.[0] || 'Failed to send verification code');
       }
 
       setEmailSent(true);
@@ -88,7 +96,12 @@ const Signup = () => {
         console.log('Verification code (dev mode):', data.code);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send verification code');
+      const msg = err instanceof Error ? err.message : 'Failed to send verification code';
+      setError(
+        msg.includes('JSON') || msg.includes('Unexpected token')
+          ? 'Server connection failed. Make sure the Django backend is running (python3 manage.py runserver).'
+          : msg
+      );
     } finally {
       setIsLoading(false);
     }
@@ -168,8 +181,18 @@ const Signup = () => {
         );
       }
 
-      // Success! Redirect to login
-      navigate("/login");
+      // Log in with created user and go to demo
+      const u = data.user;
+      if (u) {
+        login({
+          id: u.id,
+          username: u.username || username,
+          email: u.email || email,
+          profile_image: normalizeProfileImageUrl(u.profile_image),
+          plan: "Pro plan",
+        });
+      }
+      navigate("/demo/home");
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create account');
     } finally {

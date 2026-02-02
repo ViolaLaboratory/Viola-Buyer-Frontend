@@ -3,7 +3,8 @@
  * Centralized API endpoint configuration for Viola backend
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+// Use /api (proxied to backend) in dev when VITE_API_BASE_URL is not set
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const CHATBOT_API_URL = import.meta.env.VITE_CHATBOT_API_URL || 'https://chatbot-901724938348.us-west1.run.app/chat';
 const CLAP_API_URL = import.meta.env.VITE_CLAP_API_URL || 'https://clap-model-901724938348.us-west1.run.app/query';
 
@@ -23,6 +24,7 @@ export const API_ENDPOINTS = {
     `${API_BASE_URL}/music/songs/search/?q=${encodeURIComponent(query)}${page ? `&page=${page}` : ''}${limit ? `&limit=${limit}` : ''}`,
   
   // User Authentication APIs
+  LOGIN: `${API_BASE_URL}/users/login/`,
   SEND_VERIFICATION: `${API_BASE_URL}/users/send-verification/`,
   VERIFY_EMAIL: `${API_BASE_URL}/users/verify-email/`,
   SIGNUP: `${API_BASE_URL}/users/signup/`,

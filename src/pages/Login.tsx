@@ -1,5 +1,8 @@
 import { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import API_ENDPOINTS from "@/config/api";
+import { normalizeProfileImageUrl } from "@/utils/profileImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +35,7 @@ const LogoMark = () => (
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -42,13 +46,38 @@ const Login = () => {
 
     setIsLoading(true);
     
-    // TODO: Implement actual login API call
-    // For now, just simulate login and redirect
-    setTimeout(() => {
-      setIsLoading(false);
-      // Redirect to demo/home after successful login
+    try {
+      const response = await fetch(API_ENDPOINTS.LOGIN, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Invalid credentials.");
+      }
+
+      if (data.user) {
+        const u = data.user;
+        login({
+          id: u.id,
+          username: u.username,
+          email: u.email,
+          profile_image: normalizeProfileImageUrl(u.profile_image),
+          plan: "Pro plan",
+        });
+      }
       navigate("/demo/home");
-    }, 1000);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Login failed.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
