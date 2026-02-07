@@ -17,7 +17,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { getChatHistory, deleteChatSession, type ChatSession } from "@/services/chatHistoryService";
+import { getChatHistory, getChatsFromBackend, deleteChatSession, deleteChatFromBackend, type ChatSession } from "@/services/chatHistoryService";
 import { getSidebarCollapsed, setSidebarCollapsed } from "@/services/sidebarStateService";
 import { useAuth } from "@/contexts/AuthContext";
 import { normalizeProfileImageUrl } from "@/utils/profileImage";
@@ -82,13 +82,27 @@ export const Sidebar = () => {
       setChatSessions(getChatHistory());
     };
 
-    loadChatHistory();
+    const loadMerged = async () => {
+      try {
+        const fromBackend = await getChatsFromBackend();
+        const local = getChatHistory();
+        const byId = new Map<string, ChatSession>();
+        local.forEach((s) => byId.set(s.id, s));
+        fromBackend.forEach((s) => byId.set(s.id, s));
+        const merged = Array.from(byId.values()).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 50);
+        setChatSessions(merged);
+      } catch {
+        loadChatHistory();
+      }
+    };
+
+    loadMerged();
     window.addEventListener("storage", loadChatHistory);
-    window.addEventListener("chatHistoryUpdated", loadChatHistory);
+    window.addEventListener("chatHistoryUpdated", loadMerged);
 
     return () => {
       window.removeEventListener("storage", loadChatHistory);
-      window.removeEventListener("chatHistoryUpdated", loadChatHistory);
+      window.removeEventListener("chatHistoryUpdated", loadMerged);
     };
   }, []);
 
@@ -122,19 +136,21 @@ export const Sidebar = () => {
     navigate(`/demo/search/${sessionId}`);
   };
 
-  /* HANDLER: Delete chat session */
-  const handleDeleteChat = (sessionId: string, e?: React.MouseEvent) => {
+  /* HANDLER: Delete chat session (local + backend) */
+  const handleDeleteChat = async (sessionId: string, e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
-    
-    if (window.confirm("Are you sure you want to delete this chat? This action cannot be undone.")) {
-      deleteChatSession(sessionId);
-      setChatSessions(getChatHistory());
-      // Dispatch event to notify other components
-      window.dispatchEvent(new Event("chatHistoryUpdated"));
+    if (!window.confirm("Are you sure you want to delete this chat? This action cannot be undone.")) return;
+    deleteChatSession(sessionId);
+    try {
+      await deleteChatFromBackend(sessionId);
+    } catch {
+      // ignore
     }
+    setChatSessions(getChatHistory());
+    window.dispatchEvent(new Event("chatHistoryUpdated"));
   };
 
   /* HELPER: Check if nav item is active */
@@ -264,7 +280,7 @@ export const Sidebar = () => {
           </div>
           <ScrollArea className="h-full pr-1">
             <div className="flex flex-col gap-1">
-              {chatSessions.length > 0 ? (
+              {user && chatSessions.length > 0 ? (
                 chatSessions.map((session) => (
                   <ChatItem
                     key={session.id}
@@ -276,7 +292,7 @@ export const Sidebar = () => {
                 ))
               ) : (
                 <div className="px-3 py-6 text-center text-xs text-white/40">
-                  No recent chats yet.
+                  {user ? "No recent chats yet." : "Log in to see your chat history."}
                 </div>
               )}
             </div>

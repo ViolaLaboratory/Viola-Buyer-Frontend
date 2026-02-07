@@ -8,11 +8,12 @@
  */
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import AnimatedVLogo from "@/components/AnimatedVLogo";
 import { Sidebar } from "./Sidebar";
 import { CustomCursor } from "./CustomCursor";
+import { CatalogMusicPlayerBar } from "@/components/CatalogMusicPlayerBar";
 import { getSidebarCollapsed } from "@/services/sidebarStateService";
 
 interface AppLayoutProps {
@@ -21,6 +22,8 @@ interface AppLayoutProps {
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const showMusicPlayer = location.pathname.includes("/catalog") || location.pathname.includes("/pitch-kit");
 
   /* STATE: Mobile detection */
   const [isMobile, setIsMobile] = useState(false);
@@ -165,12 +168,20 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
           /* OVERFLOW: Hidden to prevent scrollbars */
           overflow-hidden
 
+          /* 하단 플레이어 공간 확보 */
+          ${showMusicPlayer ? "pb-[88px]" : ""}
+
           /* CUSTOM SCROLLBAR: (optional, can style in global CSS) */
           /* scrollbar-thin scrollbar-thumb-accent scrollbar-track-transparent */
         `}
       >
         {children}
       </main>
+
+      {/* Catalog/Pitch Kit 공통 플레이어 - body에 Portal로 렌더링, 잘림 방지 */}
+      {showMusicPlayer && (
+        <CatalogMusicPlayerBar sidebarWidth={isSidebarCollapsed ? "70px" : "240px"} />
+      )}
     </div>
   );
 };

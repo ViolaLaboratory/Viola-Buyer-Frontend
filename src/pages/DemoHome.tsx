@@ -2,6 +2,7 @@ import { useEffect, useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
 
 const typingPhrases = [
   "Your next song is found when you type...",
@@ -12,6 +13,8 @@ const typingPhrases = [
 
 const DemoHome = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const firstName = user?.username?.trim().split(/\s+/)[0] || "there";
   const [query, setQuery] = useState("");
   const [placeholderText, setPlaceholderText] = useState(" ");
   const [phraseIndex, setPhraseIndex] = useState(0);
@@ -65,7 +68,7 @@ const DemoHome = () => {
         <div className="w-full max-w-5xl space-y-10">
           <div className="text-center space-y-3">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal font-dm drop-shadow-[0_0_18px_rgba(255,255,255,0.2)]">
-              What are we up to today, Sarah?
+              What are we up to today, {firstName}?
             </h1>
           </div>
 

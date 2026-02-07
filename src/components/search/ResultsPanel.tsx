@@ -18,6 +18,7 @@ import { Pause, Play, Plus, SkipBack, SkipForward } from "lucide-react";
 import { useMusicPlayer } from "@/contexts/MusicPlayerContext";
 import { getFolders, addTracksToFolder, type Folder } from "@/services/folderService";
 import { useToast } from "@/hooks/use-toast";
+import { getWaveformBars } from "@/utils/waveformGenerator";
 
 const formatTime = (seconds: number): string => {
   if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
@@ -26,7 +27,7 @@ const formatTime = (seconds: number): string => {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 };
 
-// Scrolling Title Component for long song titles
+// Scrolling Title Component - carousel effect when text overflows
 interface ScrollingTitleProps {
   text: string;
   className?: string;
@@ -34,42 +35,53 @@ interface ScrollingTitleProps {
 
 const ScrollingTitle = ({ text, className = "" }: ScrollingTitleProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLSpanElement>(null);
   const [needsScroll, setNeedsScroll] = useState(false);
 
   useEffect(() => {
-    if (containerRef.current && textRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-      const textWidth = textRef.current.scrollWidth;
-      setNeedsScroll(textWidth > containerWidth);
+    const checkOverflow = () => {
+      if (containerRef.current && measureRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        const textWidth = measureRef.current.offsetWidth;
+        setNeedsScroll(textWidth > containerWidth);
+      }
+    };
+    checkOverflow();
+    const container = containerRef.current;
+    if (container) {
+      const ro = new ResizeObserver(checkOverflow);
+      ro.observe(container);
+      return () => ro.disconnect();
     }
   }, [text]);
-
-  if (!needsScroll) {
-    return (
-      <div ref={containerRef} className={`overflow-hidden ${className}`}>
-        <div className="truncate">{text}</div>
-      </div>
-    );
-  }
 
   return (
     <div
       ref={containerRef}
-      className={`overflow-hidden relative ${className}`}
-      style={{ maskImage: 'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)' }}
+      className={`overflow-hidden relative w-full ${className}`}
+      style={needsScroll ? { maskImage: 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)' } : undefined}
     >
-      <div
-        ref={textRef}
-        className="inline-block whitespace-nowrap"
-        style={{
-          animation: needsScroll ? 'scroll-text 15s linear infinite' : 'none',
-        }}
+      {needsScroll ? (
+        <div
+          className="inline-block whitespace-nowrap"
+          style={{ animation: 'scroll-text 12s linear infinite' }}
+        >
+          {text}
+          <span className="mx-6">•</span>
+          {text}
+          <span className="mx-6">•</span>
+        </div>
+      ) : (
+        <div className="truncate">{text}</div>
+      )}
+      {/* Hidden measure element for overflow detection */}
+      <span
+        ref={measureRef}
+        className="invisible absolute whitespace-nowrap pointer-events-none"
+        aria-hidden
       >
         {text}
-        <span className="mx-8">•</span>
-        {text}
-      </div>
+      </span>
     </div>
   );
 };
@@ -81,7 +93,26 @@ interface Song {
   album: string;
   keywords: string[];
   duration: string;
+  genre?: string;
+  mood?: string;
+  producer?: string;
+  writer?: string;
+  thumbnail?: string;
 }
+
+// Collaborators fallback (matches Catalog's detailVariants - different writers/producers per song)
+const COLLABORATOR_VARIANTS = [
+  { writers: ["Jude Gabriel Kozielec", "Ryan Chan", "Kyung Tae Kim"], producer: "Cirkut & Jason Evigan" },
+  { writers: ["Mina Park", "Damon Wu", "Clara Swift"], producer: "Mina Park & Damon Wu" },
+  { writers: ["Andre Sol", "Mira Voss"], producer: "Andre Sol" },
+  { writers: ["Jason Evigan", "David Stewart"], producer: "Cirkut & Jason Evigan" },
+  { writers: ["Lou-ridz", "Supreme Boi"], producer: "Lou-ridz" },
+  { writers: ["Sarah Chen", "Marcus Lee"], producer: "Sarah Chen & Marcus Lee" },
+  { writers: ["Elena Torres", "James Wright"], producer: "Elena Torres" },
+  { writers: ["Nina Park", "Alex Kim"], producer: "Nina Park & Alex Kim" },
+  { writers: ["David Miller", "Emma Brown"], producer: "David Miller" },
+  { writers: ["Chris Anderson", "Lisa Wang"], producer: "Chris Anderson & Lisa Wang" },
+];
 
 interface ResultsPanelProps {
   isLoading: boolean;
@@ -178,23 +209,38 @@ export const ResultsPanel = ({
   }, [searchResults, fallbackSongs]); // Run when results change
 
   // Use selectedSong from props, or currentSong from context, or first result
-  // Convert currentSong to local Song type if needed
+  const songsToDisplay = searchResults.length > 0 ? searchResults : fallbackSongs;
+
   const getDisplayedSong = (): Song => {
-    if (propSelectedSong) return propSelectedSong;
-    if (currentSong) {
-      return {
-        id: currentSong.id,
+    let song: Song;
+    if (propSelectedSong) {
+      song = propSelectedSong;
+    } else if (currentSong) {
+      song = {
+        id: typeof currentSong.id === "number" ? currentSong.id : parseInt(String(currentSong.id), 10) || 0,
         title: currentSong.title,
         artist: currentSong.artist,
         album: currentSong.album || 'Unknown Album',
         keywords: currentSong.keywords || [],
         duration: currentSong.duration || '03:00',
       };
+    } else {
+      return songsToDisplay[0];
     }
-    return searchResults.length > 0 ? searchResults[0] : fallbackSongs[0];
+    // Enrich with genre/mood/producer/writer from results (propSelectedSong/currentSong may lack these when from player)
+    const fullSong = songsToDisplay.find((s) => s.id === song.id);
+    if (fullSong) {
+      return {
+        ...song,
+        genre: song.genre ?? fullSong.genre,
+        mood: song.mood ?? fullSong.mood,
+        producer: song.producer ?? fullSong.producer,
+        writer: song.writer ?? fullSong.writer,
+      };
+    }
+    return song;
   };
   const displayedSong = getDisplayedSong();
-  const songsToDisplay = searchResults.length > 0 ? searchResults : fallbackSongs;
 
   // Load folders when dialog opens
   useEffect(() => {
@@ -255,7 +301,7 @@ export const ResultsPanel = ({
     }
   };
 
-  // Helper to split keywords into genres and moods
+  // Use genre/mood from API when available; fallback to keywords parsing for mock/legacy data
   const getGenresAndMoods = (keywords: string[]) => {
     const genreKeywords = [
       "Kpop", "Pop", "Pop Punk", "Emo Pop", "R&B", "Hip Hop", "Electronic", "EDM",
@@ -266,19 +312,22 @@ export const ResultsPanel = ({
       "Haunting", "Ethereal", "Cold", "Hypnotic", "Minimal", "Deep", "Melancholic", "Emotional",
       "Expansive", "Meditative", "Tense", "Building", "Dramatic", "Retro", "Nostalgic",
     ];
-
     const genres = keywords.filter((k) => genreKeywords.some((g) => k.includes(g) || g.includes(k)));
     const moods = keywords.filter((k) => moodKeywords.some((m) => k.includes(m) || m.includes(k)));
-
     const finalGenres = genres.length > 0 ? genres : keywords.slice(0, 3);
     const finalMoods = moods.length > 0 ? moods : keywords.slice(3).length ? keywords.slice(3) : keywords.slice(0, 2);
-
     return { genres: finalGenres, moods: finalMoods };
   };
 
-  const { genres, moods } = displayedSong
-    ? getGenresAndMoods(displayedSong.keywords || [])
-    : { genres: [], moods: [] };
+  const hasApiGenreMood = displayedSong && (displayedSong.genre !== undefined || displayedSong.mood !== undefined);
+  const genreFromApi = hasApiGenreMood && displayedSong?.genre ? displayedSong.genre : null;
+  const moodFromApi = hasApiGenreMood && displayedSong?.mood !== undefined ? displayedSong.mood : null;
+  const fallback = displayedSong ? getGenresAndMoods(displayedSong.keywords || []) : { genres: [] as string[], moods: [] as string[] };
+
+  const genres = genreFromApi !== null ? [genreFromApi] : fallback.genres;
+  const moods = moodFromApi !== null
+    ? (moodFromApi && moodFromApi !== "N/A" ? [moodFromApi] : ["N/A"])
+    : fallback.moods;
 
   const handlePlayPause = () => {
     // If no song is loaded, load the current display song first
@@ -356,17 +405,38 @@ export const ResultsPanel = ({
               <div className="flex flex-col items-center gap-4 flex-shrink-0" style={{ width: '280px' }}>
                 {/* Larger spinning track indicator (vinyl) */}
                 <div className="relative h-56 w-56 flex items-center justify-center">
-                  <img
-                    src="/vynl.png"
-                    alt="Track indicator"
-                    className="album-spin is-spinning"
-                    style={{ 
-                      animationPlayState: isPlaying ? "running" : "paused",
-                      width: '224px',
-                      height: '224px',
-                      objectFit: 'contain'
-                    }}
-                  />
+                  <div
+                    className="album-spin is-spinning relative"
+                    style={{ animationPlayState: isPlaying ? "running" : "paused", width: 224, height: 224 }}
+                  >
+                    <img
+                      src="/vynl.png"
+                      alt="Track indicator"
+                      className="w-full h-full object-contain"
+                    />
+                    {/* Blue center label: album cover (circular crop) or default music note */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-[72px] h-[72px] rounded-full overflow-hidden bg-transparent">
+                        {(displayedSong?.thumbnail && displayedSong.thumbnail !== "🎵") ? (
+                          <img
+                            src={displayedSong.thumbnail}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = "/NoteAlbumArt.png";
+                            }}
+                          />
+                        ) : (
+                          <img
+                            src="/NoteAlbumArt.png"
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div className="text-center w-full">
                   <ScrollingTitle
@@ -384,12 +454,12 @@ export const ResultsPanel = ({
                   </div>
                 </div>
                 <div className="w-full" style={{ maxWidth: '280px' }}>
-                  <div 
+                  <div
                     className="relative h-[3px] bg-white/20 rounded-full cursor-pointer group"
                     onClick={handleProgressBarClick}
                     title="Click to seek"
                   >
-                    <div 
+                    <div
                       className="absolute left-0 top-0 h-full bg-[#e4ea04] rounded-full transition-all duration-300"
                       style={{ width: `${progress}%` }}
                     />
@@ -460,26 +530,31 @@ export const ResultsPanel = ({
                       </div>
                     )}
                     
-                    {moods.length > 0 && (
+                    {(moods.length > 0 || hasApiGenreMood) && (
                       <div>
                         <div className="text-lg font-dm font-normal mb-2">Mood</div>
                         <div className="flex gap-2 flex-wrap mt-2">
-                          {moods.map((mood, idx) => {
-                            const colors = [
-                              "bg-[#4338ca]",
-                              "bg-[#b45309]",
-                              "bg-[#dc2626]",
-                              "bg-[#7c2d12]",
-                            ];
-                            return (
-                              <Badge 
-                                key={idx}
-                                className={`${colors[idx % colors.length]} text-white rounded-full px-4 py-1 font-dm font-normal`}
-                              >
-                                {mood}
-                              </Badge>
-                            );
-                          })}
+                          {moods.length > 0 ? (
+                            moods.map((mood, idx) => {
+                              const colors = [
+                                "bg-[#4338ca]",
+                                "bg-[#b45309]",
+                                "bg-[#dc2626]",
+                                "bg-[#7c2d12]",
+                              ];
+                              const isNA = mood === "N/A";
+                              return (
+                                <Badge 
+                                  key={idx}
+                                  className={`${isNA ? "bg-white/20" : colors[idx % colors.length]} text-white rounded-full px-4 py-1 font-dm font-normal`}
+                                >
+                                  {mood}
+                                </Badge>
+                              );
+                            })
+                          ) : (
+                            <span className="text-white/60 text-sm">N/A</span>
+                          )}
                         </div>
                       </div>
                     )}
@@ -515,12 +590,19 @@ export const ResultsPanel = ({
                 <div className="space-y-4 text-sm text-white">
                   <div>
                     <div className="text-lg font-dm font-normal mb-2">Collaborators</div>
-                    <p className="text-white font-exo">
-                      Songwriters: Cirkut, Jason Evigan, David Stewart, Lou-ridz, & Supreme Boi
-                    </p>
-                    <p className="text-white font-exo">
-                      Producer: Cirkut & Jason Evigan
-                    </p>
+                    {(() => {
+                      const idx = displayedSong ? songsToDisplay.findIndex((s) => s.id === displayedSong.id) : -1;
+                      const variant = COLLABORATOR_VARIANTS[(idx >= 0 ? idx : displayedSong?.id ?? 0) % COLLABORATOR_VARIANTS.length];
+                      const songwriters = displayedSong?.writer && displayedSong.writer !== "N/A" ? displayedSong.writer : "N/A";
+                      const producer = displayedSong?.producer && displayedSong.producer !== "N/A" ? displayedSong.producer : variant.producer;
+                      return (
+                        <>
+                          <p className="text-white font-exo">Artist: {displayedSong?.artist || "N/A"}</p>
+                          <p className="text-white font-exo">Songwriters: {songwriters}</p>
+                          <p className="text-white font-exo">Producer: {producer}</p>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
 
@@ -555,26 +637,38 @@ export const ResultsPanel = ({
                       onClick={() => onSongClick?.(song)}
                     >
                       <div className="w-6 text-white font-dm">{index + 1}</div>
-                      <div className="h-12 w-12 rounded-md bg-white/10 flex items-center justify-center">
-                        <div className="h-7 w-7 rounded-full border border-white/60" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <ScrollingTitle
-                          text={song.title}
-                          className="text-white font-dm"
+                      <div className="h-12 w-12 rounded-md overflow-hidden flex-shrink-0 bg-white">
+                        <img
+                          src={song.thumbnail && song.thumbnail !== "🎵" ? song.thumbnail : "/NoteAlbumArt.png"}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            if (e.currentTarget.src !== "/NoteAlbumArt.png") {
+                              e.currentTarget.src = "/NoteAlbumArt.png";
+                            }
+                          }}
                         />
-                        <div className="text-xs text-white font-exo truncate">{song.artist}</div>
                       </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <div className="flex items-center gap-1">
-                          {Array.from({ length: 10 }).map((_, idx) => (
+                      <div className="flex-1 min-w-0 flex items-center gap-3">
+                        <div className="min-w-0 flex-1">
+                          <ScrollingTitle
+                            text={song.title}
+                            className="text-white font-dm"
+                          />
+                          <div className="text-xs text-white font-exo truncate">{song.artist}</div>
+                        </div>
+                        {/* 곡별 고유 파형 - 카드 내 축소 크기 */}
+                        <div className="flex items-center gap-[2px] h-8 flex-shrink-0" aria-hidden>
+                          {getWaveformBars(song.id, song.title, song.artist).map((height, idx) => (
                             <span
                               key={`${song.id}-bar-${idx}`}
-                              className="inline-block w-[3px] rounded-full bg-white/70"
-                              style={{ height: `${6 + (idx % 5) * 3}px` }}
+                              className="inline-block w-[2px] min-w-[2px] rounded-full bg-white/70"
+                              style={{ height: `${height}px` }}
                             />
                           ))}
                         </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-1">
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-white font-dm">
                             {songDurations[song.id] || song.duration || "03:00"}

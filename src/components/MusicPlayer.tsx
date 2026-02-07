@@ -26,6 +26,19 @@ export const MusicPlayer = () => {
   } = useMusicPlayer();
 
   const [sliderValue, setSliderValue] = useState([0]);
+  const [albumArtError, setAlbumArtError] = useState(false);
+
+  // Reset image error when song changes so we retry loading thumbnail
+  useEffect(() => {
+    setAlbumArtError(false);
+  }, [currentSong?.id, currentSong?.thumbnail]);
+
+  const showAlbumArtImage =
+    currentSong?.thumbnail &&
+    currentSong.thumbnail !== "🎵" &&
+    !albumArtError;
+
+  const albumPlaceholderLetter = currentSong?.title?.trim().charAt(0)?.toUpperCase() || "?";
 
   useEffect(() => {
     if (duration > 0) {
@@ -52,12 +65,13 @@ export const MusicPlayer = () => {
       <div className="flex items-center justify-between gap-8">
         {/* Current Track Info */}
         <div className="flex items-center gap-4 flex-1 min-w-0">
-          <div className="w-14 h-14 bg-secondary rounded flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
-            {currentSong.thumbnail ? (
+          <div className="w-14 h-14 rounded flex items-center justify-center flex-shrink-0 overflow-hidden bg-white">
+            {showAlbumArtImage ? (
               <img
-                src={currentSong.thumbnail}
+                src={currentSong.thumbnail!}
                 alt="Album Art"
                 className="w-full h-full object-cover"
+                onError={() => setAlbumArtError(true)}
               />
             ) : (
               <img

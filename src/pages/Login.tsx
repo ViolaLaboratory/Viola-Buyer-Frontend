@@ -69,7 +69,7 @@ const Login = () => {
           username: u.username,
           email: u.email,
           profile_image: normalizeProfileImageUrl(u.profile_image),
-          plan: "Pro plan",
+          plan: "Free plan",
         });
       }
       navigate("/demo/home");

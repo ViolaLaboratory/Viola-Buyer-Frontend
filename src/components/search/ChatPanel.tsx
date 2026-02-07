@@ -78,10 +78,17 @@ export const ChatPanel = ({
     };
   }, [isLoading, showResults, thinkingText, defaultText]);
 
+  // Deduplicate consecutive identical bot messages (e.g. from older saved sessions)
+  const dedupedHistory = conversationHistory.filter((entry, index) => {
+    if (entry.role !== "bot") return true;
+    const prev = conversationHistory[index - 1];
+    return !(prev?.role === "bot" && prev?.message === entry.message);
+  });
+
   return (
   <section className="w-1/3 min-w-0 flex flex-col bg-[rgba(0,0,0,0.33)] backdrop-blur-[26px] border-r border-white/40 shadow-[inset_0_0_35.4px_rgba(255,255,255,0.15)] h-screen font-exo">
     <div className="flex-1 space-y-5 overflow-y-auto pr-2 px-6 py-8">
-      {conversationHistory.map((entry, index) => (
+      {dedupedHistory.map((entry, index) => (
         <div
           key={`${entry.role}-${index}`}
           className={`text-sm leading-relaxed ${
@@ -93,8 +100,8 @@ export const ChatPanel = ({
           {entry.message}
         </div>
       ))}
-      {conversationHistory.length > 0 &&
-        conversationHistory[conversationHistory.length - 1]?.role === "user" && (
+      {dedupedHistory.length > 0 &&
+        dedupedHistory[dedupedHistory.length - 1]?.role === "user" && (
           <div className="text-white/70 text-sm leading-relaxed">
             im working on that now.
           </div>
@@ -120,7 +127,7 @@ export const ChatPanel = ({
         <Input
           value={searchQuery}
           onChange={(event) => onSearchChange(event.target.value)}
-          placeholder={conversationHistory.length > 0 ? "Ask Away" : ""}
+          placeholder={dedupedHistory.length > 0 ? "Ask Away" : ""}
           className="h-12 w-full rounded-full border border-white/15 bg-black/40 pl-5 pr-12 text-sm text-white placeholder:text-white/40 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
           disabled={isLoading}
         />

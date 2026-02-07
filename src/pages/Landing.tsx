@@ -816,7 +816,7 @@ const Landing = () => {
                 <Button
                   variant="outline"
                   className="hidden lg:flex text-white border-white/40 px-16 py-6 sm:min-w-[220px] text-lg rounded-lg transition-all duration-500 ease-out hover:border-[#e4ea04] hover:text-black hover:bg-[#e4ea04]/85 hover:shadow-[0_0_30px_rgba(228,234,4,0.35)]"
-                  onClick={() => navigate("/demo")}
+                  onClick={() => navigate("/login")}
                 >
                   Checkout Demo
                 </Button>

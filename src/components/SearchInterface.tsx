@@ -24,8 +24,10 @@ import {
 import {
   saveChatSession,
   getChatSessionById,
+  getChatSessionByIdOrBackend,
 } from "@/services/chatHistoryService";
 import { useMusicPlayer, type Song as MusicPlayerSong } from "@/contexts/MusicPlayerContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Song {
   id: number;
@@ -34,6 +36,10 @@ interface Song {
   album: string;
   keywords: string[];
   duration: string;
+  genre?: string;
+  mood?: string;
+  producer?: string;
+  writer?: string;
 }
 
 const mockSongs: Song[] = [
@@ -167,6 +173,7 @@ export const SearchInterface = () => {
   
   /* Music Player Integration */
   const { loadSong, isPlaying: playerIsPlaying, togglePlayPause, currentSong, clearQueue } = useMusicPlayer();
+  const { isAuthenticated } = useAuth();
 
   /* STATE: Chat session management */
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -185,11 +192,39 @@ export const SearchInterface = () => {
 
   /* EFFECT: Initialize session - handle resuming saved sessions or starting new ones */
   useEffect(() => {
-    // CASE 1: Resuming a saved chat session from URL parameter
-    if (urlSessionId) {
-      const savedSession = getChatSessionById(urlSessionId);
+    // Guest: never restore sessions - show empty search page
+    if (!isAuthenticated) {
+      if (urlSessionId) {
+        navigate("/demo/search", { replace: true });
+      }
+      setSearchQuery("");
+      setConversationHistory([]);
+      setSearchResults([]);
+      setShowResults(false);
+      setSelectedSong(null);
+      setCurrentChatSessionId(null);
+      setHasSearched(false);
+      setIsFirstMessage(true);
+      setIsLoading(false);
+      setWaitingForResponse(false);
+      setChatMessage("Hi! Tell me what kind of music you'd like, and I'll help you find the perfect tracks.");
+      localStorage.removeItem("viola_current_chat_session_id");
+      setFolders(getFolders());
+      return;
+    }
 
-      if (savedSession) {
+    // CASE 1: Resuming a saved chat session from URL parameter (load from DB or local)
+    if (urlSessionId) {
+      getChatSessionByIdOrBackend(urlSessionId).then((savedSession) => {
+        if (!savedSession) {
+          toast({
+            title: "Session not found",
+            description: "Starting a new search session instead",
+            variant: "destructive",
+          });
+          navigate("/demo/search", { replace: true });
+          return;
+        }
         // Restore chat session from history
         setCurrentChatSessionId(urlSessionId);
         // Store current chat session ID for restoration when navigating back
@@ -272,15 +307,8 @@ export const SearchInterface = () => {
           title: "Chat session resumed",
           description: `Conversation: "${savedSession.title}"`,
         });
-      } else {
-        // Session not found in history
-        toast({
-          title: "Session not found",
-          description: "Starting a new search session instead",
-          variant: "destructive",
-        });
-        navigate("/demo/search", { replace: true });
-      }
+      });
+      return;
     }
     // CASE 2: Starting new session from HomePage (query in location.state)
     else if (location.state?.query) {
@@ -422,7 +450,7 @@ export const SearchInterface = () => {
 
     // Load folders
     setFolders(getFolders());
-  }, [urlSessionId, location.state, location.pathname]); // Re-run if URL session ID, location state, or pathname changes
+  }, [urlSessionId, location.state, location.pathname, isAuthenticated, navigate]); // Re-run when auth changes (e.g. logout)
 
   /* EFFECT: Handle reset when Search button is clicked twice */
   useEffect(() => {
@@ -466,6 +494,10 @@ export const SearchInterface = () => {
         album: track.album,
         keywords: track.keywords || ["Music"],
         duration: track.duration,
+        genre: track.genre,
+        mood: track.mood || "N/A",
+        producer: track.producer || "N/A",
+        writer: track.writer || "N/A",
       }));
     } catch (error) {
       console.error("Error fetching track details:", error);
@@ -483,7 +515,8 @@ export const SearchInterface = () => {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchQuery.trim() || !sessionId) return;
+    if (!searchQuery.trim()) return;
+    if (isAuthenticated && !sessionId) return;
 
     // Clear previous search results when starting a new search
     setSearchResults([]);
@@ -503,6 +536,28 @@ export const SearchInterface = () => {
       ...prev,
       { role: "user", message: userMessage },
     ]);
+
+    // Demo mode: not logged in → show mock data only, no API call
+    if (!isAuthenticated) {
+      setConversationHistory((prev) => [
+        ...prev,
+        { role: "bot", message: "Here are some demo tracks. Log in for full search." },
+      ]);
+      setChatMessage("Here are some demo tracks. Log in for full search.");
+      setSearchResults(mockSongs);
+      setShowResults(true);
+      setIsLoading(false);
+      setWaitingForResponse(false);
+      if (isFirstMessage) setIsFirstMessage(false);
+      // Select first song so details page is shown
+      const firstSong = mockSongs[0];
+      setSelectedSong(firstSong);
+      loadSong(
+        { id: firstSong.id, title: firstSong.title, artist: firstSong.artist, album: firstSong.album, duration: firstSong.duration, keywords: firstSong.keywords },
+        mockSongs.map(s => ({ id: s.id, title: s.title, artist: s.artist, album: s.album, duration: s.duration, keywords: s.keywords }))
+      );
+      return;
+    }
 
     try {
       // Call backend search endpoint (proxies to chatbot, then CLAP when complete)
@@ -535,13 +590,14 @@ export const SearchInterface = () => {
         localStorage.setItem("viola_session_id", data.session_id);
       }
 
-      // Add bot response to conversation
+      // Add bot response to conversation (skip if last message is identical to avoid duplicates)
       if (data.message) {
         setChatMessage(data.message);
-        setConversationHistory((prev) => [
-          ...prev,
-          { role: "bot", message: data.message },
-        ]);
+        setConversationHistory((prev) => {
+          const last = prev[prev.length - 1];
+          if (last?.role === "bot" && last?.message === data.message) return prev;
+          return [...prev, { role: "bot", message: data.message }];
+        });
       }
 
       // Check if conversation is complete and we have results
@@ -553,8 +609,13 @@ export const SearchInterface = () => {
           title: track.title || "Unknown Title",
           artist: track.artist || "Unknown Artist",
           album: track.album || "Unknown Album",
-          keywords: [track.genre || "Music"],
+          keywords: track.keywords || [track.genre || "Music"],
           duration: track.duration || "03:00",
+          genre: track.genre || "Unknown",
+          mood: track.mood || "N/A",
+          producer: track.producer || "N/A",
+          writer: track.writer || "N/A",
+          thumbnail: track.thumbnail || track.thumbnail_url || "🎵",
         }));
 
         setSearchResults(songs);
@@ -562,11 +623,13 @@ export const SearchInterface = () => {
         setIsLoading(false);
         setWaitingForResponse(false);
 
-        /* NEW: Save completed chat session to history */
-        const updatedHistory = [
-          ...conversationHistory,
-          { role: "bot", message: data.message },
-        ];
+        /* NEW: Save completed chat session to history (avoid duplicate bot message) */
+        const prevForSave = [...conversationHistory];
+        const last = prevForSave[prevForSave.length - 1];
+        const updatedHistory =
+          last?.role === "bot" && last?.message === data.message
+            ? prevForSave
+            : [...prevForSave, { role: "bot", message: data.message }];
 
         // Generate chat session ID if we don't have one yet
         const chatSessionId = currentChatSessionId || crypto.randomUUID();
@@ -603,10 +666,35 @@ export const SearchInterface = () => {
         // Dispatch custom event to notify sidebar of chat history update
         window.dispatchEvent(new Event("chatHistoryUpdated"));
       } else {
-        // Conversation is still ongoing - bot is asking for more info
+        // Conversation is still ongoing (e.g. fallback "Describe what you'd like...") - save partial session so it appears in Recent Chats
         setIsLoading(false);
         setWaitingForResponse(false);
         setShowResults(false);
+        const prevForSave = [...conversationHistory];
+        const lastOngoing = prevForSave[prevForSave.length - 1];
+        const updatedHistory =
+          lastOngoing?.role === "bot" && lastOngoing?.message === data.message
+            ? prevForSave
+            : [...prevForSave, { role: "bot", message: data.message }];
+        const firstUserMessage = updatedHistory.find((m) => m.role === "user")?.message || "Untitled Search";
+        const title = firstUserMessage.length > 50 ? firstUserMessage.slice(0, 50) + "..." : firstUserMessage;
+        const chatSessionId = currentChatSessionId || crypto.randomUUID();
+        setCurrentChatSessionId(chatSessionId);
+        localStorage.setItem("viola_current_chat_session_id", chatSessionId);
+        const existingSession = currentChatSessionId ? getChatSessionById(currentChatSessionId) : null;
+        saveChatSession({
+          id: chatSessionId,
+          title,
+          query: firstUserMessage,
+          sessionId: data.session_id,
+          conversationHistory: updatedHistory,
+          resultCount: 0,
+          searchResults: [],
+          selectedSongId: existingSession?.selectedSongId,
+          createdAt: existingSession?.createdAt || Date.now(),
+          updatedAt: Date.now(),
+        });
+        window.dispatchEvent(new Event("chatHistoryUpdated"));
       }
     } catch (error) {
       console.error("Search error:", error);

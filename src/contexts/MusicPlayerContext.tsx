@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useRef, useEffect, ReactNode } from 'react';
 
 export interface Song {
-  id: number;
+  id: number | string;
   title: string;
   artist: string;
   album?: string;

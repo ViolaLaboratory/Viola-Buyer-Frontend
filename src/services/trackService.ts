@@ -24,9 +24,9 @@ export interface TrackDetails {
   licensing?: string;
 }
 
-const CHROMA_API_KEY = import.meta.env.VITE_CHROMA_API_KEY || 'ck-5R1gbicHUMeAERcAPhRzoN2U5znRkrRjSjdJXdu7U8RA';
-const CHROMA_TENANT = import.meta.env.VITE_CHROMA_TENANT || 'b2a6f32d-669f-4c1a-8525-c857a7d1e59e';
-const CHROMA_DATABASE = import.meta.env.VITE_CHROMA_DATABASE || 'VIOLA';
+const CHROMA_API_KEY = import.meta.env.VITE_CHROMA_API_KEY ?? '';
+const CHROMA_TENANT = import.meta.env.VITE_CHROMA_TENANT ?? '';
+const CHROMA_DATABASE = import.meta.env.VITE_CHROMA_DATABASE ?? 'VIOLA';
 // ChromaDB Cloud API base URL
 const CHROMA_BASE_URL = `https://api.trychroma.com/api/v1`;
 

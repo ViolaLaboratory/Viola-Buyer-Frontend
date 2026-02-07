@@ -3,6 +3,13 @@
  * Manages folders (pitch projects) and their tracks in localStorage
  */
 
+export interface FolderMetadata {
+  client?: string;
+  film?: string;
+  description?: string;
+  color?: string;
+}
+
 export interface Folder {
   id: string;
   name: string;
@@ -15,11 +22,53 @@ export interface Folder {
     duration: string;
     thumbnail?: string;
   }>;
+  client?: string;
+  film?: string;
+  description?: string;
+  color?: string;
   createdAt: number;
   updatedAt: number;
 }
 
 const STORAGE_KEY = 'viola_folders';
+
+/** Demo folders for Guest users - Netflix, Stranger Things, etc. */
+export const DEMO_FOLDERS: Folder[] = [
+  {
+    id: 'demo-1',
+    name: 'Stranger Things',
+    trackIds: [],
+    client: 'Netflix',
+    film: 'Stranger Things, S1E4',
+    description: 'Needs a song for a 30 second clip with a dark and eerie song, where the lead girl and boy are being chased in the woods by a monster.',
+    color: 'red',
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },
+  {
+    id: 'demo-2',
+    name: 'The White Lotus',
+    trackIds: [],
+    client: 'HBO',
+    film: 'The White Lotus',
+    description: 'Upscale resort drama - need atmospheric, tension-building tracks.',
+    color: 'purple',
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },
+  {
+    id: 'demo-3',
+    name: 'Apple',
+    trackIds: [],
+    client: 'Apple',
+    film: 'Product Launch',
+    description: 'Clean, minimal tracks for product showcase.',
+    color: 'blue',
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  },
+];
+
 const DEFAULT_FOLDERS: Folder[] = [
   {
     id: '1',
@@ -59,6 +108,17 @@ const DEFAULT_FOLDERS: Folder[] = [
 ];
 
 /**
+ * Get demo folders (for Guest users)
+ */
+export const getDemoFolders = (): Folder[] => DEMO_FOLDERS;
+
+/**
+ * Get demo folder by ID (for Guest users)
+ */
+export const getDemoFolderById = (id: string): Folder | null =>
+  DEMO_FOLDERS.find(f => f.id === id) || null;
+
+/**
  * Get all folders from localStorage
  */
 export const getFolders = (): Folder[] => {
@@ -88,14 +148,21 @@ export const saveFolders = (folders: Folder[]): void => {
 };
 
 /**
- * Create a new folder
+ * Create a new folder with optional metadata
  */
-export const createFolder = (name: string): Folder => {
+export const createFolder = (
+  name: string,
+  metadata?: Partial<FolderMetadata>
+): Folder => {
   const folders = getFolders();
   const newFolder: Folder = {
     id: crypto.randomUUID(),
     name: name.trim(),
     trackIds: [],
+    client: metadata?.client ?? "",
+    film: metadata?.film ?? "",
+    description: metadata?.description ?? "",
+    color: metadata?.color ?? "red",
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -120,6 +187,25 @@ export const updateFolderName = (id: string, name: string): void => {
   const folder = folders.find(f => f.id === id);
   if (folder) {
     folder.name = name.trim();
+    folder.updatedAt = Date.now();
+    saveFolders(folders);
+  }
+};
+
+/**
+ * Update folder metadata (client, film, description, color)
+ */
+export const updateFolderMetadata = (
+  id: string,
+  metadata: Partial<FolderMetadata>
+): void => {
+  const folders = getFolders();
+  const folder = folders.find(f => f.id === id);
+  if (folder) {
+    if (metadata.client !== undefined) folder.client = metadata.client;
+    if (metadata.film !== undefined) folder.film = metadata.film;
+    if (metadata.description !== undefined) folder.description = metadata.description;
+    if (metadata.color !== undefined) folder.color = metadata.color;
     folder.updatedAt = Date.now();
     saveFolders(folders);
   }

@@ -20,15 +20,19 @@ import {
 import { fetchTrackDetailsFromMongoDB } from "@/services/trackService";
 import { 
   getFolders, 
+  getDemoFolders,
+  getDemoFolderById,
   createFolder, 
   getFolderById,
   addTracksToFolder,
   updateFolderName,
+  updateFolderMetadata,
   deleteFolder,
   removeTracksFromFolder,
   type Folder 
 } from "@/services/folderService";
 import { useMusicPlayer, type Song as MusicPlayerSong } from "@/contexts/MusicPlayerContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import API_ENDPOINTS from "@/config/api";
 
@@ -116,21 +120,24 @@ interface Song {
 
 export const PitchBuilder = () => {
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
   const [recommendedSongs, setRecommendedSongs] = useState<Song[]>([]);
   const [isLoadingSongs, setIsLoadingSongs] = useState(false);
   const [folders, setFolders] = useState<Folder[]>([]);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"builder" | "client" | "link">("builder");
-  const [clientName, setClientName] = useState("Netflix");
-  const [clientProject, setClientProject] = useState("Stranger Things, S1E4");
+  const [clientName, setClientName] = useState("");
+  const [clientProject, setClientProject] = useState("");
   const [clientColor, setClientColor] = useState("red");
-  const [clientDescription, setClientDescription] = useState(
-    "Needs a song for a 30 second clip with a dark and eerie song, where the lead girl and boy are being chased in the woods by a monster."
-  );
+  const [clientDescription, setClientDescription] = useState("");
   const [linkCopied, setLinkCopied] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
+  const [newFolderClient, setNewFolderClient] = useState("");
+  const [newFolderFilm, setNewFolderFilm] = useState("");
+  const [newFolderDescription, setNewFolderDescription] = useState("");
+  const [newFolderColor, setNewFolderColor] = useState("red");
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [renameFolderId, setRenameFolderId] = useState<string | null>(null);
   const [renameFolderName, setRenameFolderName] = useState("");
@@ -143,18 +150,7 @@ export const PitchBuilder = () => {
   const [commentDraft, setCommentDraft] = useState("");
 
   /* Music Player Integration */
-  const { playSong, loadSong, currentSong, isPlaying, togglePlayPause, nextTrack, previousTrack, currentTime, duration, seekTo } = useMusicPlayer();
-
-  // Format time helper
-  const formatTime = (seconds: number): string => {
-    if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  // Calculate progress percentage
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const { loadSong, currentSong, duration } = useMusicPlayer();
 
   // Update song duration when audio metadata loads
   useEffect(() => {
@@ -213,15 +209,32 @@ export const PitchBuilder = () => {
     });
   }, [recommendedSongs]); // Run when recommended songs change
 
-  // Load folders on mount
+  // Load folders on mount (demo folders for Guest, localStorage for logged-in)
   useEffect(() => {
-    const foldersList = getFolders();
+    const foldersList = isAuthenticated ? getFolders() : getDemoFolders();
     setFolders(foldersList);
-    // Select first folder by default
     if (foldersList.length > 0 && !selectedFolderId) {
       setSelectedFolderId(foldersList[0].id);
     }
-  }, []);
+  }, [isAuthenticated]);
+
+  // Load folder-specific metadata when selected folder changes
+  useEffect(() => {
+    if (!selectedFolderId) {
+      setClientName("");
+      setClientProject("");
+      setClientColor("red");
+      setClientDescription("");
+      return;
+    }
+    const folder = isAuthenticated ? getFolderById(selectedFolderId) : getDemoFolderById(selectedFolderId);
+    if (folder) {
+      setClientName(folder.client ?? "");
+      setClientProject(folder.film ?? "");
+      setClientColor(folder.color ?? "red");
+      setClientDescription(folder.description ?? "");
+    }
+  }, [selectedFolderId]);
 
   // Fetch recommended songs for the selected folder
   useEffect(() => {
@@ -290,16 +303,27 @@ export const PitchBuilder = () => {
   }, [selectedFolderId]);
 
   const handleCreateFolder = () => {
+    if (!isAuthenticated) return;
     if (newFolderName.trim()) {
-      const newFolder = createFolder(newFolderName.trim());
+      const newFolder = createFolder(newFolderName.trim(), {
+        client: newFolderClient.trim() || undefined,
+        film: newFolderFilm.trim() || undefined,
+        description: newFolderDescription.trim() || undefined,
+        color: newFolderColor,
+      });
       setFolders(getFolders());
       setSelectedFolderId(newFolder.id);
       setShowCreateDialog(false);
       setNewFolderName("");
+      setNewFolderClient("");
+      setNewFolderFilm("");
+      setNewFolderDescription("");
+      setNewFolderColor("red");
     }
   };
 
   const handleRenameFolder = (folderId: string) => {
+    if (!isAuthenticated) return;
     const folder = getFolderById(folderId);
     if (folder) {
       setRenameFolderId(folderId);
@@ -319,6 +343,7 @@ export const PitchBuilder = () => {
   };
 
   const handleDeleteFolder = (folderId: string) => {
+    if (!isAuthenticated) return;
     if (window.confirm("Are you sure you want to delete this folder? This action cannot be undone.")) {
       deleteFolder(folderId);
       const updatedFolders = getFolders();
@@ -336,7 +361,7 @@ export const PitchBuilder = () => {
   };
 
   const handleRemoveTrackFromFolder = (trackId: number) => {
-    if (!selectedFolderId) return;
+    if (!isAuthenticated || !selectedFolderId) return;
     
     removeTracksFromFolder(selectedFolderId, [trackId.toString()]);
     
@@ -405,6 +430,7 @@ export const PitchBuilder = () => {
 
   // Handle adding song to another folder
   const handleAddSongToFolder = (folderId: string) => {
+    if (!isAuthenticated) return;
     if (!selectedSongForFolder) return;
 
     try {
@@ -452,6 +478,7 @@ export const PitchBuilder = () => {
 
 
   const handleExport = async () => {
+    if (!isAuthenticated) return;
     if (status === "loading" || !selectedFolderId) return;
 
     setStatus("loading");
@@ -472,8 +499,12 @@ export const PitchBuilder = () => {
         const trackDetails = await fetchTrackDetails([trackId]);
         if (trackDetails.length > 0) {
           const track = trackDetails[0];
+          // Prefer trackCache for display name (actual song title from Search), else use fetched track
+          const cached = folder.trackCache?.[trackId];
+          const displayTitle = cached?.title || track.title || `Track ${trackId}`;
+          const displayArtist = cached?.artist || track.artist || "Unknown Artist";
+          const safeFileName = `${displayTitle} - ${displayArtist}`.replace(/[^a-z0-9\uAC00-\uD7A3]/gi, "_").replace(/_+/g, "_").replace(/^_|_$/g, "") || `Track_${trackId}`;
           const trackInfo = `Title: ${track.title}\nArtist: ${track.artist}\nAlbum: ${track.album}\nDuration: ${track.duration}\nProducer: ${track.producer}\nWriter: ${track.writer}\nLicensing: ${track.licensing}\nKeywords: ${track.keywords.join(", ")}\n`;
-          const safeFileName = track.title.replace(/[^a-z0-9]/gi, "_");
           zip.file(`${safeFileName}_${trackId}.txt`, trackInfo);
           
           // Fetch and add MP3 file
@@ -608,7 +639,9 @@ export const PitchBuilder = () => {
     }
   };
 
-  const selectedFolder = selectedFolderId ? getFolderById(selectedFolderId) : null;
+  const selectedFolder = selectedFolderId
+    ? (isAuthenticated ? getFolderById(selectedFolderId) : getDemoFolderById(selectedFolderId))
+    : null;
   const viewLabel =
     viewMode === "client"
       ? "Pitch Kit Builder (Add Client)"
@@ -622,7 +655,9 @@ export const PitchBuilder = () => {
     green: "bg-emerald-600",
     amber: "bg-amber-500",
   };
-  const clientBadgeClass = clientColorMap[clientColor] ?? "bg-white/20";
+  const getFolderAvatarClass = (folder: Folder, isSelected: boolean) =>
+    isSelected ? (clientColorMap[folder.color ?? "red"] ?? "bg-red-600") : "bg-white/15";
+  const clientBadgeClass = clientColorMap[clientColor ?? selectedFolder?.color ?? "red"] ?? "bg-white/20";
 
   const handleCopyLink = () => {
     const shareUrl = `${window.location.origin}/demo/pitch-kit/share/${selectedFolderId ?? "kit"}`;
@@ -692,10 +727,8 @@ export const PitchBuilder = () => {
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div
                         className={`h-10 w-10 rounded-full flex items-center justify-center text-xs font-dm flex-shrink-0 ${
-                          selectedFolderId === folder.id
-                            ? "bg-red-500 text-white"
-                            : "bg-white/15 text-white/80"
-                        }`}
+                          getFolderAvatarClass(folder, selectedFolderId === folder.id)
+                        } text-white ${selectedFolderId !== folder.id ? "text-white/80" : ""}`}
                       >
                         {folder.name.slice(0, 1).toUpperCase()}
                       </div>
@@ -718,6 +751,7 @@ export const PitchBuilder = () => {
                           )}
                         </div>
                       </div>
+                      {isAuthenticated && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button
@@ -752,14 +786,16 @@ export const PitchBuilder = () => {
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
+                      )}
                     </div>
                   ))}
                 </div>
 
                 <button
                   type="button"
-                  onClick={() => setShowCreateDialog(true)}
-                  className="flex h-12 w-full items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-white/80 hover:text-white hover:bg-white/15 shadow-[0_0_12px_rgba(0,0,0,0.3)]"
+                  onClick={() => isAuthenticated ? setShowCreateDialog(true) : toast({ title: "Log in for full functionality" })}
+                  disabled={!isAuthenticated}
+                  className="flex h-12 w-full items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-white/80 hover:text-white hover:bg-white/15 shadow-[0_0_12px_rgba(0,0,0,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -773,11 +809,11 @@ export const PitchBuilder = () => {
                 alt="Vinyl"
                 className="pointer-events-none invert absolute place-self-center grayscale top-12 w-[680px] opacity-90 saturate-0 rotate-8 brightness-150 z-0"
               />
-              <div className="relative z-10 h-full pr-6 overflow-y-auto">
-                <div className="flex items-start justify-between gap-6">
+              <div className="relative z-10 h-full pr-6 overflow-y-auto pb-24">
+                <div className="w-full max-w-[820px] flex items-start justify-between gap-6">
                 <div className="flex items-center gap-4">
                   <div className={`h-12 w-12 rounded-full ${clientBadgeClass} flex items-center justify-center text-sm font-dm`}>
-                    {clientName.slice(0, 1).toUpperCase()}
+                    {(clientName || selectedFolder?.name || "N").slice(0, 1).toUpperCase()}
                   </div>
                   <div>
                     <div className="text-3xl font-dm">{selectedFolder?.name ?? "Select a kit"}</div>
@@ -791,8 +827,9 @@ export const PitchBuilder = () => {
                   <div className="flex items-center gap-3">
                     <Button
                       size="sm"
-                      className="bg-white/5 text-white border border-white/25 hover:bg-white/15 rounded-full px-5 font-dm focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.12)]"
-                      onClick={() => setViewMode("client")}
+                      disabled={!isAuthenticated}
+                      className="bg-white/5 text-white border border-white/25 hover:bg-white/15 rounded-full px-5 font-dm focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.12)] disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={() => isAuthenticated ? setViewMode("client") : toast({ title: "Log in for full functionality" })}
                     >
                       <Pencil className="h-4 w-4 mr-2" />
                       Edit
@@ -818,9 +855,9 @@ export const PitchBuilder = () => {
                   {viewMode === "builder" ? (
                     <Button
                       size="sm"
-                      className="bg-white/5 text-white border border-white/25 hover:bg-white/15 rounded-full px-6 font-dm focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.12)]"
-                      onClick={handleExport}
-                      disabled={status === "loading"}
+                      className="bg-white/5 text-white border border-white/25 hover:bg-white/15 rounded-full px-6 font-dm focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.12)] disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={() => isAuthenticated ? handleExport() : toast({ title: "Log in for full functionality" })}
+                      disabled={status === "loading" || !isAuthenticated}
                     >
                       <ArrowUp className="h-4 w-4 mr-2" />
                       Export
@@ -866,14 +903,15 @@ export const PitchBuilder = () => {
               )}
 
               <div className="mt-6 w-full max-w-[820px] space-y-6">
-                <div className="relative rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,18,18,0.75),rgba(10,10,12,0.85))] p-6 shadow-[0_0_28px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-                  <div className="text-sm text-white/60">Prepared for {clientName || "Client"}</div>
-                  <div className="text-xl font-dm text-white">{clientProject || "Project Name"}</div>
-                  <div className="mt-4 rounded-2xl bg-white/10 p-4 text-sm text-white/70">
+                <div className="relative rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,18,18,0.75),rgba(10,10,12,0.85))] p-6 shadow-[0_0_28px_rgba(0,0,0,0.45)] backdrop-blur-xl flex flex-col">
+                  <div className="text-sm text-white/60 flex-shrink-0">Prepared for {clientName || "Client"}</div>
+                  <div className="text-xl font-dm text-white flex-shrink-0">{clientProject || "Project Name"}</div>
+                  <div className="mt-4 rounded-2xl bg-white/10 p-4 text-sm text-white/70 flex-shrink-0">
                     {clientDescription}
                   </div>
 
-                  <div className="mt-5 space-y-3">
+                  {/* 곡 목록: 3곡 높이만 보이고 나머지는 스크롤 (하단 플레이어바와 겹침 방지) */}
+                  <div className="mt-5 space-y-3 max-h-[252px] overflow-y-auto pr-1">
                     {isLoadingSongs ? (
                       <div className="flex items-center justify-center py-8 text-white/70">
                         <Loader2 className="h-6 w-6 animate-spin text-white/70" />
@@ -896,17 +934,46 @@ export const PitchBuilder = () => {
                           return (
                             <div key={song.id} className="space-y-0">
                               <div
-                                className={`flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 ${
+                                role="button"
+                                tabIndex={0}
+                                className={`flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 cursor-pointer hover:bg-white/10 transition-colors ${
                                   expandedCommentSongId === song.id
                                     ? "rounded-b-none border-b-0"
                                     : ""
                                 }`}
-                              >
-                                <button
-                                  type="button"
-                                  className="flex h-12 w-12 items-center justify-center rounded-md bg-white text-black"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
+                                onClick={() => {
+                                  const musicPlayerSong: MusicPlayerSong = {
+                                    id: song.id,
+                                    title: song.title,
+                                    artist: song.artist,
+                                    album: song.album,
+                                    duration: song.duration,
+                                    keywords: song.keywords || [],
+                                    thumbnail: song.thumbnail,
+                                  };
+                                  const queue: MusicPlayerSong[] = recommendedSongs.map(s => ({
+                                    id: s.id,
+                                    title: s.title,
+                                    artist: s.artist,
+                                    album: s.album,
+                                    duration: s.duration,
+                                    keywords: s.keywords || [],
+                                    thumbnail: s.thumbnail,
+                                  }));
+                                  loadSong(musicPlayerSong, queue);
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    const musicPlayerSong: MusicPlayerSong = {
+                                      id: song.id,
+                                      title: song.title,
+                                      artist: song.artist,
+                                      album: song.album,
+                                      duration: song.duration,
+                                      keywords: song.keywords || [],
+                                      thumbnail: song.thumbnail,
+                                    };
                                     const queue: MusicPlayerSong[] = recommendedSongs.map(s => ({
                                       id: s.id,
                                       title: s.title,
@@ -916,15 +983,22 @@ export const PitchBuilder = () => {
                                       keywords: s.keywords || [],
                                       thumbnail: s.thumbnail,
                                     }));
-                                    playSong(musicPlayerSong, queue);
-                                  }}
-                                >
-                                  {currentSong?.id === song.id && isPlaying ? (
-                                    <Pause className="h-5 w-5" />
-                                  ) : (
-                                    <Play className="h-5 w-5" />
-                                  )}
-                                </button>
+                                    loadSong(musicPlayerSong, queue);
+                                  }
+                                }}
+                              >
+                                <div className="h-12 w-12 min-w-[3rem] min-h-[3rem] rounded-md flex-shrink-0 overflow-hidden bg-white">
+                                  <img
+                                    src={song.thumbnail && song.thumbnail !== "🎵" ? song.thumbnail : "/NoteAlbumArt.png"}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      if (e.currentTarget.src !== "/NoteAlbumArt.png") {
+                                        e.currentTarget.src = "/NoteAlbumArt.png";
+                                      }
+                                    }}
+                                  />
+                                </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="text-white">{song.title}</div>
                                   <div className="text-white/50 text-xs">{song.artist}</div>
@@ -1017,33 +1091,43 @@ export const PitchBuilder = () => {
                                     ) : null}
                                     <button
                                       type="button"
-                                      className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/60 hover:bg-white/20 cursor-grab"
+                                      className="flex h-9 w-9 min-w-[2.25rem] min-h-[2.25rem] items-center justify-center rounded-full bg-white/10 text-white/60 hover:bg-white/20 cursor-grab flex-shrink-0"
                                       aria-label="Drag to reorder"
                                     >
-                                      <GripVertical className="h-4 w-4" />
+                                      <GripVertical className="h-4 w-4 shrink-0" />
                                     </button>
                                     <button
                                       type="button"
-                                      className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/60 hover:bg-white/20"
+                                      disabled={!isAuthenticated}
+                                      className="flex h-9 w-9 min-w-[2.25rem] min-h-[2.25rem] items-center justify-center rounded-full bg-white/10 text-white/60 hover:bg-white/20 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                                       aria-label="Add track to another folder"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        setSelectedSongForFolder(song);
-                                        setShowAddToFolderDialog(true);
+                                        if (isAuthenticated) {
+                                          setSelectedSongForFolder(song);
+                                          setShowAddToFolderDialog(true);
+                                        } else {
+                                          toast({ title: "Log in for full functionality" });
+                                        }
                                       }}
                                     >
-                                      <Plus className="h-4 w-4" />
+                                      <Plus className="h-4 w-4 shrink-0" />
                                     </button>
                                     <button
                                       type="button"
+                                      disabled={!isAuthenticated}
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        handleRemoveTrackFromFolder(song.id);
+                                        if (isAuthenticated) {
+                                          handleRemoveTrackFromFolder(song.id);
+                                        } else {
+                                          toast({ title: "Log in for full functionality" });
+                                        }
                                       }}
-                                      className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black"
+                                      className="flex h-9 w-9 min-w-[2.25rem] min-h-[2.25rem] items-center justify-center rounded-full bg-white text-black flex-shrink-0 p-0 disabled:opacity-50 disabled:cursor-not-allowed"
                                       aria-label="Remove track"
                                     >
-                                      <Trash2 className="h-4 w-4" />
+                                      <Trash2 className="h-3.5 w-3.5 shrink-0" />
                                     </button>
                                   </div>
                                 )}
@@ -1111,74 +1195,6 @@ export const PitchBuilder = () => {
                   </div>
                 </div>
 
-                {currentSong && (
-                  <div className="rounded-2xl border border-white/15 bg-black/60 px-5 py-4 shadow-[0_0_24px_rgba(0,0,0,0.4)] backdrop-blur">
-                    <div className="flex items-center gap-4">
-                      <img
-                        src={currentSong.thumbnail || "/NoteAlbumArt.png"}
-                        alt="Now playing"
-                        className="h-12 w-12 rounded-md object-cover"
-                      />
-                      <div className="text-sm">
-                        <div className="text-white font-dm">{currentSong.title || "Song Title"}</div>
-                        <div className="text-white/60 font-exo">{currentSong.artist || "Artist Name"}</div>
-                        <div className="text-white/60 font-exo">{currentSong.album || "Album Name"}</div>
-                      </div>
-                      <div className="flex-1 px-6">
-                        <div 
-                          className="relative h-[3px] bg-white/20 rounded-full cursor-pointer group"
-                          onClick={(e) => {
-                            if (!duration) return;
-                            const progressBar = e.currentTarget;
-                            const rect = progressBar.getBoundingClientRect();
-                            const clickX = e.clientX - rect.left;
-                            const percentage = clickX / rect.width;
-                            const newTime = percentage * duration;
-                            seekTo(newTime);
-                          }}
-                          title="Click to seek"
-                        >
-                          <div 
-                            className="absolute left-0 top-0 h-full bg-white rounded-full transition-all duration-300"
-                            style={{ width: `${progress}%` }}
-                          />
-                          <div className="absolute inset-0 rounded-full group-hover:bg-white/10 transition-colors" />
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-white/60 mt-2 font-dm">
-                          <span>{formatTime(currentTime)}</span>
-                          <span>{formatTime(duration) || currentSong.duration || "0:00"}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button 
-                          type="button" 
-                          className="h-9 w-9 rounded-full border border-white/40 flex items-center justify-center hover:bg-white/10 transition-colors focus-visible:ring-0 focus-visible:ring-offset-0"
-                          onClick={previousTrack}
-                        >
-                          <SkipBack className="h-4 w-4" />
-                        </button>
-                        <button 
-                          type="button" 
-                          className="h-9 w-9 rounded-full border border-white/40 flex items-center justify-center hover:bg-white/10 transition-colors focus-visible:ring-0 focus-visible:ring-offset-0"
-                          onClick={togglePlayPause}
-                        >
-                          {isPlaying ? (
-                            <Pause className="h-4 w-4" fill="currentColor" />
-                          ) : (
-                            <Play className="h-4 w-4" fill="currentColor" />
-                          )}
-                        </button>
-                        <button 
-                          type="button" 
-                          className="h-9 w-9 rounded-full border border-white/40 flex items-center justify-center hover:bg-white/10 transition-colors focus-visible:ring-0 focus-visible:ring-offset-0"
-                          onClick={nextTrack}
-                        >
-                          <SkipForward className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
               </div>
             </main>
@@ -1197,7 +1213,7 @@ export const PitchBuilder = () => {
                 onChange={(e) => setClientName(e.target.value)}
                 className="bg-white/10 text-white border-white/20 placeholder:text-white/40 focus:border-white/40"
               />
-              <div className="text-lg font-dm">Film/TV/Video Game/Commercial</div>
+              <div className="text-lg font-dm">Film/TV/Video Game/Commercial - Project Name</div>
               <Input
                 placeholder="(e.g) Coca Cola Commercial"
                 value={clientProject}
@@ -1226,7 +1242,18 @@ export const PitchBuilder = () => {
             <div className="mt-6 flex justify-end">
               <Button
                 className="bg-white/10 text-white border border-white/30 hover:bg-white/20 rounded-full px-6 focus-visible:ring-0 focus-visible:ring-offset-0"
-                onClick={() => setViewMode("builder")}
+                onClick={() => {
+                  if (selectedFolderId) {
+                    updateFolderMetadata(selectedFolderId, {
+                      client: clientName.trim(),
+                      film: clientProject.trim(),
+                      description: clientDescription.trim(),
+                      color: clientColor,
+                    });
+                    setFolders(getFolders());
+                  }
+                  setViewMode("builder");
+                }}
               >
                 Done
               </Button>
@@ -1236,26 +1263,77 @@ export const PitchBuilder = () => {
       )}
 
     {/* Create Folder Dialog */}
-    <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-      <DialogContent className="bg-black/80 text-white border border-white/20 backdrop-blur-xl">
+    <Dialog open={showCreateDialog} onOpenChange={(open) => {
+      setShowCreateDialog(open);
+      if (!open) {
+        setNewFolderName("");
+        setNewFolderClient("");
+        setNewFolderFilm("");
+        setNewFolderDescription("");
+        setNewFolderColor("red");
+      }
+    }}>
+      <DialogContent className="bg-black/80 text-white border border-white/20 backdrop-blur-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Folder</DialogTitle>
+          <DialogTitle>Create New Pitch Kit</DialogTitle>
           <DialogDescription>
-            Enter a name for your new pitch folder.
+            Set up your new pitch kit with name, client, film, and description.
           </DialogDescription>
         </DialogHeader>
-        <Input
-          placeholder="Folder name"
-          value={newFolderName}
-          onChange={(e) => setNewFolderName(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleCreateFolder();
-            }
-          }}
-          className="bg-white/10 text-white border-white/20 placeholder:text-white/40 focus:border-white/40"
-          autoFocus
-        />
+        <div className="space-y-4 py-2">
+          <div>
+            <label className="text-sm font-medium text-white/80 block mb-2">Folder Name *</label>
+            <Input
+              placeholder="e.g. Stranger Things"
+              value={newFolderName}
+              onChange={(e) => setNewFolderName(e.target.value)}
+              className="bg-white/10 text-white border-white/20 placeholder:text-white/40 focus:border-white/40"
+              autoFocus
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-white/80 block mb-2">Client</label>
+            <Input
+              placeholder="e.g. Netflix"
+              value={newFolderClient}
+              onChange={(e) => setNewFolderClient(e.target.value)}
+              className="bg-white/10 text-white border-white/20 placeholder:text-white/40 focus:border-white/40"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-white/80 block mb-2">Film/TV/Video Game/Commercial - Project Name</label>
+            <Input
+              placeholder="e.g. Stranger Things, S1E4"
+              value={newFolderFilm}
+              onChange={(e) => setNewFolderFilm(e.target.value)}
+              className="bg-white/10 text-white border-white/20 placeholder:text-white/40 focus:border-white/40"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-white/80 block mb-2">Color</label>
+            <select
+              value={newFolderColor}
+              onChange={(e) => setNewFolderColor(e.target.value)}
+              className="h-10 w-full rounded-md bg-white/10 px-3 text-white border border-white/20"
+            >
+              <option value="red">Red</option>
+              <option value="purple">Purple</option>
+              <option value="blue">Blue</option>
+              <option value="green">Green</option>
+              <option value="amber">Amber</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-white/80 block mb-2">Description</label>
+            <textarea
+              placeholder="Brief description of the pitch..."
+              value={newFolderDescription}
+              onChange={(e) => setNewFolderDescription(e.target.value)}
+              className="h-24 w-full rounded-md bg-white/10 px-3 py-2 text-sm text-white border border-white/20 placeholder:text-white/40 focus:border-white/40"
+              rows={3}
+            />
+          </div>
+        </div>
         <DialogFooter>
           <Button
             variant="outline"
@@ -1332,7 +1410,7 @@ export const PitchBuilder = () => {
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/10 transition-colors text-left"
                 onClick={() => handleAddSongToFolder(folder.id)}
               >
-                <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-sm font-dm flex-shrink-0">
+                <div className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-dm flex-shrink-0 ${clientColorMap[folder.color ?? "red"] ?? "bg-purple-600"}`}>
                   {folder.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 text-left font-dm">{folder.name}</div>

@@ -9,10 +9,10 @@
  */
 
 // MongoDB connection string (for backend reference only)
+// NEVER commit real credentials. Use VITE_MONGODB_URL in .env (and add .env to .gitignore).
 export const MONGODB_CONFIG = {
   // DO NOT use this directly in frontend - use backend API instead
-  CONNECTION_STRING: import.meta.env.VITE_MONGODB_URL || 
-    'mongodb+srv://kimkyungtae12386_db_user:yBCn4hYANtHb3zRI@viola.x07ascb.mongodb.net/?appName=viola',
+  CONNECTION_STRING: import.meta.env.VITE_MONGODB_URL || '',
 };
 
 /**

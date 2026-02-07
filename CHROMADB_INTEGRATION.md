@@ -55,7 +55,8 @@ The `src/services/trackService.ts` file provides three main functions:
 MongoDB connection string is stored in `src/config/mongodb.ts` for reference:
 
 ```
-mongodb+srv://kimkyungtae12386_db_user:yBCn4hYANtHb3zRI@viola.x07ascb.mongodb.net/?appName=viola
+# Set in .env - NEVER commit real credentials
+# VITE_MONGODB_URL=mongodb+srv://USER:PASSWORD@cluster.mongodb.net/?appName=viola
 ```
 
 **⚠️ Important**: MongoDB should ONLY be accessed through your backend API. Never use MongoDB directly in the frontend.
@@ -65,14 +66,14 @@ mongodb+srv://kimkyungtae12386_db_user:yBCn4hYANtHb3zRI@viola.x07ascb.mongodb.ne
 Create a `.env` file in the project root with:
 
 ```env
-# ChromaDB Configuration
-VITE_CHROMA_API_KEY=ck-5R1gbicHUMeAERcAPhRzoN2U5znRkrRjSjdJXdu7U8RA
-VITE_CHROMA_TENANT=b2a6f32d-669f-4c1a-8525-c857a7d1e59e
+# ChromaDB Configuration - add these to .env (do NOT commit .env)
+VITE_CHROMA_API_KEY=your-chroma-api-key
+VITE_CHROMA_TENANT=your-tenant-id
 VITE_CHROMA_DATABASE=VIOLA
 VITE_CHROMA_COLLECTION_NAME=fma_small
 
 # MongoDB (Backend Only - Do NOT use in frontend)
-# VITE_MONGODB_URL=mongodb+srv://...
+# VITE_MONGODB_URL=mongodb+srv://USER:PASSWORD@cluster.mongodb.net/...
 ```
 
 ## Security Notes

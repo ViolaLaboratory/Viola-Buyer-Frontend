@@ -8,6 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Camera } from "lucide-react";
 import API_ENDPOINTS from "@/config/api";
 
+/** User-friendly message when server/network fails */
+const SERVER_ERROR_MESSAGE = "There is a problem with the server. Please try again later.";
+
 /**
  * LogoMark Component
  * Displays the Viola logo SVG
@@ -79,7 +82,7 @@ const Signup = () => {
 
       const contentType = response.headers.get('content-type');
       if (!contentType?.includes('application/json')) {
-        setError('Server connection failed. Make sure the Django backend is running (python3 manage.py runserver).');
+        setError(SERVER_ERROR_MESSAGE);
         return;
       }
       const data = (await response.json()) as Record<string, unknown>;
@@ -98,8 +101,8 @@ const Signup = () => {
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to send verification code';
       setError(
-        msg.includes('JSON') || msg.includes('Unexpected token')
-          ? 'Server connection failed. Make sure the Django backend is running (python3 manage.py runserver).'
+        msg.includes('JSON') || msg.includes('Unexpected token') || msg.includes('fetch') || msg.includes('Network')
+          ? SERVER_ERROR_MESSAGE
           : msg
       );
     } finally {
@@ -128,21 +131,37 @@ const Signup = () => {
         }),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get('content-type');
+      if (!contentType?.includes('application/json')) {
+        setError(SERVER_ERROR_MESSAGE);
+        return;
+      }
+      let data: Record<string, unknown>;
+      try {
+        data = (await response.json()) as Record<string, unknown>;
+      } catch {
+        setError(SERVER_ERROR_MESSAGE);
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(
-          data.error || 
-          data.code?.[0] || 
-          data.username?.[0] || 
-          data.password?.[0] || 
+          (data.error as string) ||
+          (data.code as string[])?.[0] ||
+          (data.username as string[])?.[0] ||
+          (data.password as string[])?.[0] ||
           'Failed to verify code'
         );
       }
 
       setStep("complete");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to verify code');
+      const msg = err instanceof Error ? err.message : 'Failed to verify code';
+      setError(
+        msg.includes('JSON') || msg.includes('Unexpected token') || msg.includes('fetch') || msg.includes('Network')
+          ? SERVER_ERROR_MESSAGE
+          : msg
+      );
     } finally {
       setIsLoading(false);
     }
@@ -169,14 +188,25 @@ const Signup = () => {
         body: formData,
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get('content-type');
+      if (!contentType?.includes('application/json')) {
+        setError(SERVER_ERROR_MESSAGE);
+        return;
+      }
+      let data: Record<string, unknown>;
+      try {
+        data = (await response.json()) as Record<string, unknown>;
+      } catch {
+        setError(SERVER_ERROR_MESSAGE);
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(
-          data.error || 
-          data.email?.[0] || 
-          data.username?.[0] || 
-          data.password?.[0] || 
+          (data.error as string) ||
+          (data.email as string[])?.[0] ||
+          (data.username as string[])?.[0] ||
+          (data.password as string[])?.[0] ||
           'Failed to create account'
         );
       }
@@ -189,12 +219,17 @@ const Signup = () => {
           username: u.username || username,
           email: u.email || email,
           profile_image: normalizeProfileImageUrl(u.profile_image),
-          plan: "Pro plan",
+          plan: "Free plan",
         });
       }
       navigate("/demo/home");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create account');
+      const msg = err instanceof Error ? err.message : 'Failed to create account';
+      setError(
+        msg.includes('JSON') || msg.includes('Unexpected token') || msg.includes('fetch') || msg.includes('Network')
+          ? SERVER_ERROR_MESSAGE
+          : msg
+      );
     } finally {
       setIsLoading(false);
     }

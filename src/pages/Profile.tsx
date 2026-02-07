@@ -17,11 +17,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ArrowLeft, LogOut, ChevronDown, Camera, CreditCard } from "lucide-react";
 import { normalizeProfileImageUrl } from "@/utils/profileImage";
 import { useToast } from "@/hooks/use-toast";
@@ -193,32 +193,20 @@ const Profile = () => {
           {/* Email */}
           <p className="text-white/60 text-sm mb-4">{user.email}</p>
 
-          {/* Plan badge - clickable dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white/90 text-sm font-dm mb-8 hover:bg-white/15 transition-colors cursor-pointer"
-              >
-                {user.plan || "Pro plan"}
-                <ChevronDown className="h-4 w-4 opacity-70" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="center"
-              className="w-48 bg-black/95 border-white/20 text-white"
-            >
-              {PLAN_OPTIONS.map((plan) => (
-                <DropdownMenuItem
-                  key={plan}
-                  className="focus:bg-white/10 focus:text-white cursor-pointer"
-                  onClick={() => handlePlanSelect(plan)}
-                >
-                  {plan}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Plan badge - temporarily disabled */}
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white/90 text-sm font-dm mb-8 cursor-not-allowed opacity-80">
+                  {user.plan || "Free plan"}
+                  <ChevronDown className="h-4 w-4 opacity-70" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="bg-black/90 border border-red-500/50 px-3 py-2">
+                <span className="text-red-500 font-medium">Changing Plan is Temporarily not Available</span>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           {/* Payment Dialog */}
           <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
@@ -316,6 +304,7 @@ const Profile = () => {
             className="border-white/20 text-white/80 hover:bg-white/10 hover:text-white"
             onClick={() => {
               logout();
+              navigate("/", { replace: true }); // Replace profile with landing so browser back from login goes to landing
               navigate("/login");
             }}
           >
