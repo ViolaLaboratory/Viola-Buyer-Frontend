@@ -18,6 +18,7 @@ export default {
         inter: ['Inter', 'sans-serif'],
         dm: ['"DM Sans"', 'Zen Dots'],
         zen: ['"Zen Dots"', 'sans-serif'],
+        exo: ['"Exo 2"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

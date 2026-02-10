@@ -128,6 +128,32 @@
   }
 }
 
+.demo-cursor,
+.demo-cursor * {
+  cursor: none;
+}
+
+.custom-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  background: transparent;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+  z-index: 9999;
+}
+
+.custom-cursor.is-hover {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.4);
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
 /**
  * Heatwave Animation
  * Creates a slow, fluid background position shift for viola-glow-bg elements

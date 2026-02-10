@@ -446,10 +446,9 @@ const Landing = () => {
           {/* Content */}
           <div className="relative z-10 px-6 md:px-12 py-12 md:py-16 lg:py-20 text-center space-y-3 md:space-y-4">
             <p className="uppercase tracking-[0.25em] text-xs">Locate · Listen · License</p>
-            <h2 className="font-zen font-semibold text-3xl md:text-4xl lg:text-5xl leading-tight max-w-5xl mx-auto">
-              From <span className="italic">"I'll Know It When I Hear It"</span>
+            <h2 className="font-zen font-semibold text-2xl md:text-3xl lg:text-4xl leading-tight max-w-5xl mx-auto">
+              From <span className="italic">"I'll Know It When I Hear It"</span> to Easily Pitched.
               <br className="hidden md:block" />
-              <span className="md:inline block mt-2 md:mt-0 font-dm">to Easily Pitched.</span>
               <br className="hidden md:block" />
               <span className="md:inline block mt-2 md:mt-0 font-dm">All Done in One Place.</span>
             </h2>
@@ -468,7 +467,7 @@ const Landing = () => {
                   <img
                     src={fallbackPoster}
                     alt="Search demo placeholder"
-                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1 brightness-75 grayscale"
+                    className="absolute inset-0 w-full h-full object-contain brightness-75 grayscale"
                   />
                 ) : (
                   <video
@@ -480,7 +479,7 @@ const Landing = () => {
                     poster={fallbackPoster}
                     crossOrigin="anonymous"
                     onError={() => setSearchVideoFailed(true)}
-                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1"
+                    className="absolute inset-0 w-full h-full object-contain"
                   >
                     <source src={searchVideo} type="video/mp4" />
                   </video>
@@ -514,7 +513,7 @@ const Landing = () => {
                   <img
                     src={fallbackPoster}
                     alt="Pitch builder placeholder"
-                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1 brightness-75 grayscale"
+                    className="absolute inset-0 w-full h-full object-contain brightness-75 grayscale"
                   />
                 ) : (
                   <video
@@ -526,7 +525,7 @@ const Landing = () => {
                     poster={fallbackPoster}
                     crossOrigin="anonymous"
                     onError={() => setPitchVideoFailed(true)}
-                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1"
+                    className="absolute inset-0 w-full h-full object-contain"
                   >
                     <source src={pitchVideo} type="video/mp4" />
                   </video>
@@ -560,7 +559,7 @@ const Landing = () => {
                   <img
                     src={fallbackPoster}
                     alt="Catalog viewer placeholder"
-                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1 brightness-75 grayscale"
+                    className="absolute inset-0 w-full h-full object-contain brightness-75 grayscale"
                   />
                 ) : (
                   <video
@@ -572,7 +571,7 @@ const Landing = () => {
                     poster={fallbackPoster}
                     crossOrigin="anonymous"
                     onError={() => setCatalogueVideoFailed(true)}
-                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1"
+                    className="absolute inset-0 w-full h-full object-contain"
                   >
                     <source src={catalogueVideo} type="video/mp4" />
                   </video>
@@ -687,7 +686,7 @@ const Landing = () => {
                 </li>
                 <li className="flex items-center justify-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#e4ea04]" />
-                  <span>Record Label or Publishing Company Team </span>
+                  <span>Record Label or Publishing Company Team Player </span>
                 </li>
               </ul>
             </div>
@@ -713,17 +712,13 @@ const Landing = () => {
           </div>
 
           <p className="text-white font-dm text-center text-2xl text-center px-12 lg:px-32">
-            Viola doesn’t replace your ear. It gives you a better easel, better paints, and a cleaner studio to work in.
+            Viola doesn't replace your ear. It gives you a better easel, better paints, and a cleaner studio to work in.
           </p>
-          <div className="w-full ">
-            <img src="paintSupplies.png" alt="" className="h-1/3 px-24 brightness-[2] saturate-200 place-self-center"/>
-
-          </div>
         </div>
       </section>
 
 {/* Why / Trust */}
-      <section className="px-6 py-16 md:py-20 bg-[#EE481F] rounded-none md:rounded-full shadow-[0_0_80px_rgba(238,72,31,0.55)]">
+      <section className="px-6 py-16 md:py-20 border border-white/10 rounded-2xl">
         <div className="max-w-4xl mx-auto space-y-4 text-center">
           <p className="uppercase tracking-[0.2em] text-white font-dm text-xs">Why Viola</p>
           <h2 className="text-4xl md:text-7xl font-zen font-semibold text-white pb-6 px-8">AI that assists your ear, not replaces it.</h2>
@@ -783,7 +778,7 @@ const Landing = () => {
             {/* Tagline - only visible when not searched */}
             {!hasSearched && (
               <p className="text-center text-white/70 text-sm mt-4 tracking-wide">
-                locate, listen, license.
+                Locate, Listen, License.
               </p>
             )}
           </form>
@@ -821,7 +816,7 @@ const Landing = () => {
                 <Button
                   variant="outline"
                   className="hidden lg:flex text-white border-white/40 px-16 py-6 sm:min-w-[220px] text-lg rounded-lg transition-all duration-500 ease-out hover:border-[#e4ea04] hover:text-black hover:bg-[#e4ea04]/85 hover:shadow-[0_0_30px_rgba(228,234,4,0.35)]"
-                  onClick={() => navigate("/demo")}
+                  onClick={() => navigate("/login")}
                 >
                   Checkout Demo
                 </Button>
@@ -857,8 +852,12 @@ const Landing = () => {
             <Accordion type="single" collapsible className="space-y-3">
               {[
                 {
-                  q: "Are you replacing music supervisors?",
-                  a: "No. Viola is a workflow tool for people whose full-time job is taste and judgment. It helps you find, sort, and clear faster. You decide what’s right for the project."
+                  q: "Are you replacing sync agents, sync managers, and music supervisors?",
+                  a: "No. Viola is a workflow tool for people whose full-time job is taste and judgment. It helps you find, sort, and clear faster. You decide what's right for the project."
+                },
+                {
+                  q: "Who's Viola intended for?",
+                  a: "Viola is intended for users who work in sync and music supervisors to improve their workflow efficiency and make more informed decisions."
                 },
                 {
                   q: "Do we have to move our whole catalog into Viola?",

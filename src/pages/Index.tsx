@@ -1,6 +1,5 @@
 import { Navigation } from "@/components/Navigation";
 import { MusicCatalog } from "@/components/MusicCatalog";
-import { MusicPlayer } from "@/components/MusicPlayer";
 import { SearchInterface } from "@/components/SearchInterface";
 import { PitchBuilder } from "@/components/PitchBuilder";
 import { Button } from "@/components/ui/button";
@@ -55,12 +54,11 @@ const Index = () => {
         <Navigation currentView={currentView} onViewChange={setCurrentView} />
       </header>
       
-      <main className="pt-0">
+      <main className="pt-0 pb-8">
         {currentView === 'search' && <SearchInterface />}
         {currentView === 'pitchBuilder' && <PitchBuilder />}
         {currentView === 'catalogue' && <MusicCatalog />}
       </main>
-      {(currentView === 'pitchBuilder' || currentView === 'catalogue') && (<MusicPlayer />)}
     </div>
   );
 };
