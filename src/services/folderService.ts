@@ -32,38 +32,17 @@ export interface Folder {
 
 const STORAGE_KEY = 'viola_folders';
 
-/** Demo folders for Guest users - Netflix, Stranger Things, etc. */
+/** Demo folders for Guest users - single Viola starter kit */
 export const DEMO_FOLDERS: Folder[] = [
   {
-    id: 'demo-1',
-    name: 'Stranger Things',
+    id: 'demo-viola',
+    name: 'Viola',
     trackIds: [],
-    client: 'Netflix',
-    film: 'Stranger Things, S1E4',
-    description: 'Needs a song for a 30 second clip with a dark and eerie song, where the lead girl and boy are being chased in the woods by a monster.',
-    color: 'red',
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-  {
-    id: 'demo-2',
-    name: 'The White Lotus',
-    trackIds: [],
-    client: 'HBO',
-    film: 'The White Lotus',
-    description: 'Upscale resort drama - need atmospheric, tension-building tracks.',
+    client: 'Viola',
+    film: 'Viola Project',
+    description:
+      'Viola is an AI music workspace for sync teams and the creative tastemakers. Locate, Shortlist, and Clear the right tracks without losing your day and sanity.',
     color: 'purple',
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-  {
-    id: 'demo-3',
-    name: 'Apple',
-    trackIds: [],
-    client: 'Apple',
-    film: 'Product Launch',
-    description: 'Clean, minimal tracks for product showcase.',
-    color: 'blue',
     createdAt: Date.now(),
     updatedAt: Date.now(),
   },
@@ -71,37 +50,14 @@ export const DEMO_FOLDERS: Folder[] = [
 
 const DEFAULT_FOLDERS: Folder[] = [
   {
-    id: '1',
-    name: 'Stranger Things',
+    id: 'viola-1',
+    name: 'Viola',
     trackIds: [],
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-  {
-    id: '2',
-    name: 'The White Lotus',
-    trackIds: [],
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-  {
-    id: '3',
-    name: "Now You See Me: Now You Don't",
-    trackIds: [],
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-  {
-    id: '4',
-    name: 'Adidas',
-    trackIds: [],
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-  {
-    id: '5',
-    name: 'Lego Batman',
-    trackIds: [],
+    client: 'Viola',
+    film: 'Viola Project',
+    description:
+      'Viola is an AI music workspace for sync teams and the creative tastemakers. Locate, Shortlist, and Clear the right tracks without losing your day and sanity.',
+    color: 'purple',
     createdAt: Date.now(),
     updatedAt: Date.now(),
   },
