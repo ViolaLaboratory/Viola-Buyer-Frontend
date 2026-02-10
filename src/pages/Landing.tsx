@@ -467,7 +467,7 @@ const Landing = () => {
                   <img
                     src={fallbackPoster}
                     alt="Search demo placeholder"
-                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1 brightness-75 grayscale"
+                    className="absolute inset-0 w-full h-full object-contain brightness-75 grayscale"
                   />
                 ) : (
                   <video
@@ -479,7 +479,7 @@ const Landing = () => {
                     poster={fallbackPoster}
                     crossOrigin="anonymous"
                     onError={() => setSearchVideoFailed(true)}
-                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1"
+                    className="absolute inset-0 w-full h-full object-contain"
                   >
                     <source src={searchVideo} type="video/mp4" />
                   </video>
@@ -513,7 +513,7 @@ const Landing = () => {
                   <img
                     src={fallbackPoster}
                     alt="Pitch builder placeholder"
-                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1 brightness-75 grayscale"
+                    className="absolute inset-0 w-full h-full object-contain brightness-75 grayscale"
                   />
                 ) : (
                   <video
@@ -525,7 +525,7 @@ const Landing = () => {
                     poster={fallbackPoster}
                     crossOrigin="anonymous"
                     onError={() => setPitchVideoFailed(true)}
-                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1"
+                    className="absolute inset-0 w-full h-full object-contain"
                   >
                     <source src={pitchVideo} type="video/mp4" />
                   </video>
@@ -559,7 +559,7 @@ const Landing = () => {
                   <img
                     src={fallbackPoster}
                     alt="Catalog viewer placeholder"
-                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1 brightness-75 grayscale"
+                    className="absolute inset-0 w-full h-full object-contain brightness-75 grayscale"
                   />
                 ) : (
                   <video
@@ -571,7 +571,7 @@ const Landing = () => {
                     poster={fallbackPoster}
                     crossOrigin="anonymous"
                     onError={() => setCatalogueVideoFailed(true)}
-                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1"
+                    className="absolute inset-0 w-full h-full object-contain"
                   >
                     <source src={catalogueVideo} type="video/mp4" />
                   </video>
