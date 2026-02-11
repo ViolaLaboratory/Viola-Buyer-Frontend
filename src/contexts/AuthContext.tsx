@@ -29,7 +29,7 @@ const defaultUser: User = {
   id: 0,
   username: "Michael Smith",
   email: "michael@example.com",
-  profile_image: "/michael.png",
+  profile_image: "/viola-logo.jpg",
   plan: "Free plan",
 };
 
@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       id: u.id ?? 0,
       username: u.username ?? "User",
       email: u.email ?? "",
-      profile_image: u.profile_image ?? "/michael.png",
+      profile_image: u.profile_image ?? "/viola-logo.jpg",
       plan: u.plan ?? "Free plan",
     });
   }, []);

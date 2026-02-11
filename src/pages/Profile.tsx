@@ -164,7 +164,7 @@ const Profile = () => {
                 alt={`${user.username} profile`}
                 className="h-full w-full object-cover"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/michael.png";
+                  (e.target as HTMLImageElement).src = "/viola-logo.jpg";
                 }}
               />
             </div>

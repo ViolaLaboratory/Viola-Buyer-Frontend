@@ -96,7 +96,7 @@ export const Navigation = ({ currentView, onViewChange }: NavigationProps) => {
             Join Waitlist
           </Button>
           <img
-            src="michael.png"
+            src="/viola-logo.jpg"
             alt="User Profile Photo"
             className="w-12 h-12 rounded-full" />
         </div>

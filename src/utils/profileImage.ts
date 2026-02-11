@@ -4,9 +4,9 @@
  */
 
 export function normalizeProfileImageUrl(apiValue: string | null | undefined): string {
-  if (!apiValue) return "/michael.png";
+  if (!apiValue) return "/viola-logo.jpg";
   const trimmed = apiValue.trim();
-  if (!trimmed) return "/michael.png";
+  if (!trimmed) return "/viola-logo.jpg";
 
   // Data URL (e.g. from local upload) - use as-is
   if (trimmed.startsWith("data:")) {
