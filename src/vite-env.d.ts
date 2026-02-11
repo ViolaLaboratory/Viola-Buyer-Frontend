@@ -13,7 +13,6 @@ interface ImportMetaEnv {
   readonly VITE_CHROMA_TENANT: string;
   readonly VITE_CHROMA_DATABASE: string;
   readonly VITE_CHROMA_COLLECTION_NAME: string;
-  readonly VITE_MONGODB_URL: string;
 }
 
 interface ImportMeta {

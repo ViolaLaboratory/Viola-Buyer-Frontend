@@ -1,26 +1,17 @@
 /**
- * MongoDB Configuration
- * 
- * WARNING: MongoDB connection should ONLY be used in the backend.
- * Never expose MongoDB credentials in the frontend code.
- * 
- * This file is for reference only - actual MongoDB operations
- * should be performed through your backend API.
+ * MongoDB Configuration (Frontend)
+ *
+ * WARNING: MongoDB credentials must NEVER be in the frontend.
+ * All MongoDB access goes through the backend API.
+ *
+ * This module exists only for documentation/reference.
+ * Use backend endpoints like GET /api/music/tracks/:trackId
  */
 
-// MongoDB connection string (for backend reference only)
-// NEVER commit real credentials. Use VITE_MONGODB_URL in .env (and add .env to .gitignore).
+// No credentials here - frontend calls backend API only
 export const MONGODB_CONFIG = {
-  // DO NOT use this directly in frontend - use backend API instead
-  CONNECTION_STRING: import.meta.env.VITE_MONGODB_URL || '',
+  CONNECTION_STRING: '', // Intentionally empty; use backend API
 };
-
-/**
- * Note: To fetch track details from MongoDB, use your backend API endpoint:
- * GET /api/music/tracks/:trackId
- * 
- * The backend should handle MongoDB connections securely.
- */
 
 export default MONGODB_CONFIG;
 
