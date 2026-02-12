@@ -504,7 +504,16 @@ export const PitchBuilder = () => {
           const displayTitle = cached?.title || track.title || `Track ${trackId}`;
           const displayArtist = cached?.artist || track.artist || "Unknown Artist";
           const safeFileName = `${displayTitle} - ${displayArtist}`.replace(/[^a-z0-9\uAC00-\uD7A3]/gi, "_").replace(/_+/g, "_").replace(/^_|_$/g, "") || `Track_${trackId}`;
-          const trackInfo = `Title: ${track.title}\nArtist: ${track.artist}\nAlbum: ${track.album}\nDuration: ${track.duration}\nProducer: ${track.producer}\nWriter: ${track.writer}\nLicensing: ${track.licensing}\nKeywords: ${track.keywords.join(", ")}\n`;
+
+          // Show actual data when available; use N/A for missing/unknown values
+          const orNA = (v: string | undefined | null): string => {
+            if (v == null || String(v).trim() === "") return "N/A";
+            const s = String(v).trim();
+            if (/^Unknown\s/i.test(s) || s === "Unknown") return "N/A";
+            if (/^Track\s+\d+$/i.test(s)) return "N/A"; // generic "Track {id}" fallback
+            return s;
+          };
+          const trackInfo = `Title: ${orNA(cached?.title || track.title)}\nArtist: ${orNA(cached?.artist || track.artist)}\nAlbum: ${orNA(track.album)}\nDuration: ${orNA(track.duration)}\nProducer: ${orNA(track.producer)}\nWriter: ${orNA(track.writer)}\nLicensing: ${orNA(track.licensing)}\nKeywords: ${track.keywords?.length ? track.keywords.join(", ") : "N/A"}\n`;
           zip.file(`${safeFileName}_${trackId}.txt`, trackInfo);
           
           // Fetch and add MP3 file
