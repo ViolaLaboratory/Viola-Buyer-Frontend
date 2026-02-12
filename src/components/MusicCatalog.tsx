@@ -474,6 +474,7 @@ export const MusicCatalog = () => {
       const response = await fetch(API_ENDPOINTS.SONGS_LIST(page, pageSize, q || undefined), {
         cache: "no-store",
         headers: { Accept: "application/json" },
+        credentials: "include",
       });
       
       if (!response.ok) {
