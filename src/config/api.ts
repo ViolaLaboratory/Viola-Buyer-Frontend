@@ -31,6 +31,7 @@ export const API_ENDPOINTS = {
   SEND_VERIFICATION: `${API_BASE_URL}/users/send-verification/`,
   VERIFY_EMAIL: `${API_BASE_URL}/users/verify-email/`,
   SIGNUP: `${API_BASE_URL}/users/signup/`,
+  PROFILE_UPDATE: `${API_BASE_URL}/users/profile/`,
   
   // Chatbot API (for music search conversation)
   CHATBOT_CHAT: CHATBOT_API_URL,

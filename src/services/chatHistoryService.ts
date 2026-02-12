@@ -31,8 +31,21 @@ export interface ChatSession {
   updatedAt: number;             // Timestamp (Date.now())
 }
 
-const STORAGE_KEY = 'viola_chat_history';
+const STORAGE_KEY_BASE = 'viola_chat_history';
 const MAX_SESSIONS = 50;
+
+function getUserStorageKey(): string {
+  try {
+    const storedUser = localStorage.getItem('viola_user');
+    if (!storedUser) return STORAGE_KEY_BASE;
+    const parsed = JSON.parse(storedUser) as { email?: string };
+    const email = (parsed.email || '').toLowerCase().trim();
+    if (!email) return STORAGE_KEY_BASE;
+    return `${STORAGE_KEY_BASE}_${email}`;
+  } catch {
+    return STORAGE_KEY_BASE;
+  }
+}
 
 /** Map API response (snake_case, ISO dates) to ChatSession */
 function apiToChatSession(res: Record<string, unknown>): ChatSession {
@@ -72,7 +85,8 @@ function chatSessionToApi(session: ChatSession): Record<string, unknown> {
  */
 export const getChatHistory = (): ChatSession[] => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const key = getUserStorageKey();
+    const stored = localStorage.getItem(key);
     if (!stored) return [];
 
     const sessions: ChatSession[] = JSON.parse(stored);
@@ -104,7 +118,8 @@ export const saveChatSession = (session: ChatSession): void => {
     }
 
     const toKeep = sessions.slice(0, MAX_SESSIONS);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toKeep));
+    const key = getUserStorageKey();
+    localStorage.setItem(key, JSON.stringify(toKeep));
 
     // Persist to backend DB (fire-and-forget)
     saveChatSessionToBackend(session).catch(() => {});
@@ -118,7 +133,7 @@ export const saveChatSession = (session: ChatSession): void => {
  */
 export const getChatsFromBackend = async (): Promise<ChatSession[]> => {
   try {
-    const res = await fetch(API_ENDPOINTS.CHATS_LIST);
+    const res = await fetch(API_ENDPOINTS.CHATS_LIST, { credentials: "include" });
     if (!res.ok) return [];
     const data = (await res.json()) as Record<string, unknown>[];
     return data.map((item) => apiToChatSession(item));
@@ -132,7 +147,7 @@ export const getChatsFromBackend = async (): Promise<ChatSession[]> => {
  */
 export const getChatFromBackend = async (id: string): Promise<ChatSession | null> => {
   try {
-    const res = await fetch(API_ENDPOINTS.CHATS_GET(id));
+    const res = await fetch(API_ENDPOINTS.CHATS_GET(id), { credentials: "include" });
     if (!res.ok) return null;
     const data = (await res.json()) as Record<string, unknown>;
     return apiToChatSession(data);
@@ -148,6 +163,7 @@ export const saveChatSessionToBackend = async (session: ChatSession): Promise<vo
   const res = await fetch(API_ENDPOINTS.CHATS_SAVE, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: "include",
     body: JSON.stringify(chatSessionToApi(session)),
   });
   if (!res.ok) throw new Error('Failed to save chat');
@@ -157,7 +173,10 @@ export const saveChatSessionToBackend = async (session: ChatSession): Promise<vo
  * Delete chat session from backend DB
  */
 export const deleteChatFromBackend = async (id: string): Promise<void> => {
-  const res = await fetch(API_ENDPOINTS.CHATS_DELETE(id), { method: 'DELETE' });
+  const res = await fetch(API_ENDPOINTS.CHATS_DELETE(id), {
+    method: 'DELETE',
+    credentials: "include",
+  });
   if (!res.ok && res.status !== 404) throw new Error('Failed to delete chat');
 };
 
@@ -169,7 +188,8 @@ export const deleteChatSession = (id: string): void => {
   try {
     const sessions = getChatHistory();
     const filtered = sessions.filter(s => s.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+    const key = getUserStorageKey();
+    localStorage.setItem(key, JSON.stringify(filtered));
     deleteChatFromBackend(id).catch(() => {});
   } catch (error) {
     console.error('Error deleting chat session:', error);
@@ -205,7 +225,8 @@ export const getChatSessionByIdOrBackend = async (id: string): Promise<ChatSessi
  */
 export const clearChatHistory = (): void => {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    const key = getUserStorageKey();
+    localStorage.removeItem(key);
   } catch (error) {
     console.error('Error clearing chat history:', error);
   }

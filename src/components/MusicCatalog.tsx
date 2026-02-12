@@ -571,6 +571,7 @@ export const MusicCatalog = () => {
     try {
       const res = await fetch(API_ENDPOINTS.SONGS_UPLOAD, {
         method: "POST",
+        credentials: "include",
         body: formData,
       });
       const data = await res.json();

@@ -25,6 +25,51 @@ import {
 import { ArrowLeft, LogOut, ChevronDown, Camera, CreditCard } from "lucide-react";
 import { normalizeProfileImageUrl } from "@/utils/profileImage";
 import { useToast } from "@/hooks/use-toast";
+import { API_ENDPOINTS } from "@/config/api";
+
+const MAX_IMAGE_SIZE_MB = 2;
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+const MAX_DIMENSION = 512;
+
+/** Resize image to max dimension and compress to avoid memory/localStorage overflow */
+async function resizeImage(file: File): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const { width, height } = img;
+      const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height));
+      const w = Math.round(width * scale);
+      const h = Math.round(height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Canvas not supported"));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error("Failed to compress"));
+            return;
+          }
+          resolve(new File([blob], file.name, { type: "image/jpeg" }));
+        },
+        "image/jpeg",
+        0.85
+      );
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Failed to load image"));
+    };
+    img.src = url;
+  });
+}
 
 const PLAN_OPTIONS = ["Free plan", "Pro plan", "Enterprise plan"] as const;
 
@@ -48,15 +93,46 @@ const Profile = () => {
     cvv: "",
     cardholderName: "",
   });
+  const [isUploadingProfileImage, setIsUploadingProfileImage] = useState(false);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      updateUser({ profile_image: reader.result as string });
-    };
-    reader.readAsDataURL(file);
+    e.target.value = "";
+
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      toast({
+        title: `Image too large`,
+        description: `Please use an image under ${MAX_IMAGE_SIZE_MB} MB.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploadingProfileImage(true);
+    try {
+      const resized = await resizeImage(file);
+      const formData = new FormData();
+      formData.append("profile_image", resized);
+      const res = await fetch(API_ENDPOINTS.PROFILE_UPDATE, {
+        method: "PATCH",
+        credentials: "include",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to update");
+      }
+      updateUser({ profile_image: data.user?.profile_image });
+      toast({ title: "Profile picture updated" });
+    } catch (err) {
+      toast({
+        title: err instanceof Error ? err.message : "Failed to update profile",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingProfileImage(false);
+    }
   };
 
   const handlePlanSelect = (plan: string) => {
@@ -177,8 +253,9 @@ const Profile = () => {
             />
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-0 right-0 w-9 h-9 rounded-full bg-purple-600 hover:bg-purple-500 flex items-center justify-center text-white transition-colors cursor-pointer shadow-lg"
+              onClick={() => !isUploadingProfileImage && fileInputRef.current?.click()}
+              disabled={isUploadingProfileImage}
+              className="absolute bottom-0 right-0 w-9 h-9 rounded-full bg-purple-600 hover:bg-purple-500 flex items-center justify-center text-white transition-colors cursor-pointer shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
               aria-label="Change profile photo"
             >
               <Camera className="h-4 w-4" />

@@ -1,6 +1,11 @@
 /**
  * Folder Service
  * Manages folders (pitch projects) and their tracks in localStorage
+ *
+ * IMPORTANT: Folders are now stored **per user** so that different
+ * logged-in users don't share the same Pitch Kit state on the same device.
+ * Storage key pattern: `viola_folders_<userEmailLowercase>`
+ * Falls back to `viola_folders` if no logged-in user is found.
  */
 
 export interface FolderMetadata {
@@ -30,7 +35,20 @@ export interface Folder {
   updatedAt: number;
 }
 
-const STORAGE_KEY = 'viola_folders';
+const STORAGE_KEY_BASE = 'viola_folders';
+
+function getUserStorageKey(): string {
+  try {
+    const storedUser = localStorage.getItem('viola_user');
+    if (!storedUser) return STORAGE_KEY_BASE;
+    const parsed = JSON.parse(storedUser) as { email?: string };
+    const email = (parsed.email || '').toLowerCase().trim();
+    if (!email) return STORAGE_KEY_BASE;
+    return `${STORAGE_KEY_BASE}_${email}`;
+  } catch {
+    return STORAGE_KEY_BASE;
+  }
+}
 
 /** Demo folders for Guest users - single Viola starter kit */
 export const DEMO_FOLDERS: Folder[] = [
@@ -75,16 +93,26 @@ export const getDemoFolderById = (id: string): Folder | null =>
   DEMO_FOLDERS.find(f => f.id === id) || null;
 
 /**
- * Get all folders from localStorage
+ * Get all folders from localStorage (per user)
  */
 export const getFolders = (): Folder[] => {
+  const key = getUserStorageKey();
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(key);
     if (stored) {
       return JSON.parse(stored);
     }
+    // Migrate legacy global folders (if any) on first access
+    if (key !== STORAGE_KEY_BASE) {
+      const legacy = localStorage.getItem(STORAGE_KEY_BASE);
+      if (legacy) {
+        localStorage.setItem(key, legacy);
+        localStorage.removeItem(STORAGE_KEY_BASE);
+        return JSON.parse(legacy);
+      }
+    }
     // Initialize with default folders if nothing exists
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_FOLDERS));
+    localStorage.setItem(key, JSON.stringify(DEFAULT_FOLDERS));
     return DEFAULT_FOLDERS;
   } catch (error) {
     console.error('Error loading folders:', error);
@@ -93,11 +121,12 @@ export const getFolders = (): Folder[] => {
 };
 
 /**
- * Save folders to localStorage
+ * Save folders to localStorage (per user)
  */
 export const saveFolders = (folders: Folder[]): void => {
+  const key = getUserStorageKey();
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(folders));
+    localStorage.setItem(key, JSON.stringify(folders));
   } catch (error) {
     console.error('Error saving folders:', error);
   }
