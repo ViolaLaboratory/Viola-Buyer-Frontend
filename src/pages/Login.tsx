@@ -60,7 +60,13 @@ const Login = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Invalid credentials.");
+        // Backend returns field-specific errors: { email: "..." } or { password: "..." }
+        const msg =
+          data.error ||
+          (data.email ? (Array.isArray(data.email) ? data.email[0] : data.email) : null) ||
+          (data.password ? (Array.isArray(data.password) ? data.password[0] : data.password) : null) ||
+          "Invalid credentials.";
+        throw new Error(msg);
       }
 
       if (data.user) {
