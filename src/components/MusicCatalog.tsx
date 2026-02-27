@@ -497,7 +497,7 @@ export const MusicCatalog = () => {
           artist: track.artist || "Unknown Artist",
           album: track.album || "Unknown Album",
           genre: track.genre || "Unknown",
-          mood: track.mood || "Unknown",
+          mood: track.mood || "N/A",
           licensing: track.licensing || "Standard",
           duration: track.duration || "0:00",
           thumbnail: track.thumbnail || "🎵",
@@ -806,7 +806,7 @@ export const MusicCatalog = () => {
                         <div className="text-white/80 min-w-0 truncate">{song.artist}</div>
                         <div className="text-white/80 min-w-0 truncate">{song.album}</div>
                         <div className="text-white/80 min-w-0 truncate">{song.genre}</div>
-                        <div className="text-white/80 min-w-0 truncate max-w-[140px]" title={song.mood}>{song.mood || "—"}</div>
+                        <div className="text-white/80 min-w-0 truncate max-w-[140px]" title={song.mood}>{song.mood || "N/A"}</div>
                         <div className="text-white/80 font-dm tabular-nums min-w-[4rem]">{songDurations[String(song.id)] ?? song.duration}</div>
                         <div className="flex items-center justify-center gap-3 text-sm text-white/70 min-w-[120px] shrink-0">
                           <span>{isExpanded ? "Collapse" : "See more..."}</span>
