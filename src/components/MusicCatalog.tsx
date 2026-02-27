@@ -567,29 +567,37 @@ export const MusicCatalog = () => {
     }
     setUploading(true);
     setUploadResult(null);
-    const formData = new FormData();
-    fileList.forEach((f) => formData.append("files", f));
-    try {
-      const res = await fetch(API_ENDPOINTS.SONGS_UPLOAD, {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setUploadResult({ uploaded: data.uploaded ?? fileList.length, errors: data.errors ?? undefined });
-        if ((data.uploaded ?? 0) > 0) {
-          setCurrentPage(1);
-          loadSongs(1, false, searchQuery.trim());
+    const errors: { file: string; error: string }[] = [];
+    let uploaded = 0;
+
+    for (const f of fileList) {
+      const formData = new FormData();
+      formData.append("audio_file", f);
+      const baseName = f.name.replace(/\.[^.]+$/, "");
+      formData.append("title", baseName);
+      try {
+        const res = await fetch(API_ENDPOINTS.MVP_UPLOAD, {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        });
+        const data = await res.json();
+        if (res.ok) {
+          uploaded += 1;
+        } else {
+          errors.push({ file: f.name, error: data.error || "Upload failed" });
         }
-      } else {
-        setUploadResult({ uploaded: 0, errors: [{ file: "", error: data.error || "Upload failed" }] });
+      } catch (e) {
+        errors.push({ file: f.name, error: "Failed to connect to server" });
       }
-    } catch (e) {
-      setUploadResult({ uploaded: 0, errors: [{ file: "", error: "Failed to connect to server" }] });
-    } finally {
-      setUploading(false);
     }
+
+    setUploadResult({ uploaded, errors: errors.length > 0 ? errors : undefined });
+    if (uploaded > 0) {
+      setCurrentPage(1);
+      loadSongs(1, false, searchQuery.trim());
+    }
+    setUploading(false);
   }, [currentPage, searchQuery, loadSongs]);
 
   const onDrop = useCallback(

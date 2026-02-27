@@ -516,7 +516,9 @@ export const SearchInterface = () => {
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    if (isAuthenticated && !sessionId) return;
+    // Removed: if (isAuthenticated && !sessionId) return
+    // Backend creates session_id if not provided. The strict check caused early return
+    // when user searched before useEffect had set sessionId (race condition on local).
 
     // Clear previous search results when starting a new search
     setSearchResults([]);
@@ -623,13 +625,13 @@ export const SearchInterface = () => {
         setIsLoading(false);
         setWaitingForResponse(false);
 
-        /* NEW: Save completed chat session to history (avoid duplicate bot message) */
-        const prevForSave = [...conversationHistory];
-        const last = prevForSave[prevForSave.length - 1];
+        /* Save completed chat session: include user prompt + bot reply (conversationHistory is stale in closure) */
+        const historyWithUser = [...conversationHistory, { role: "user", message: userMessage }];
+        const last = historyWithUser[historyWithUser.length - 1];
         const updatedHistory =
           last?.role === "bot" && last?.message === data.message
-            ? prevForSave
-            : [...prevForSave, { role: "bot", message: data.message }];
+            ? historyWithUser
+            : [...historyWithUser, { role: "bot", message: data.message }];
 
         // Generate chat session ID if we don't have one yet
         const chatSessionId = currentChatSessionId || crypto.randomUUID();
@@ -670,12 +672,12 @@ export const SearchInterface = () => {
         setIsLoading(false);
         setWaitingForResponse(false);
         setShowResults(false);
-        const prevForSave = [...conversationHistory];
-        const lastOngoing = prevForSave[prevForSave.length - 1];
+        const historyWithUser = [...conversationHistory, { role: "user", message: userMessage }];
+        const lastOngoing = historyWithUser[historyWithUser.length - 1];
         const updatedHistory =
           lastOngoing?.role === "bot" && lastOngoing?.message === data.message
-            ? prevForSave
-            : [...prevForSave, { role: "bot", message: data.message }];
+            ? historyWithUser
+            : [...historyWithUser, { role: "bot", message: data.message }];
         const firstUserMessage = updatedHistory.find((m) => m.role === "user")?.message || "Untitled Search";
         const title = firstUserMessage.length > 50 ? firstUserMessage.slice(0, 50) + "..." : firstUserMessage;
         const chatSessionId = currentChatSessionId || crypto.randomUUID();

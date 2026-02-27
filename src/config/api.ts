@@ -15,6 +15,8 @@ export const API_ENDPOINTS = {
   TRACK_DETAILS: (trackId: string) => `${API_BASE_URL}/music/tracks/${trackId}/`,
   TRACK_AUDIO: (trackId: string) => `${API_BASE_URL}/music/tracks/${trackId}/audio/`,
   SONGS_UPLOAD: `${API_BASE_URL}/music/songs/upload/`,
+  // MVP Upload Audio (viola_mvp_api_doc Endpoint 2): ML metadata extraction
+  MVP_UPLOAD: `${API_BASE_URL}/operation/mvp_upload-audio/`,
   SONGS_LIST: (page?: number, limit?: number, q?: string) => {
     const params = new URLSearchParams();
     if (page) params.set('page', page.toString());
