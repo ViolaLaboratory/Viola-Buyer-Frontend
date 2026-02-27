@@ -425,7 +425,7 @@ export const MusicCatalog = () => {
   const [songDurations, setSongDurations] = useState<Record<string, string>>({});
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [uploadResult, setUploadResult] = useState<{ uploaded: number; errors?: { file: string; error: string }[] } | null>(null);
+  const [uploadResult, setUploadResult] = useState<{ uploaded: number; processing?: boolean; errors?: { file: string; error: string }[] } | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pageSize = 30; // Show 30 songs per page in the catalog
@@ -569,6 +569,7 @@ export const MusicCatalog = () => {
     setUploadResult(null);
     const errors: { file: string; error: string }[] = [];
     let uploaded = 0;
+    let processing = false;
 
     for (const f of fileList) {
       const formData = new FormData();
@@ -584,6 +585,7 @@ export const MusicCatalog = () => {
         const data = await res.json();
         if (res.ok) {
           uploaded += 1;
+          if (data.processing) processing = true;
         } else {
           errors.push({ file: f.name, error: data.error || "Upload failed" });
         }
@@ -592,7 +594,7 @@ export const MusicCatalog = () => {
       }
     }
 
-    setUploadResult({ uploaded, errors: errors.length > 0 ? errors : undefined });
+    setUploadResult({ uploaded, processing, errors: errors.length > 0 ? errors : undefined });
     if (uploaded > 0) {
       setCurrentPage(1);
       loadSongs(1, false, searchQuery.trim());
@@ -970,7 +972,9 @@ export const MusicCatalog = () => {
               {uploadResult.uploaded > 0 && (
                 <p className="text-green-400 flex items-center gap-2">
                   <Music2 className="h-4 w-4" />
-                  {uploadResult.uploaded} song{uploadResult.uploaded !== 1 ? "s" : ""} added to catalog.
+                  {uploadResult.processing
+                    ? `${uploadResult.uploaded} song${uploadResult.uploaded !== 1 ? "s" : ""} are being processed. Refresh the catalog in about 1 minute.`
+                    : `${uploadResult.uploaded} song${uploadResult.uploaded !== 1 ? "s" : ""} added to catalog.`}
                 </p>
               )}
               {uploadResult.errors && uploadResult.errors.length > 0 && (
