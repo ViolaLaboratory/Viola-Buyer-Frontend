@@ -84,7 +84,7 @@ export const CatalogMusicPlayerBar = ({ sidebarWidth }: CatalogMusicPlayerBarPro
           </div>
           <div className="flex items-center justify-between text-xs text-white/60 mt-2 font-dm">
             <span>{currentSong ? formatTime(currentTime) : "0:00"}</span>
-            <span>{currentSong ? (formatTime(duration) || currentSong.duration || "0:00") : "2:37"}</span>
+            <span>{currentSong ? (currentSong.duration || formatTime(duration) || "0:00") : "2:37"}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">

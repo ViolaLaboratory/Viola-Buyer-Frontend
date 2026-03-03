@@ -468,10 +468,8 @@ export const ResultsPanel = ({
                   <div className="flex items-center justify-between text-xs text-white font-dm mt-2">
                     <span>{formatTime(currentTime)}</span>
                     <span>
-                      {duration > 0 ? formatTime(duration) :
-                       (displayedSong && songDurations[displayedSong.id]) || 
-                       displayedSong?.duration || 
-                       "0:00"}
+                      {displayedSong?.duration || 
+                       (duration > 0 ? formatTime(duration) : "0:00")}
                     </span>
                   </div>
                   <div className="flex items-center justify-center gap-5 mt-4">
@@ -579,8 +577,8 @@ export const ResultsPanel = ({
                       Tempo: 105 BPM
                       <br />
                       Duration: {
-                        (displayedSong && songDurations[displayedSong.id]) || 
                         displayedSong?.duration || 
+                        (displayedSong && songDurations[displayedSong.id]) || 
                         "2:38"
                       }
                     </div>
@@ -671,7 +669,7 @@ export const ResultsPanel = ({
                       <div className="flex flex-col items-end gap-1">
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-white font-dm">
-                            {songDurations[song.id] || song.duration || "03:00"}
+                            {song.duration || songDurations[song.id] || "03:00"}
                           </span>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
