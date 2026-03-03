@@ -135,7 +135,7 @@ export const MusicPlayer = () => {
               className="flex-1"
             />
             <span className="text-xs text-muted-foreground min-w-[40px]">
-              {formatTime(duration)}
+              {currentSong?.duration || formatTime(duration)}
             </span>
           </div>
         </div>
