@@ -497,11 +497,11 @@ export const MusicCatalog = () => {
           artist: track.artist || "Unknown Artist",
           album: track.album || "Unknown Album",
           genre: track.genre || "Unknown",
-          mood: track.mood && !/^(unknown|music)$/i.test(track.mood) ? track.mood : "N/A",
-          licensing: track.licensing || "Standard",
+          mood: track.mood && !/^(unknown|music|undefined)$/i.test(track.mood) ? track.mood : "N/A",
           duration: track.duration || "0:00",
           thumbnail: track.thumbnail || "🎵",
           audioUrl: track.audio_url,
+          licensing: "Standard",
         };
       });
 
@@ -744,7 +744,7 @@ export const MusicCatalog = () => {
                 <div>Album</div>
                 <div className="">Genre</div>
                 <div className="">Mood</div>
-                <div className="">Duration</div>
+                <div className="text-center">Duration</div>
                 <div className="">Details</div>
               </div>
 
@@ -805,9 +805,9 @@ export const MusicCatalog = () => {
                         <div className="text-white min-w-0 truncate" title={song.title}>{song.title}</div>
                         <div className="text-white/80 min-w-0 truncate">{song.artist}</div>
                         <div className="text-white/80 min-w-0 truncate">{song.album}</div>
-                        <div className="text-white/80 min-w-0 truncate">{song.genre}</div>
-                        <div className="text-white/80 min-w-0 truncate max-w-[140px]" title={song.mood}>{song.mood && !/^(unknown|music)$/i.test(song.mood) ? song.mood : "N/A"}</div>
-                        <div className="text-white/80 font-dm tabular-nums min-w-[4rem]">{songDurations[String(song.id)] ?? song.duration}</div>
+                        <div className="text-white/80 min-w-0 truncate">{song.genre && !/^(unknown|undefined)$/i.test(song.genre) ? song.genre : "N/A"}</div>
+                        <div className="text-white/80 min-w-0 truncate max-w-[140px]" title={song.mood}>{song.mood && !/^(unknown|music|undefined)$/i.test(song.mood) ? song.mood : "N/A"}</div>
+                        <div className="text-white/80 min-w-[120px] shrink-0 text-center">{song.duration || "0:00"}</div>
                         <div className="flex items-center justify-center gap-3 text-sm text-white/70 min-w-[120px] shrink-0">
                           <span>{isExpanded ? "Collapse" : "See more..."}</span>
                           <button
