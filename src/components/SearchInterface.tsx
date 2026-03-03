@@ -565,6 +565,7 @@ export const SearchInterface = () => {
       // Call backend search endpoint (proxies to chatbot, then CLAP when complete)
       const response = await fetch(API_ENDPOINTS.MUSIC_SEARCH, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
