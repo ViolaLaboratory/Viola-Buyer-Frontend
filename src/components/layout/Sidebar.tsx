@@ -9,7 +9,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ListMusic, PanelLeft, Wrench, Trash2 } from "lucide-react";
+import { ListMusic, PanelLeft, Wrench, Trash2, Home } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   ContextMenu,
@@ -47,6 +47,12 @@ const VLogo = () => (
 
 /* NAVIGATION ITEMS: Configuration for main nav */
 const NAV_ITEMS = [
+  {
+    id: "marketplace",
+    label: "Marketplace",
+    icon: Home,
+    path: "/demo/marketplace",
+  },
   {
     id: "search",
     label: "Search",
