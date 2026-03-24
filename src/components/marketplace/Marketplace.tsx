@@ -208,7 +208,7 @@ export const Marketplace = () => {
 
         {/* Content */}
         <div className="relative z-10 h-full flex flex-col justify-end p-8">
-          <p className="text-white text-xl font-semibold tracking-wide mb-2">
+          <p className="text-white text-3xl font-bold tracking-wide mb-2">
             Viola Top Picks for you
           </p>
           <h2 className="text-5xl font-bold text-white font-dm leading-tight">
