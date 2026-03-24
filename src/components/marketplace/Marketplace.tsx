@@ -335,7 +335,10 @@ export const Marketplace = () => {
         <div className="col-span-5 bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-white font-semibold text-base">Discover Sync Ready Tracks</h3>
-            <button className="text-white/50 text-xs hover:text-white/80 transition-colors">
+            <button
+              onClick={() => navigate("/demo/marketplace/discover")}
+              className="text-white/50 text-xs hover:text-white/80 transition-colors"
+            >
               See All
             </button>
           </div>

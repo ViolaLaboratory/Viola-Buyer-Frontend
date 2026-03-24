@@ -19,6 +19,7 @@ import { SearchInterface } from "./components/SearchInterface";
 import { PitchBuilder } from "./components/PitchBuilder";
 import { MusicCatalog } from "./components/MusicCatalog";
 import { Marketplace } from "./components/marketplace/Marketplace";
+import { DiscoverPage } from "./components/marketplace/DiscoverPage";
 import { MusicPlayerProvider, useMusicPlayer } from "./contexts/MusicPlayerContext";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -83,6 +84,7 @@ const AppContent = () => {
 
                 {/* MARKETPLACE: Discover page with carousel, genres, labels, tracks */}
                 <Route path="marketplace" element={<Marketplace />} />
+                <Route path="marketplace/discover" element={<DiscoverPage />} />
                 <Route path="marketplace/*" element={<Marketplace />} />
 
                 {/* SEARCH: Music search interface (new session) */}
