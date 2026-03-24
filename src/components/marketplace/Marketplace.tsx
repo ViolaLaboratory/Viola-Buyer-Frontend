@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -335,12 +335,12 @@ export const Marketplace = () => {
         <div className="col-span-5 bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-white font-semibold text-base">Discover Sync Ready Tracks</h3>
-            <button
-              onClick={() => navigate("/demo/marketplace/discover")}
-              className="text-white/50 text-xs hover:text-white/80 transition-colors"
+            <Link
+              to="/demo/marketplace/discover"
+              className="text-white/50 text-sm hover:text-white transition-colors underline underline-offset-2 z-10 relative"
             >
               See All
-            </button>
+            </Link>
           </div>
           <div className="flex flex-col gap-1">
             {DISCOVER_TRACKS.map((track, i) => (
