@@ -390,19 +390,15 @@ const Landing = () => {
                 The work is creative. The workflow still is not.
               </h2>
 
-              <p className="text-white/75 text-sm md:text-base mb-6">
-                Most sync teams spend more time chasing logistics than making taste-driven decisions.
-              </p>
-
               <ul className="space-y-3">
                 <li className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm md:text-base text-white/90">
                   3–4 hours of manual searching and sifting tracks for every placement
                 </li>
                 <li className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm md:text-base text-white/90">
-                  Endless scrolling and listening to find the perfect track
+                  Unorganized and inefficient communication for every music license negotiated
                 </li>
                 <li className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm md:text-base text-white/90">
-                  Unorganized and inefficient communication for every license negotiated
+                  Inaccessible music licenses leaves money on the table
                 </li>
               </ul>
 
