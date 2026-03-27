@@ -18,6 +18,8 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { SearchInterface } from "./components/SearchInterface";
 import { PitchBuilder } from "./components/PitchBuilder";
 import { MusicCatalog } from "./components/MusicCatalog";
+import { Marketplace } from "./components/marketplace/Marketplace";
+import { DiscoverPage } from "./components/marketplace/DiscoverPage";
 import { MusicPlayerProvider, useMusicPlayer } from "./contexts/MusicPlayerContext";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -79,6 +81,11 @@ const AppContent = () => {
               <Routes>
                 {/* HOME: Main search page with gradient background */}
                 <Route path="home" element={<DemoHome />} />
+
+                {/* MARKETPLACE: Discover page with carousel, genres, labels, tracks */}
+                <Route path="marketplace" element={<Marketplace />} />
+                <Route path="marketplace/discover" element={<DiscoverPage />} />
+                <Route path="marketplace/*" element={<Marketplace />} />
 
                 {/* SEARCH: Music search interface (new session) */}
                 <Route path="search" element={<SearchInterface />} />

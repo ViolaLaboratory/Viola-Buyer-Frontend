@@ -1,8 +1,21 @@
 import { useEffect, useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, MessageSquare, Video } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
+
+const RECENT_CHATS = [
+  "Hip-Hop, 130 bpm, raspy voice",
+  "R&B, Female Vocals, C# major, Piano",
+];
+
+const USE_CASES = [
+  "Product Commercials",
+  "Video Game Soundtracks",
+  "Fashion Commercials",
+  "Trailers",
+  "Horror Films",
+];
 
 const typingPhrases = [
   "Your next song is found when you type...",
@@ -64,7 +77,7 @@ const DemoHome = () => {
   return (
     <div className="relative min-h-screen overflow-hidden text-white font-exo">
 
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center gap-10 px-0">
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center gap-10 px-6">
         <div className="w-full max-w-5xl space-y-10">
           <div className="text-center space-y-3">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal font-dm drop-shadow-[0_0_18px_rgba(255,255,255,0.2)]">
@@ -101,6 +114,64 @@ const DemoHome = () => {
               </div>
             </div>
           </form>
+
+          {/* ─── RECENT CHATS & USE CASES ─── */}
+          <div className="grid grid-cols-2 gap-6 w-full">
+            {/* Recent Chats */}
+            <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 space-y-4">
+              <div className="flex items-center gap-2.5">
+                <MessageSquare className="h-5 w-5 text-white/70" />
+                <h2 className="text-xl font-semibold text-white">Recent Chats</h2>
+              </div>
+              <div className="space-y-2">
+                {RECENT_CHATS.map((chat) => (
+                  <button
+                    key={chat}
+                    onClick={() => {
+                      setQuery(chat);
+                      navigate("/demo/search", { state: { query: chat } });
+                    }}
+                    className="flex items-center gap-3 w-full rounded-lg px-3 py-3 hover:bg-white/5 transition-colors text-left"
+                  >
+                    <div className="h-8 w-8 rounded-md bg-white/10 flex items-center justify-center flex-shrink-0">
+                      <MessageSquare className="h-4 w-4 text-white/50" />
+                    </div>
+                    <span className="text-white/80 text-sm">{chat}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Use Cases */}
+            <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 space-y-4">
+              <div className="flex items-center gap-2.5">
+                <svg className="h-5 w-5 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <h2 className="text-xl font-semibold text-white">Use Cases</h2>
+              </div>
+              <div className="space-y-2">
+                {USE_CASES.map((useCase) => (
+                  <button
+                    key={useCase}
+                    onClick={() => {
+                      setQuery(useCase);
+                      navigate("/demo/search", { state: { query: useCase } });
+                    }}
+                    className="flex items-center gap-3 w-full rounded-lg px-3 py-3 hover:bg-white/5 transition-colors text-left"
+                  >
+                    <div className="h-8 w-8 rounded-md bg-white/10 flex items-center justify-center flex-shrink-0">
+                      <Video className="h-4 w-4 text-white/50" />
+                    </div>
+                    <span className="text-white/80 text-sm">{useCase}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

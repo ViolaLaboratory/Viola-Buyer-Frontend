@@ -23,7 +23,7 @@ interface AppLayoutProps {
 export const AppLayout = ({ children }: AppLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const showMusicPlayer = location.pathname.includes("/catalog") || location.pathname.includes("/pitch-kit");
+  const showMusicPlayer = location.pathname.includes("/catalog") || location.pathname.includes("/pitch-kit") || location.pathname.includes("/marketplace/discover");
 
   /* STATE: Mobile detection */
   const [isMobile, setIsMobile] = useState(false);
