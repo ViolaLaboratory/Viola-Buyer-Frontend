@@ -30,8 +30,8 @@ interface Genre {
 interface RecordLabel {
   id: string;
   name: string;
-  logo: string;
-  logoBg: string;
+  logoText: string;
+  logoSubtext?: string;
 }
 
 interface DiscoverTrack {
@@ -96,36 +96,11 @@ const GENRES: Genre[] = [
 ];
 
 const RECORD_LABELS: RecordLabel[] = [
-  {
-    id: "umg",
-    name: "Universal Music Group",
-    logo: "UNIVERSAL",
-    logoBg: "bg-white/10",
-  },
-  {
-    id: "sony",
-    name: "Sony Music Entertainment",
-    logo: "SONY",
-    logoBg: "bg-red-500/20",
-  },
-  {
-    id: "warner",
-    name: "Warner Music Group",
-    logo: "WARNER",
-    logoBg: "bg-blue-500/20",
-  },
-  {
-    id: "88rising",
-    name: "88rising",
-    logo: "88↑",
-    logoBg: "bg-white/10",
-  },
-  {
-    id: "hybe",
-    name: "HYBE Labels",
-    logo: "HYBE",
-    logoBg: "bg-white/10",
-  },
+  { id: "umg", name: "Universal Music Group", logoText: "UNIVERSAL" },
+  { id: "sony", name: "Sony Music Entertainment", logoText: "♪", logoSubtext: "SONY MUSIC" },
+  { id: "warner", name: "Warner Music Group", logoText: "W", logoSubtext: "WARNER MUSIC" },
+  { id: "88rising", name: "88rising", logoText: "88↑" },
+  { id: "hybe", name: "HYBE Labels", logoText: "H Y B E" },
 ];
 
 const DISCOVER_TRACKS: DiscoverTrack[] = [
@@ -311,21 +286,26 @@ export const Marketplace = () => {
               See All
             </button>
           </div>
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-2">
             {RECORD_LABELS.map((label) => (
               <button
                 key={label.id}
                 onClick={() => navigate(`/demo/marketplace/label/${label.id}`)}
-                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-colors group/label"
+                className="flex items-center w-full rounded-full bg-black/60 border border-white/10 hover:border-white/25 transition-colors group/label overflow-hidden"
               >
-                <div
-                  className={`h-10 w-10 rounded-lg ${label.logoBg} flex items-center justify-center flex-shrink-0`}
-                >
-                  <span className="text-white text-[9px] font-bold tracking-wider">
-                    {label.logo}
-                  </span>
+                <div className="flex items-center justify-center flex-shrink-0 w-20 h-12">
+                  <div className="flex flex-col items-center">
+                    <span className="text-white text-sm font-bold tracking-wider leading-none">
+                      {label.logoText}
+                    </span>
+                    {label.logoSubtext && (
+                      <span className="text-white/60 text-[7px] tracking-widest mt-0.5">
+                        {label.logoSubtext}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <span className="text-white/80 text-sm font-medium group-hover/label:text-white transition-colors">
+                <span className="text-white/90 text-sm font-medium ml-auto pr-5 group-hover/label:text-white transition-colors">
                   {label.name}
                 </span>
               </button>
