@@ -284,7 +284,9 @@ const Landing = () => {
           </h1>
 
           <p className="text-md md:text-xl max-w-3xl text-white/70 mx-auto opacity-0 animate-fade-in-up [animation-delay:600ms]">
-          Viola is an AI music workspace for sync teams and the creative tastemakers. Locate, Shortlist, and Clear the right tracks without losing your day and sanity.
+          Viola is the all-in-one music licensing platform for sync teams and the creative tastemakers. 
+          <br />
+          Locate, Listen, and License the right tracks you want efficiently and accessibly.
           </p>
 
           <div className="cursor-pointer flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 animate-fade-in-up [animation-delay:800ms]">
@@ -378,58 +380,35 @@ const Landing = () => {
 
           {/* Main content container */}
           <div className="relative bg-black/90 rounded-xl md:rounded-2xl m-2 md:m-3 border border-white/10 backdrop-blur-sm shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
-            <div className="flex flex-col lg:flex-row items-center gap-6 md:gap-8 lg:gap-12 px-4 py-8 md:px-8 md:py-12 lg:px-12 lg:py-16">
-              <div className="w-full lg:flex-[2] lg:max-w-2xl px-4 lg:pb-10">
-                <div className="inline-flex gap-2 px-3 py-2 md:px-4 rounded-full bg-white text-black mb-6 md:mb-8 lg:mb-12 ring-1 ring-white/30">
-                  <Bug className="w-4 h-4" />
-                  <span className="text-xs md:text-sm font-medium">The Problem</span>
-                </div>
-                <h2 className="font-zen text-xl md:text-3xl lg:text-5xl font-bold mb-4 md:mb-6 lg:mb-12 text-white leading-tight">
-                  For tastemakers drowning in tracks, not short on taste.
-                </h2>
-                <div className="text-white/90 space-y-4 md:space-y-2">
-                  <p className="text-base md:text-lg">
-                    If you work in sync or as a creative, you already know the inefficiencies of pitching tracks
-                  </p>
-
-                  <ul className="list-disc pl-5 md:pl-6 space-y-1 md:space-y-2 lg:space-y-5">
-                    <li className="text-sm md:text-base lg:text-lg">3–4 hours of manual searching and sifting tracks for every placement</li>
-                    <li className="text-sm md:text-base lg:text-lg">
-                    Endless scrolling and listening to find the perfect track
-                    </li>
-                    <li className="text-sm md:text-base lg:text-lg">
-                    Unorganized communication for every license negotiated
-                    </li>
-                  </ul>
-
-                  <p className="text-sm md:text-base pt-2 md:pt-3">
-                  You weren’t hired to tolerate busywork. 
-                  </p>
-
-                  
-                </div>
+            <div className="max-w-4xl mx-auto px-6 py-10 md:px-10 md:py-14">
+              <div className="inline-flex gap-2 px-3 py-2 md:px-4 rounded-full bg-white text-black mb-6 ring-1 ring-white/30">
+                <Bug className="w-4 h-4" />
+                <span className="text-xs md:text-sm font-medium">The Problem</span>
               </div>
-              <div className="relative w-full lg:flex-1 flex justify-center mt-4 lg:mt-0 lg:self-stretch overflow-hidden px-4 md:px-2">
-                <img
-                  src="needle_haystack.png"
-                  alt="Looking for perfect tracks can be like finding a needle in a haystack."
-                  className="w-full h-52 lg:h-full object-cover rounded-2xl saturate-[0] contrast-[1.2] brightness-[1.5]"
-                />
-                <div className="absolute left-4 sm:left-6 bottom-4 sm:bottom-6 shadow-lg">
-                  <Button
-                    ref={(el) => (buttonRefs.current[2] = el)}
-                    onMouseMove={(e) => handleMouseMove(e, 2)}
-                    size="lg"
-                    className="left-4 group relative transition duration-500 text-lg px-8 py-6 bg-white text-black hover:bg-[#e4ea04]/90 hover:shadow-[0_0_20px_rgba(228,234,4,0.5),0_0_40px_rgba(228,234,4,0.2)] 
-                    rounded-lg overflow-hidden before:absolute before:inset-0 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 
-                    before:rounded-lg before:bg-[radial-gradient(circle_100px_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.2),transparent)]"
-                    onClick={handleJoinWaitlist}
-                  >
-                    <span className="relative z-10">Join Us</span>
-                    <ArrowRight className="w-5 h-5 ml-2 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
-                  </Button>
-                </div>
-              </div>
+
+              <h2 className="font-zen text-2xl md:text-4xl leading-tight text-white mb-4">
+                The work is creative. The workflow still is not.
+              </h2>
+
+              <p className="text-white/75 text-sm md:text-base mb-6">
+                Most sync teams spend more time chasing logistics than making taste-driven decisions.
+              </p>
+
+              <ul className="space-y-3">
+                <li className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm md:text-base text-white/90">
+                  3–4 hours of manual searching and sifting tracks for every placement
+                </li>
+                <li className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm md:text-base text-white/90">
+                  Endless scrolling and listening to find the perfect track
+                </li>
+                <li className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm md:text-base text-white/90">
+                  Unorganized and inefficient communication for every license negotiated
+                </li>
+              </ul>
+
+              <p className="text-white/85 text-sm md:text-base pt-5">
+                Viola gives you the tools to streamline the busy work.
+              </p>
             </div>
           </div>
         </div>
@@ -448,9 +427,8 @@ const Landing = () => {
             <p className="uppercase tracking-[0.25em] text-xs">Locate · Listen · License</p>
             <h2 className="font-zen font-semibold text-2xl md:text-3xl lg:text-4xl leading-tight max-w-5xl mx-auto">
               From <span className="italic">"I'll Know It When I Hear It"</span> to Easily Pitched.
-              <br className="hidden md:block" />
-              <br className="hidden md:block" />
-              <span className="md:inline block mt-2 md:mt-0 font-dm">All Done in One Place.</span>
+              <span className="block h-4 md:h-6" aria-hidden="true"></span>
+              <span className="block font-dm">All Done in One Place.</span>
             </h2>
           </div>
         </div>
@@ -467,7 +445,7 @@ const Landing = () => {
                   <img
                     src={fallbackPoster}
                     alt="Search demo placeholder"
-                    className="absolute inset-0 w-full h-full object-contain brightness-75 grayscale"
+                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1 brightness-75 grayscale"
                   />
                 ) : (
                   <video
@@ -479,7 +457,7 @@ const Landing = () => {
                     poster={fallbackPoster}
                     crossOrigin="anonymous"
                     onError={() => setSearchVideoFailed(true)}
-                    className="absolute inset-0 w-full h-full object-contain"
+                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1"
                   >
                     <source src={searchVideo} type="video/mp4" />
                   </video>
@@ -513,7 +491,7 @@ const Landing = () => {
                   <img
                     src={fallbackPoster}
                     alt="Pitch builder placeholder"
-                    className="absolute inset-0 w-full h-full object-contain brightness-75 grayscale"
+                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1 brightness-75 grayscale"
                   />
                 ) : (
                   <video
@@ -525,7 +503,7 @@ const Landing = () => {
                     poster={fallbackPoster}
                     crossOrigin="anonymous"
                     onError={() => setPitchVideoFailed(true)}
-                    className="absolute inset-0 w-full h-full object-contain"
+                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1"
                   >
                     <source src={pitchVideo} type="video/mp4" />
                   </video>
@@ -559,7 +537,7 @@ const Landing = () => {
                   <img
                     src={fallbackPoster}
                     alt="Catalog viewer placeholder"
-                    className="absolute inset-0 w-full h-full object-contain brightness-75 grayscale"
+                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1 brightness-75 grayscale"
                   />
                 ) : (
                   <video
@@ -571,7 +549,7 @@ const Landing = () => {
                     poster={fallbackPoster}
                     crossOrigin="anonymous"
                     onError={() => setCatalogueVideoFailed(true)}
-                    className="absolute inset-0 w-full h-full object-contain"
+                    className="absolute inset-0 w-full h-full object-cover lg:-translate-y-5 md:-translate-y-4 sm:-translate-y-3 -translate-y-1"
                   >
                     <source src={catalogueVideo} type="video/mp4" />
                   </video>
@@ -711,9 +689,6 @@ const Landing = () => {
             </div>
           </div>
 
-          <p className="text-white font-dm text-center text-2xl text-center px-12 lg:px-32">
-            Viola doesn't replace your ear. It gives you a better easel, better paints, and a cleaner studio to work in.
-          </p>
         </div>
       </section>
 
@@ -790,16 +765,8 @@ const Landing = () => {
         <div className="border border-white/20 border-3 rounded-3xl">
           <div className="max-w-5xl mx-auto  bg-black p-6 md:p-10 rounded-3xl space-y-8 shadow-[0_50px_90px_rgba(0,0,0,1)]">
             <div className="space-y-6 text-center">
-              <p className="text-sm uppercase tracking-[0.2em] text-white font-dm">Trust The Ear 🎧</p>
-              <blockquote className="text-2xl md:text-3xl text-white font-zen leading-relaxed">
-                “Man I love your vision... You've cooked.”
-              </blockquote>
-              <div className="relative flex items-center justify-center gap-3 text-sm md:text-base text-white/70">
-                      <div className="h-px w-10 bg-[#e4ea04]"></div>
-                      <p className="font-dm">Alex</p>
-                    </div>
-              <p className="text-white text-sm md:text-base">
-                Early teams are closing briefs in under 30 minutes. Ready to join them?
+              <p className="text-white font-zen text-2xl md:text-3xl leading-tight">
+                Ready To Access Licensable Music Within Your Fingertips?
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Button
@@ -816,7 +783,7 @@ const Landing = () => {
                 <Button
                   variant="outline"
                   className="hidden lg:flex text-white border-white/40 px-16 py-6 sm:min-w-[220px] text-lg rounded-lg transition-all duration-500 ease-out hover:border-[#e4ea04] hover:text-black hover:bg-[#e4ea04]/85 hover:shadow-[0_0_30px_rgba(228,234,4,0.35)]"
-                  onClick={() => navigate("/login")}
+                  onClick={() => navigate("/demo")}
                 >
                   Checkout Demo
                 </Button>
