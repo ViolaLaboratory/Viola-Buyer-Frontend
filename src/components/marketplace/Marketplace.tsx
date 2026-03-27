@@ -50,14 +50,14 @@ const TOP_PICKS: TopPick[] = [
     id: "1",
     title: "End of Beginning",
     artist: "DJO",
-    image: "https://i.scdn.co/image/ab67616d0000b273b03b40f68482b5114f70dd09",
+    image: "https://i.scdn.co/image/ab67616d0000b273fddfffec51b4580acae727c1",
     gradient: "from-purple-900/80 via-purple-800/60 to-transparent",
   },
   {
     id: "2",
     title: "Espresso",
     artist: "Sabrina Carpenter",
-    image: "https://i.scdn.co/image/ab67616d0000b273b0ed6028067e384a8c0bceef",
+    image: "https://i.scdn.co/image/ab67616d0000b273fd8d7a8d96871e791cb1f626",
     gradient: "from-amber-900/80 via-orange-800/60 to-transparent",
   },
   {
@@ -71,7 +71,7 @@ const TOP_PICKS: TopPick[] = [
     id: "4",
     title: "Good Luck, Babe!",
     artist: "Chappell Roan",
-    image: "https://i.scdn.co/image/ab67616d0000b2737c15e6e4f7b0645ab4b1f52c",
+    image: "https://i.scdn.co/image/ab67616d0000b27391b4bc7c88d91a42e0f3a8b7",
     gradient: "from-rose-900/80 via-pink-800/60 to-transparent",
   },
   {
@@ -208,7 +208,7 @@ export const Marketplace = () => {
 
         {/* Content */}
         <div className="relative z-10 h-full flex flex-col justify-end p-8">
-          <p className="text-white text-3xl font-bold tracking-wide mb-2">
+          <p className="text-white/80 text-sm font-semibold tracking-widest uppercase mb-1">
             Viola Top Picks for you
           </p>
           <h2 className="text-5xl font-bold text-white font-dm leading-tight">
