@@ -92,6 +92,7 @@ const GENRES: Genre[] = [
   { id: "jazz", name: "Jazz", color: "bg-indigo-300" },
   { id: "thriller", name: "Thriller", color: "bg-red-900" },
   { id: "disco", name: "Disco", color: "bg-purple-400" },
+  { id: "country", name: "Country", color: "bg-amber-600" },
 ];
 
 const RECORD_LABELS: RecordLabel[] = [
@@ -288,14 +289,15 @@ export const Marketplace = () => {
               <button
                 key={genre.id}
                 onClick={() => navigate(`/demo/marketplace/genre/${genre.id}`)}
-                className="group/genre flex flex-col items-center gap-1.5"
+                className="group/genre"
               >
                 <div
-                  className={`w-full aspect-square rounded-xl ${genre.color} opacity-80 group-hover/genre:opacity-100 group-hover/genre:scale-105 transition-all duration-200 shadow-lg`}
-                />
-                <span className="text-white/70 text-[11px] group-hover/genre:text-white transition-colors">
-                  {genre.name}
-                </span>
+                  className={`w-full aspect-square rounded-xl ${genre.color} opacity-80 group-hover/genre:opacity-100 group-hover/genre:scale-105 transition-all duration-200 shadow-lg flex items-end justify-start p-2`}
+                >
+                  <span className="text-white text-[11px] font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]">
+                    {genre.name}
+                  </span>
+                </div>
               </button>
             ))}
           </div>
