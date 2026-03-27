@@ -398,7 +398,7 @@ const Landing = () => {
                   Unorganized and inefficient communication for every music license negotiated
                 </li>
                 <li className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm md:text-base text-white/90">
-                  Inaccessible music licenses leaves money on the table
+                  Inaccessible music licenses leave money on the table
                 </li>
               </ul>
 
