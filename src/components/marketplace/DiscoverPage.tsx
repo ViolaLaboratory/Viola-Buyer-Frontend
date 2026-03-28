@@ -197,9 +197,9 @@ export const DiscoverPage = () => {
                   <div className="text-white/80 text-sm truncate">{track.genre}</div>
                   <div className="text-white/80 text-sm truncate">{track.mood}</div>
                   {/* Details */}
-                  <div className="text-white/80 text-sm">
+                  <div className="text-white text-sm space-y-1">
                     <div>{track.bpm} BPM</div>
-                    <div className="text-white/50 text-xs">{track.key}</div>
+                    <div>{track.key}</div>
                   </div>
                   <div className="flex items-center justify-end gap-2">
                     <span className="text-white/60 text-xs">
@@ -225,33 +225,35 @@ export const DiscoverPage = () => {
 
                 {/* Expanded details */}
                 {isExpanded && (
-                  <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-1 text-sm text-white/70">
+                  <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-1 text-sm text-white items-start">
                     <div />
                     <div />
                     <div className="space-y-3">
                       <div>
                         <div className="text-xs uppercase tracking-[0.2em] text-white/40">ISWC</div>
-                        <div className="text-white font-dm font-bold">{track.iswc}</div>
+                        <div className="font-dm font-bold">{track.iswc}</div>
                       </div>
                       <div>
                         <div className="text-xs uppercase tracking-[0.2em] text-white/40">ISRC</div>
-                        <div className="text-white font-dm font-bold">{track.isrc}</div>
+                        <div className="font-dm font-bold">{track.isrc}</div>
                       </div>
                     </div>
                     <div className="space-y-2">
                       <div className="text-xs uppercase tracking-[0.2em] text-white/40">Writers/Composers</div>
                       {track.writers.map((writer) => (
-                        <div key={writer} className="text-white font-bold">{writer}</div>
+                        <div key={writer} className="font-bold">{writer}</div>
                       ))}
                     </div>
                     <div className="space-y-2">
+                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Genre</div>
                       {track.extraGenres.map((genre) => (
-                        <div key={genre} className="text-white">{genre}</div>
+                        <div key={genre}>{genre}</div>
                       ))}
                     </div>
                     <div className="space-y-2">
+                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Mood</div>
                       {track.extraMoods.map((mood) => (
-                        <div key={mood} className="text-white">{mood}</div>
+                        <div key={mood}>{mood}</div>
                       ))}
                     </div>
                     {/* Prices */}
