@@ -30,8 +30,7 @@ interface Genre {
 interface RecordLabel {
   id: string;
   name: string;
-  logoText: string;
-  logoSubtext?: string;
+  logo: string;
 }
 
 interface DiscoverTrack {
@@ -96,11 +95,11 @@ const GENRES: Genre[] = [
 ];
 
 const RECORD_LABELS: RecordLabel[] = [
-  { id: "umg", name: "Universal Music Group", logoText: "UNIVERSAL" },
-  { id: "sony", name: "Sony Music Entertainment", logoText: "♪", logoSubtext: "SONY MUSIC" },
-  { id: "warner", name: "Warner Music Group", logoText: "W", logoSubtext: "WARNER MUSIC" },
-  { id: "88rising", name: "88rising", logoText: "88↑" },
-  { id: "hybe", name: "HYBE Labels", logoText: "H Y B E" },
+  { id: "umg", name: "Universal Music Group", logo: "/logos/universal.svg" },
+  { id: "sony", name: "Sony Music Entertainment", logo: "/logos/sony-music.svg" },
+  { id: "warner", name: "Warner Music Group", logo: "/logos/warner-music.svg" },
+  { id: "88rising", name: "88rising", logo: "/logos/88rising.svg" },
+  { id: "hybe", name: "HYBE Labels", logo: "/logos/hybe.svg" },
 ];
 
 const DISCOVER_TRACKS: DiscoverTrack[] = [
@@ -294,16 +293,11 @@ export const Marketplace = () => {
                 className="flex items-center w-full rounded-full bg-black/60 border border-white/10 hover:border-white/25 transition-colors group/label overflow-hidden"
               >
                 <div className="flex items-center justify-center flex-shrink-0 w-20 h-12">
-                  <div className="flex flex-col items-center">
-                    <span className="text-white text-sm font-bold tracking-wider leading-none">
-                      {label.logoText}
-                    </span>
-                    {label.logoSubtext && (
-                      <span className="text-white/60 text-[7px] tracking-widest mt-0.5">
-                        {label.logoSubtext}
-                      </span>
-                    )}
-                  </div>
+                  <img
+                    src={label.logo}
+                    alt={label.name}
+                    className="h-10 w-16 object-contain"
+                  />
                 </div>
                 <span className="text-white/90 text-sm font-medium ml-auto pr-5 group-hover/label:text-white transition-colors">
                   {label.name}
