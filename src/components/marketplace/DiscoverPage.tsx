@@ -5,7 +5,7 @@
  */
 
 import { useState } from "react";
-import { Search, Filter, ArrowUp, Plus, Minus } from "lucide-react";
+import { Search, Filter, ArrowUp, Plus, Minus, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 /* ─── TYPES ─── */
@@ -157,20 +157,15 @@ export const DiscoverPage = () => {
       {/* ─── TABLE ─── */}
       <div>
         {/* Table header */}
-        <div className="grid grid-cols-[40px_60px_1fr_1fr_1fr_1fr_80px_80px_100px] gap-4 px-4 py-3 text-sm text-white/60 font-dm">
+        <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-4 py-3 text-sm text-white/60 font-dm">
           <div>#</div>
           <div></div>
           <div>Title</div>
           <div>Artist</div>
           <div>Genre</div>
           <div>Mood</div>
-          <div>Details</div>
+          <div>Prices</div>
           <div></div>
-          <div className="text-right">
-            <button className="px-3 py-1 rounded-full border border-white/20 text-white/70 text-xs hover:bg-white/10 transition-colors">
-              Price
-            </button>
-          </div>
         </div>
 
         {/* Track rows */}
@@ -182,26 +177,30 @@ export const DiscoverPage = () => {
             return (
               <div
                 key={track.id}
-                className={`rounded-xl border px-4 py-3 transition cursor-pointer ${
+                className={`rounded-lg border px-4 py-3 transition cursor-pointer ${
                   isFirst
                     ? "border-white/20 bg-black/40 shadow-[0_0_22px_rgba(0,0,0,0.35)]"
                     : "border-blue-500/30 bg-blue-900/10 shadow-[0_0_12px_rgba(59,130,246,0.1)]"
                 } hover:bg-white/5`}
               >
                 {/* Main row */}
-                <div className="grid grid-cols-[40px_60px_1fr_1fr_1fr_1fr_80px_80px_100px] gap-4 items-center">
+                <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 items-center">
                   <div className="text-white/80 font-dm">{index + 1}</div>
                   <img
                     src={track.cover}
                     alt={track.title}
-                    className="h-10 w-10 rounded-md object-cover flex-shrink-0"
+                    className="h-10 w-10 rounded object-cover flex-shrink-0"
                   />
                   <div className="text-white text-sm font-medium truncate">{track.title}</div>
                   <div className="text-white/80 text-sm truncate">{track.artist}</div>
                   <div className="text-white/80 text-sm truncate">{track.genre}</div>
                   <div className="text-white/80 text-sm truncate">{track.mood}</div>
-                  <div className="text-white/80 text-sm">{track.duration}</div>
-                  <div className="text-white/60 text-xs">Prices</div>
+                  {/* Prices */}
+                  <div className="flex items-center gap-2 text-[10px]">
+                    <span className="px-2 py-1 rounded border border-white/20 text-white/70">30s</span>
+                    <span className="px-2 py-1 rounded border border-white/20 text-white/70">1 min</span>
+                    <span className="px-2 py-1 rounded border border-white/20 text-white/70">Sales</span>
+                  </div>
                   <div className="flex items-center justify-end gap-2">
                     <span className="text-white/60 text-xs">
                       {isExpanded ? "See Less" : "See more.."}
@@ -226,7 +225,7 @@ export const DiscoverPage = () => {
 
                 {/* Expanded details */}
                 {isExpanded && (
-                  <div className="mt-4 grid grid-cols-[40px_60px_1fr_1fr_1fr_1fr_80px_80px_100px] gap-4 px-1 text-sm text-white/70">
+                  <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-1 text-sm text-white/70">
                     <div />
                     <div />
                     <div className="space-y-3">
@@ -259,19 +258,13 @@ export const DiscoverPage = () => {
                       <div>{track.bpm} Bpm</div>
                       <div>{track.key}</div>
                     </div>
-                    <div />
                     <div className="flex flex-col gap-2">
-                      <button className="px-3 py-1.5 rounded-full border border-white/20 text-white text-xs hover:bg-white/10 transition-colors">
-                        30 Seconds
-                      </button>
-                      <button className="px-3 py-1.5 rounded-full border border-white/20 text-white text-xs hover:bg-white/10 transition-colors">
-                        1 Minute
-                      </button>
-                      <button className="px-3 py-1.5 rounded-full border border-blue-400/40 bg-blue-500/20 text-white text-xs hover:bg-blue-500/30 transition-colors">
+                      <button className="px-3 py-1.5 rounded border border-purple-400/40 bg-purple-600/30 text-white text-xs font-medium hover:bg-purple-600/50 transition-colors flex items-center justify-center gap-1.5">
+                        <ShoppingCart className="h-3 w-3" />
                         Add to Cart
                       </button>
-                      <button className="px-3 py-1.5 rounded-full border border-white/20 text-white text-xs hover:bg-white/10 transition-colors">
-                        Contact Sales
+                      <button className="px-3 py-1.5 rounded border border-purple-400/60 bg-purple-600 text-white text-xs font-medium hover:bg-purple-700 transition-colors">
+                        Checkout
                       </button>
                     </div>
                   </div>
