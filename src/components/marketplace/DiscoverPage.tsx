@@ -157,7 +157,7 @@ export const DiscoverPage = () => {
       {/* ─── TABLE ─── */}
       <div>
         {/* Table header */}
-        <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-4 py-3 text-sm text-white/60 font-dm">
+        <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_100px] gap-3 px-4 py-3 text-sm text-white/60 font-dm">
           <div>#</div>
           <div></div>
           <div>Title</div>
@@ -165,6 +165,7 @@ export const DiscoverPage = () => {
           <div>Genre</div>
           <div>Mood</div>
           <div>Details</div>
+          <div>Prices</div>
           <div></div>
         </div>
 
@@ -185,7 +186,7 @@ export const DiscoverPage = () => {
                 } hover:bg-white/5`}
               >
                 {/* Main row */}
-                <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 items-center">
+                <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_100px] gap-3 items-center">
                   <div className="text-white/80 font-dm">{index + 1}</div>
                   <img
                     src={track.cover}
@@ -200,6 +201,18 @@ export const DiscoverPage = () => {
                   <div className="text-white text-sm space-y-1">
                     <div>{track.bpm} BPM</div>
                     <div>{track.key}</div>
+                  </div>
+                  {/* Prices */}
+                  <div className="flex flex-col gap-1.5">
+                    <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors">
+                      30 Seconds
+                    </button>
+                    <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors">
+                      1 Minute
+                    </button>
+                    <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors">
+                      Contact Sales
+                    </button>
                   </div>
                   <div className="flex items-center justify-end gap-2">
                     <span className="text-white/60 text-xs">
@@ -225,7 +238,7 @@ export const DiscoverPage = () => {
 
                 {/* Expanded details */}
                 {isExpanded && (
-                  <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-1 text-sm text-white items-start">
+                  <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_100px] gap-3 px-1 text-sm text-white items-start">
                     <div />
                     <div />
                     <div className="space-y-3">
@@ -256,18 +269,8 @@ export const DiscoverPage = () => {
                         <div key={mood}>{mood}</div>
                       ))}
                     </div>
-                    {/* Prices */}
-                    <div className="flex flex-col gap-2">
-                      <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors">
-                        30 Seconds
-                      </button>
-                      <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors">
-                        1 Minute
-                      </button>
-                      <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors">
-                        Contact Sales
-                      </button>
-                    </div>
+                    <div />
+                    <div />
                     <div className="flex flex-col gap-2">
                       <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-purple-400/40 bg-purple-600/30 text-white text-xs font-medium hover:bg-purple-600/50 transition-colors flex items-center justify-center gap-1.5">
                         <ShoppingCart className="h-3 w-3" />
