@@ -157,13 +157,14 @@ export const DiscoverPage = () => {
       {/* ─── TABLE ─── */}
       <div>
         {/* Table header */}
-        <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-4 py-3 text-sm text-white/60 font-dm">
+        <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-4 py-3 text-sm text-white/60 font-dm">
           <div>#</div>
           <div></div>
           <div>Title</div>
           <div>Artist</div>
           <div>Genre</div>
           <div>Mood</div>
+          <div>Details</div>
           <div>Prices</div>
           <div></div>
         </div>
@@ -184,7 +185,7 @@ export const DiscoverPage = () => {
                 } hover:bg-white/5`}
               >
                 {/* Main row */}
-                <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 items-center">
+                <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_120px] gap-4 items-center">
                   <div className="text-white/80 font-dm">{index + 1}</div>
                   <img
                     src={track.cover}
@@ -195,11 +196,22 @@ export const DiscoverPage = () => {
                   <div className="text-white/80 text-sm truncate">{track.artist}</div>
                   <div className="text-white/80 text-sm truncate">{track.genre}</div>
                   <div className="text-white/80 text-sm truncate">{track.mood}</div>
+                  {/* Details */}
+                  <div className="text-white/80 text-sm">
+                    <div>{track.bpm} BPM</div>
+                    <div className="text-white/50 text-xs">{track.key}</div>
+                  </div>
                   {/* Prices */}
-                  <div className="flex items-center gap-2 text-[10px]">
-                    <span className="px-2 py-1 rounded border border-white/20 text-white/70">30s</span>
-                    <span className="px-2 py-1 rounded border border-white/20 text-white/70">1 min</span>
-                    <span className="px-2 py-1 rounded border border-white/20 text-white/70">Sales</span>
+                  <div className="flex flex-col gap-1.5">
+                    <button className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-xs hover:bg-white/20 transition-colors text-left">
+                      30 Seconds
+                    </button>
+                    <button className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-xs hover:bg-white/20 transition-colors text-left">
+                      1 Minute
+                    </button>
+                    <button className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-xs hover:bg-white/20 transition-colors text-left">
+                      Contact Sales
+                    </button>
                   </div>
                   <div className="flex items-center justify-end gap-2">
                     <span className="text-white/60 text-xs">
@@ -225,7 +237,7 @@ export const DiscoverPage = () => {
 
                 {/* Expanded details */}
                 {isExpanded && (
-                  <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-1 text-sm text-white/70">
+                  <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-1 text-sm text-white/70">
                     <div />
                     <div />
                     <div className="space-y-3">
@@ -254,10 +266,8 @@ export const DiscoverPage = () => {
                         <div key={mood} className="text-white">{mood}</div>
                       ))}
                     </div>
-                    <div className="space-y-2 text-white/80">
-                      <div>{track.bpm} Bpm</div>
-                      <div>{track.key}</div>
-                    </div>
+                    <div />
+                    <div />
                     <div className="flex flex-col gap-2">
                       <button className="px-3 py-1.5 rounded border border-purple-400/40 bg-purple-600/30 text-white text-xs font-medium hover:bg-purple-600/50 transition-colors flex items-center justify-center gap-1.5">
                         <ShoppingCart className="h-3 w-3" />
