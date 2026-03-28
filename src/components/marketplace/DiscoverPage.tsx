@@ -23,84 +23,90 @@ interface DiscoverTrack {
   writers: string[];
   extraGenres: string[];
   extraMoods: string[];
+  cover: string;
 }
 
 /* ─── MOCK DATA ─── */
 const DISCOVER_TRACKS: DiscoverTrack[] = [
   {
     id: "t1",
-    title: "Songy Song",
-    artist: "Bruno Stars",
-    genre: "Hip-Hop",
-    mood: "Cool",
-    duration: "2:30",
-    bpm: 130,
+    title: "Golden Hour",
+    artist: "Kaia Lune",
+    genre: "Pop",
+    mood: "Happy",
+    duration: "3:24",
+    bpm: 120,
     key: "C# Major",
     iswc: "C0101010101",
     isrc: "HLBD35793507",
     writers: ["Jude Gabriel Kozielec", "Ryan Chan", "Kyung Tae Kim"],
     extraGenres: ["R&B", "Afro-Beat"],
     extraMoods: ["Playful", "Upbeat", "Soothing"],
+    cover: "https://picsum.photos/seed/golden-hour/200",
   },
   {
     id: "t2",
-    title: "Songy Song",
-    artist: "Bruno",
-    genre: "Hip-Hop",
-    mood: "Cool",
-    duration: "2:30",
-    bpm: 130,
-    key: "C# Major",
+    title: "Velvet Haze",
+    artist: "Noel Rivers",
+    genre: "Indie",
+    mood: "Chill",
+    duration: "4:01",
+    bpm: 98,
+    key: "A Minor",
     iswc: "C0202020202",
     isrc: "HLBD33591588",
     writers: ["Mina Park", "Damon Wu", "Clara Swift"],
     extraGenres: ["Pop", "Synthwave"],
     extraMoods: ["Moody", "Chill", "Focused"],
+    cover: "https://picsum.photos/seed/velvet-haze/200",
   },
   {
     id: "t3",
-    title: "Songy Song",
-    artist: "Bruno",
-    genre: "Hip-Hop",
-    mood: "Cool",
-    duration: "2:30",
-    bpm: 130,
-    key: "C# Major",
+    title: "Midnight Drive",
+    artist: "Sable Moon",
+    genre: "R&B",
+    mood: "Moody",
+    duration: "3:45",
+    bpm: 110,
+    key: "F# Minor",
     iswc: "C0303030303",
     isrc: "HLBD28177421",
     writers: ["Andre Sol", "Mira Voss"],
     extraGenres: ["Indie", "Alt Rock"],
     extraMoods: ["Reflective", "Warm"],
+    cover: "https://picsum.photos/seed/midnight-drive/200",
   },
   {
     id: "t4",
-    title: "Songy Song",
-    artist: "Bruno",
-    genre: "Hip-Hop",
-    mood: "Cool",
-    duration: "2:30",
-    bpm: 130,
-    key: "C# Major",
-    iswc: "C0101010101",
+    title: "Neon Pulse",
+    artist: "ZEKRA",
+    genre: "Electronic",
+    mood: "Energetic",
+    duration: "3:12",
+    bpm: 128,
+    key: "Eb Major",
+    iswc: "C0404040404",
     isrc: "HLBD35793507",
     writers: ["Jude Gabriel Kozielec", "Ryan Chan", "Kyung Tae Kim"],
-    extraGenres: ["R&B", "Afro-Beat"],
+    extraGenres: ["Synthwave", "Dance"],
     extraMoods: ["Playful", "Upbeat", "Soothing"],
+    cover: "https://picsum.photos/seed/neon-pulse/200",
   },
   {
     id: "t5",
-    title: "Songy Song",
-    artist: "Bruno",
+    title: "Southside Glow",
+    artist: "Dex Amari",
     genre: "Hip-Hop",
-    mood: "Cool",
-    duration: "2:30",
-    bpm: 130,
-    key: "C# Major",
-    iswc: "C0202020202",
+    mood: "Dark",
+    duration: "2:58",
+    bpm: 140,
+    key: "G Minor",
+    iswc: "C0505050505",
     isrc: "HLBD33591588",
     writers: ["Mina Park", "Damon Wu"],
-    extraGenres: ["Pop", "Synthwave"],
-    extraMoods: ["Moody", "Chill"],
+    extraGenres: ["Trap", "Lo-Fi"],
+    extraMoods: ["Moody", "Gritty"],
+    cover: "https://picsum.photos/seed/southside-glow/200",
   },
 ];
 
@@ -185,9 +191,11 @@ export const DiscoverPage = () => {
                 {/* Main row */}
                 <div className="grid grid-cols-[40px_60px_1fr_1fr_1fr_1fr_80px_80px_100px] gap-4 items-center">
                   <div className="text-white/80 font-dm">{index + 1}</div>
-                  <div className="h-10 w-10 rounded-md overflow-hidden bg-white/10 flex-shrink-0">
-                    <div className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-800" />
-                  </div>
+                  <img
+                    src={track.cover}
+                    alt={track.title}
+                    className="h-10 w-10 rounded-md object-cover flex-shrink-0"
+                  />
                   <div className="text-white text-sm font-medium truncate">{track.title}</div>
                   <div className="text-white/80 text-sm truncate">{track.artist}</div>
                   <div className="text-white/80 text-sm truncate">{track.genre}</div>
