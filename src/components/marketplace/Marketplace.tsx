@@ -41,6 +41,7 @@ interface DiscoverTrack {
   mood: string;
   bpm: number;
   duration: string;
+  cover: string;
 }
 
 /* ─── MOCK DATA ─── */
@@ -103,12 +104,12 @@ const RECORD_LABELS: RecordLabel[] = [
 ];
 
 const DISCOVER_TRACKS: DiscoverTrack[] = [
-  { id: "t1", title: "Sunny Song", artist: "Ruby Skies", genre: "Pop", mood: "Happy", bpm: 120, duration: "3:24" },
-  { id: "t2", title: "Sunny Song", artist: "Ruby Skies", genre: "Indie", mood: "Chill", bpm: 98, duration: "4:01" },
-  { id: "t3", title: "Sunny Song", artist: "Ruby Skies", genre: "R&B", mood: "Moody", bpm: 110, duration: "3:45" },
-  { id: "t4", title: "Sunny Song", artist: "Ruby Skies", genre: "Electronic", mood: "Energetic", bpm: 128, duration: "3:12" },
-  { id: "t5", title: "Sunny Song", artist: "Ruby Skies", genre: "Hip-Hop", mood: "Dark", bpm: 140, duration: "2:58" },
-  { id: "t6", title: "Sunny Song", artist: "Ruby Skies", genre: "Jazz", mood: "Smooth", bpm: 95, duration: "4:30" },
+  { id: "t1", title: "Golden Hour", artist: "Kaia Lune", genre: "Pop", mood: "Happy", bpm: 120, duration: "3:24", cover: "https://picsum.photos/seed/golden-hour/200" },
+  { id: "t2", title: "Velvet Haze", artist: "Noel Rivers", genre: "Indie", mood: "Chill", bpm: 98, duration: "4:01", cover: "https://picsum.photos/seed/velvet-haze/200" },
+  { id: "t3", title: "Midnight Drive", artist: "Sable Moon", genre: "R&B", mood: "Moody", bpm: 110, duration: "3:45", cover: "https://picsum.photos/seed/midnight-drive/200" },
+  { id: "t4", title: "Neon Pulse", artist: "ZEKRA", genre: "Electronic", mood: "Energetic", bpm: 128, duration: "3:12", cover: "https://picsum.photos/seed/neon-pulse/200" },
+  { id: "t5", title: "Southside Glow", artist: "Dex Amari", genre: "Hip-Hop", mood: "Dark", bpm: 140, duration: "2:58", cover: "https://picsum.photos/seed/southside-glow/200" },
+  { id: "t6", title: "Blue Satin", artist: "Mila Sorrento", genre: "Jazz", mood: "Smooth", bpm: 95, duration: "4:30", cover: "https://picsum.photos/seed/blue-satin/200" },
 ];
 
 /* ─── COMPONENT ─── */
@@ -324,10 +325,12 @@ export const Marketplace = () => {
                 key={track.id}
                 className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/5 transition-colors group/track w-full text-left"
               >
-                {/* Thumbnail placeholder */}
-                <div className="h-10 w-10 rounded-md bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex-shrink-0 flex items-center justify-center">
-                  <div className="h-3 w-3 rounded-full bg-white/30" />
-                </div>
+                {/* Album cover */}
+                <img
+                  src={track.cover}
+                  alt={track.title}
+                  className="h-10 w-10 rounded-md object-cover flex-shrink-0"
+                />
 
                 {/* Track info */}
                 <div className="flex-1 min-w-0">

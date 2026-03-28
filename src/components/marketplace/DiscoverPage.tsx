@@ -5,7 +5,7 @@
  */
 
 import { useState } from "react";
-import { Search, Filter, ArrowUp, Plus, Minus } from "lucide-react";
+import { Search, Filter, ArrowUp, Plus, Minus, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 /* ─── TYPES ─── */
@@ -23,84 +23,90 @@ interface DiscoverTrack {
   writers: string[];
   extraGenres: string[];
   extraMoods: string[];
+  cover: string;
 }
 
 /* ─── MOCK DATA ─── */
 const DISCOVER_TRACKS: DiscoverTrack[] = [
   {
     id: "t1",
-    title: "Songy Song",
-    artist: "Bruno Stars",
-    genre: "Hip-Hop",
-    mood: "Cool",
-    duration: "2:30",
-    bpm: 130,
+    title: "Golden Hour",
+    artist: "Kaia Lune",
+    genre: "Pop",
+    mood: "Happy",
+    duration: "3:24",
+    bpm: 120,
     key: "C# Major",
     iswc: "C0101010101",
     isrc: "HLBD35793507",
     writers: ["Jude Gabriel Kozielec", "Ryan Chan", "Kyung Tae Kim"],
     extraGenres: ["R&B", "Afro-Beat"],
     extraMoods: ["Playful", "Upbeat", "Soothing"],
+    cover: "https://picsum.photos/seed/golden-hour/200",
   },
   {
     id: "t2",
-    title: "Songy Song",
-    artist: "Bruno",
-    genre: "Hip-Hop",
-    mood: "Cool",
-    duration: "2:30",
-    bpm: 130,
-    key: "C# Major",
+    title: "Velvet Haze",
+    artist: "Noel Rivers",
+    genre: "Indie",
+    mood: "Chill",
+    duration: "4:01",
+    bpm: 98,
+    key: "A Minor",
     iswc: "C0202020202",
     isrc: "HLBD33591588",
     writers: ["Mina Park", "Damon Wu", "Clara Swift"],
     extraGenres: ["Pop", "Synthwave"],
     extraMoods: ["Moody", "Chill", "Focused"],
+    cover: "https://picsum.photos/seed/velvet-haze/200",
   },
   {
     id: "t3",
-    title: "Songy Song",
-    artist: "Bruno",
-    genre: "Hip-Hop",
-    mood: "Cool",
-    duration: "2:30",
-    bpm: 130,
-    key: "C# Major",
+    title: "Midnight Drive",
+    artist: "Sable Moon",
+    genre: "R&B",
+    mood: "Moody",
+    duration: "3:45",
+    bpm: 110,
+    key: "F# Minor",
     iswc: "C0303030303",
     isrc: "HLBD28177421",
     writers: ["Andre Sol", "Mira Voss"],
     extraGenres: ["Indie", "Alt Rock"],
     extraMoods: ["Reflective", "Warm"],
+    cover: "https://picsum.photos/seed/midnight-drive/200",
   },
   {
     id: "t4",
-    title: "Songy Song",
-    artist: "Bruno",
-    genre: "Hip-Hop",
-    mood: "Cool",
-    duration: "2:30",
-    bpm: 130,
-    key: "C# Major",
-    iswc: "C0101010101",
+    title: "Neon Pulse",
+    artist: "ZEKRA",
+    genre: "Electronic",
+    mood: "Energetic",
+    duration: "3:12",
+    bpm: 128,
+    key: "Eb Major",
+    iswc: "C0404040404",
     isrc: "HLBD35793507",
     writers: ["Jude Gabriel Kozielec", "Ryan Chan", "Kyung Tae Kim"],
-    extraGenres: ["R&B", "Afro-Beat"],
+    extraGenres: ["Synthwave", "Dance"],
     extraMoods: ["Playful", "Upbeat", "Soothing"],
+    cover: "https://picsum.photos/seed/neon-pulse/200",
   },
   {
     id: "t5",
-    title: "Songy Song",
-    artist: "Bruno",
+    title: "Southside Glow",
+    artist: "Dex Amari",
     genre: "Hip-Hop",
-    mood: "Cool",
-    duration: "2:30",
-    bpm: 130,
-    key: "C# Major",
-    iswc: "C0202020202",
+    mood: "Dark",
+    duration: "2:58",
+    bpm: 140,
+    key: "G Minor",
+    iswc: "C0505050505",
     isrc: "HLBD33591588",
     writers: ["Mina Park", "Damon Wu"],
-    extraGenres: ["Pop", "Synthwave"],
-    extraMoods: ["Moody", "Chill"],
+    extraGenres: ["Trap", "Lo-Fi"],
+    extraMoods: ["Moody", "Gritty"],
+    cover: "https://picsum.photos/seed/southside-glow/200",
   },
 ];
 
@@ -151,20 +157,15 @@ export const DiscoverPage = () => {
       {/* ─── TABLE ─── */}
       <div>
         {/* Table header */}
-        <div className="grid grid-cols-[40px_60px_1fr_1fr_1fr_1fr_80px_80px_100px] gap-4 px-4 py-3 text-sm text-white/60 font-dm">
+        <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-4 py-3 text-sm text-white/60 font-dm">
           <div>#</div>
           <div></div>
           <div>Title</div>
           <div>Artist</div>
           <div>Genre</div>
           <div>Mood</div>
-          <div>Details</div>
+          <div>Prices</div>
           <div></div>
-          <div className="text-right">
-            <button className="px-3 py-1 rounded-full border border-white/20 text-white/70 text-xs hover:bg-white/10 transition-colors">
-              Price
-            </button>
-          </div>
         </div>
 
         {/* Track rows */}
@@ -176,24 +177,30 @@ export const DiscoverPage = () => {
             return (
               <div
                 key={track.id}
-                className={`rounded-xl border px-4 py-3 transition cursor-pointer ${
+                className={`rounded-lg border px-4 py-3 transition cursor-pointer ${
                   isFirst
                     ? "border-white/20 bg-black/40 shadow-[0_0_22px_rgba(0,0,0,0.35)]"
                     : "border-blue-500/30 bg-blue-900/10 shadow-[0_0_12px_rgba(59,130,246,0.1)]"
                 } hover:bg-white/5`}
               >
                 {/* Main row */}
-                <div className="grid grid-cols-[40px_60px_1fr_1fr_1fr_1fr_80px_80px_100px] gap-4 items-center">
+                <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 items-center">
                   <div className="text-white/80 font-dm">{index + 1}</div>
-                  <div className="h-10 w-10 rounded-md overflow-hidden bg-white/10 flex-shrink-0">
-                    <div className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-800" />
-                  </div>
+                  <img
+                    src={track.cover}
+                    alt={track.title}
+                    className="h-10 w-10 rounded object-cover flex-shrink-0"
+                  />
                   <div className="text-white text-sm font-medium truncate">{track.title}</div>
                   <div className="text-white/80 text-sm truncate">{track.artist}</div>
                   <div className="text-white/80 text-sm truncate">{track.genre}</div>
                   <div className="text-white/80 text-sm truncate">{track.mood}</div>
-                  <div className="text-white/80 text-sm">{track.duration}</div>
-                  <div className="text-white/60 text-xs">Prices</div>
+                  {/* Prices */}
+                  <div className="flex items-center gap-2 text-[10px]">
+                    <span className="px-2 py-1 rounded border border-white/20 text-white/70">30s</span>
+                    <span className="px-2 py-1 rounded border border-white/20 text-white/70">1 min</span>
+                    <span className="px-2 py-1 rounded border border-white/20 text-white/70">Sales</span>
+                  </div>
                   <div className="flex items-center justify-end gap-2">
                     <span className="text-white/60 text-xs">
                       {isExpanded ? "See Less" : "See more.."}
@@ -218,7 +225,7 @@ export const DiscoverPage = () => {
 
                 {/* Expanded details */}
                 {isExpanded && (
-                  <div className="mt-4 grid grid-cols-[40px_60px_1fr_1fr_1fr_1fr_80px_80px_100px] gap-4 px-1 text-sm text-white/70">
+                  <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-1 text-sm text-white/70">
                     <div />
                     <div />
                     <div className="space-y-3">
@@ -251,19 +258,13 @@ export const DiscoverPage = () => {
                       <div>{track.bpm} Bpm</div>
                       <div>{track.key}</div>
                     </div>
-                    <div />
                     <div className="flex flex-col gap-2">
-                      <button className="px-3 py-1.5 rounded-full border border-white/20 text-white text-xs hover:bg-white/10 transition-colors">
-                        30 Seconds
-                      </button>
-                      <button className="px-3 py-1.5 rounded-full border border-white/20 text-white text-xs hover:bg-white/10 transition-colors">
-                        1 Minute
-                      </button>
-                      <button className="px-3 py-1.5 rounded-full border border-blue-400/40 bg-blue-500/20 text-white text-xs hover:bg-blue-500/30 transition-colors">
+                      <button className="px-3 py-1.5 rounded border border-purple-400/40 bg-purple-600/30 text-white text-xs font-medium hover:bg-purple-600/50 transition-colors flex items-center justify-center gap-1.5">
+                        <ShoppingCart className="h-3 w-3" />
                         Add to Cart
                       </button>
-                      <button className="px-3 py-1.5 rounded-full border border-white/20 text-white text-xs hover:bg-white/10 transition-colors">
-                        Contact Sales
+                      <button className="px-3 py-1.5 rounded border border-purple-400/60 bg-purple-600 text-white text-xs font-medium hover:bg-purple-700 transition-colors">
+                        Checkout
                       </button>
                     </div>
                   </div>
