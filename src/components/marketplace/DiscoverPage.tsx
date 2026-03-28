@@ -157,7 +157,7 @@ export const DiscoverPage = () => {
       {/* ─── TABLE ─── */}
       <div>
         {/* Table header */}
-        <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-4 py-3 text-sm text-white/60 font-dm">
+        <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-4 py-3 text-sm text-white/60 font-dm">
           <div>#</div>
           <div></div>
           <div>Title</div>
@@ -165,7 +165,6 @@ export const DiscoverPage = () => {
           <div>Genre</div>
           <div>Mood</div>
           <div>Details</div>
-          <div>Prices</div>
           <div></div>
         </div>
 
@@ -178,6 +177,7 @@ export const DiscoverPage = () => {
             return (
               <div
                 key={track.id}
+                onClick={() => setExpandedTrackId(isExpanded ? null : track.id)}
                 className={`rounded-lg border px-4 py-3 transition cursor-pointer ${
                   isFirst
                     ? "border-white/20 bg-black/40 shadow-[0_0_22px_rgba(0,0,0,0.35)]"
@@ -185,7 +185,7 @@ export const DiscoverPage = () => {
                 } hover:bg-white/5`}
               >
                 {/* Main row */}
-                <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_120px] gap-4 items-center">
+                <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 items-center">
                   <div className="text-white/80 font-dm">{index + 1}</div>
                   <img
                     src={track.cover}
@@ -200,18 +200,6 @@ export const DiscoverPage = () => {
                   <div className="text-white/80 text-sm">
                     <div>{track.bpm} BPM</div>
                     <div className="text-white/50 text-xs">{track.key}</div>
-                  </div>
-                  {/* Prices */}
-                  <div className="flex flex-col gap-1.5">
-                    <button className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-xs hover:bg-white/20 transition-colors text-left">
-                      30 Seconds
-                    </button>
-                    <button className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-xs hover:bg-white/20 transition-colors text-left">
-                      1 Minute
-                    </button>
-                    <button className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-xs hover:bg-white/20 transition-colors text-left">
-                      Contact Sales
-                    </button>
                   </div>
                   <div className="flex items-center justify-end gap-2">
                     <span className="text-white/60 text-xs">
@@ -237,7 +225,7 @@ export const DiscoverPage = () => {
 
                 {/* Expanded details */}
                 {isExpanded && (
-                  <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-1 text-sm text-white/70">
+                  <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_120px] gap-4 px-1 text-sm text-white/70">
                     <div />
                     <div />
                     <div className="space-y-3">
@@ -266,14 +254,24 @@ export const DiscoverPage = () => {
                         <div key={mood} className="text-white">{mood}</div>
                       ))}
                     </div>
-                    <div />
-                    <div />
+                    {/* Prices */}
                     <div className="flex flex-col gap-2">
-                      <button className="px-3 py-1.5 rounded border border-purple-400/40 bg-purple-600/30 text-white text-xs font-medium hover:bg-purple-600/50 transition-colors flex items-center justify-center gap-1.5">
+                      <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors">
+                        30 Seconds
+                      </button>
+                      <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors">
+                        1 Minute
+                      </button>
+                      <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors">
+                        Contact Sales
+                      </button>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-purple-400/40 bg-purple-600/30 text-white text-xs font-medium hover:bg-purple-600/50 transition-colors flex items-center justify-center gap-1.5">
                         <ShoppingCart className="h-3 w-3" />
                         Add to Cart
                       </button>
-                      <button className="px-3 py-1.5 rounded border border-purple-400/60 bg-purple-600 text-white text-xs font-medium hover:bg-purple-700 transition-colors">
+                      <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-purple-400/60 bg-purple-600 text-white text-xs font-medium hover:bg-purple-700 transition-colors">
                         Checkout
                       </button>
                     </div>
