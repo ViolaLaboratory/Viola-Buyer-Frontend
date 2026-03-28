@@ -31,7 +31,6 @@ interface RecordLabel {
   id: string;
   name: string;
   logo: string;
-  logoBg: string;
 }
 
 interface DiscoverTrack {
@@ -50,14 +49,14 @@ const TOP_PICKS: TopPick[] = [
     id: "1",
     title: "End of Beginning",
     artist: "DJO",
-    image: "https://i.scdn.co/image/ab67616d0000b273b03b40f68482b5114f70dd09",
+    image: "https://i.scdn.co/image/ab67616d0000b273fddfffec51b4580acae727c1",
     gradient: "from-purple-900/80 via-purple-800/60 to-transparent",
   },
   {
     id: "2",
     title: "Espresso",
     artist: "Sabrina Carpenter",
-    image: "https://i.scdn.co/image/ab67616d0000b273b0ed6028067e384a8c0bceef",
+    image: "https://i.scdn.co/image/ab67616d0000b273fd8d7a8d96871e791cb1f626",
     gradient: "from-amber-900/80 via-orange-800/60 to-transparent",
   },
   {
@@ -71,7 +70,7 @@ const TOP_PICKS: TopPick[] = [
     id: "4",
     title: "Good Luck, Babe!",
     artist: "Chappell Roan",
-    image: "https://i.scdn.co/image/ab67616d0000b2737c15e6e4f7b0645ab4b1f52c",
+    image: "https://i.scdn.co/image/ab67616d0000b27391b4bc7c88d91a42e0f3a8b7",
     gradient: "from-rose-900/80 via-pink-800/60 to-transparent",
   },
   {
@@ -92,39 +91,15 @@ const GENRES: Genre[] = [
   { id: "jazz", name: "Jazz", color: "bg-indigo-300" },
   { id: "thriller", name: "Thriller", color: "bg-red-900" },
   { id: "disco", name: "Disco", color: "bg-purple-400" },
+  { id: "country", name: "Country", color: "bg-amber-600" },
 ];
 
 const RECORD_LABELS: RecordLabel[] = [
-  {
-    id: "umg",
-    name: "Universal Music Group",
-    logo: "UNIVERSAL",
-    logoBg: "bg-white/10",
-  },
-  {
-    id: "sony",
-    name: "Sony Music Entertainment",
-    logo: "SONY",
-    logoBg: "bg-red-500/20",
-  },
-  {
-    id: "warner",
-    name: "Warner Music Group",
-    logo: "WARNER",
-    logoBg: "bg-blue-500/20",
-  },
-  {
-    id: "88rising",
-    name: "88rising",
-    logo: "88↑",
-    logoBg: "bg-white/10",
-  },
-  {
-    id: "hybe",
-    name: "HYBE Labels",
-    logo: "HYBE",
-    logoBg: "bg-white/10",
-  },
+  { id: "umg", name: "Universal Music Group", logo: "/logos/universal.svg" },
+  { id: "sony", name: "Sony Music Entertainment", logo: "/logos/sony-music.svg" },
+  { id: "warner", name: "Warner Music Group", logo: "/logos/warner-music.svg" },
+  { id: "88rising", name: "88rising", logo: "/logos/88rising.svg" },
+  { id: "hybe", name: "HYBE Labels", logo: "/logos/hybe.svg" },
 ];
 
 const DISCOVER_TRACKS: DiscoverTrack[] = [
@@ -208,7 +183,7 @@ export const Marketplace = () => {
 
         {/* Content */}
         <div className="relative z-10 h-full flex flex-col justify-end p-8">
-          <p className="text-white text-3xl font-bold tracking-wide mb-2">
+          <p className="text-white/80 text-sm font-semibold tracking-widest uppercase mb-1">
             Viola Top Picks for you
           </p>
           <h2 className="text-5xl font-bold text-white font-dm leading-tight">
@@ -288,14 +263,15 @@ export const Marketplace = () => {
               <button
                 key={genre.id}
                 onClick={() => navigate(`/demo/marketplace/genre/${genre.id}`)}
-                className="group/genre flex flex-col items-center gap-1.5"
+                className="group/genre"
               >
                 <div
-                  className={`w-full aspect-square rounded-xl ${genre.color} opacity-80 group-hover/genre:opacity-100 group-hover/genre:scale-105 transition-all duration-200 shadow-lg`}
-                />
-                <span className="text-white/70 text-[11px] group-hover/genre:text-white transition-colors">
-                  {genre.name}
-                </span>
+                  className={`w-full aspect-square rounded-xl ${genre.color} opacity-80 group-hover/genre:opacity-100 group-hover/genre:scale-105 transition-all duration-200 shadow-lg flex items-end justify-start p-2`}
+                >
+                  <span className="text-white text-[11px] font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]">
+                    {genre.name}
+                  </span>
+                </div>
               </button>
             ))}
           </div>
@@ -309,21 +285,21 @@ export const Marketplace = () => {
               See All
             </button>
           </div>
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-2">
             {RECORD_LABELS.map((label) => (
               <button
                 key={label.id}
                 onClick={() => navigate(`/demo/marketplace/label/${label.id}`)}
-                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 transition-colors group/label"
+                className="flex items-center w-full rounded-full bg-black/60 border border-white/10 hover:border-white/25 transition-colors group/label overflow-hidden"
               >
-                <div
-                  className={`h-10 w-10 rounded-lg ${label.logoBg} flex items-center justify-center flex-shrink-0`}
-                >
-                  <span className="text-white text-[9px] font-bold tracking-wider">
-                    {label.logo}
-                  </span>
+                <div className="flex items-center justify-center flex-shrink-0 w-20 h-12">
+                  <img
+                    src={label.logo}
+                    alt={label.name}
+                    className="h-10 w-16 object-contain"
+                  />
                 </div>
-                <span className="text-white/80 text-sm font-medium group-hover/label:text-white transition-colors">
+                <span className="text-white/90 text-sm font-medium ml-auto pr-5 group-hover/label:text-white transition-colors">
                   {label.name}
                 </span>
               </button>
