@@ -185,24 +185,6 @@ export const DiscoverPage = () => {
                     : "border-blue-500/30 bg-blue-900/10 shadow-[0_0_12px_rgba(59,130,246,0.1)]"
                 } hover:bg-white/5`}
               >
-                {/* See Less — top right corner when expanded */}
-                {isExpanded && (
-                  <div className="absolute top-3 right-4 flex items-center gap-2">
-                    <span className="text-white/60 text-xs">See Less</span>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedTrackId(null);
-                      }}
-                      className="h-5 w-5 rounded-full bg-blue-500 text-white flex items-center justify-center flex-shrink-0"
-                      aria-label="Collapse"
-                    >
-                      <Minus className="h-3 w-3" />
-                    </button>
-                  </div>
-                )}
-
                 {/* Main row */}
                 <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_100px] gap-3 items-center">
                   <div className="text-white/80 font-dm">{index + 1}</div>
@@ -254,48 +236,73 @@ export const DiscoverPage = () => {
 
                 {/* Expanded details */}
                 {isExpanded && (
-                  <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_100px] gap-3 px-1 text-sm text-white items-start">
-                    <div />
-                    <div />
-                    <div className="space-y-2">
-                      <div>
-                        <div className="text-xs uppercase tracking-[0.2em] text-white/40">ISWC</div>
-                        <div className="font-dm font-bold">{track.iswc}</div>
-                      </div>
-                      <div>
-                        <div className="text-xs uppercase tracking-[0.2em] text-white/40 mt-3">ISRC</div>
-                        <div className="font-dm font-bold">{track.isrc}</div>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Writers/Composers</div>
-                      {track.writers.map((writer) => (
-                        <div key={writer} className="font-bold">{writer}</div>
-                      ))}
-                    </div>
-                    <div className="space-y-2">
-                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Other Genre</div>
-                      {track.extraGenres.map((genre) => (
-                        <div key={genre}>{genre}</div>
-                      ))}
-                    </div>
-                    <div className="space-y-2">
-                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Other Mood</div>
-                      {track.extraMoods.map((mood) => (
-                        <div key={mood}>{mood}</div>
-                      ))}
-                    </div>
-                    <div />
-                    <div className="flex flex-col gap-2">
-                      <button onClick={(e) => e.stopPropagation()} className="w-full px-3 py-1.5 rounded border border-purple-400/40 bg-purple-600/30 text-white text-xs font-medium hover:bg-purple-600/50 transition-colors flex items-center justify-center gap-1.5">
-                        <ShoppingCart className="h-3 w-3" />
-                        Add to Cart
-                      </button>
-                      <button onClick={(e) => e.stopPropagation()} className="w-full px-3 py-1.5 rounded border border-purple-400/60 bg-purple-600 text-white text-xs font-medium hover:bg-purple-700 transition-colors text-center">
-                        Checkout
+                  <div className="relative mt-4 text-sm text-white">
+                    {/* See Less — top right corner */}
+                    <div className="absolute top-0 right-0 flex items-center gap-2 z-10">
+                      <span className="text-white/60 text-xs">See Less</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedTrackId(null);
+                        }}
+                        className="h-5 w-5 rounded-full bg-blue-500 text-white flex items-center justify-center flex-shrink-0"
+                        aria-label="Collapse"
+                      >
+                        <Minus className="h-3 w-3" />
                       </button>
                     </div>
-                    <div />
+
+                    <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_100px] gap-3 items-start">
+                      {/* Remaining details — left side spanning first 4 data columns */}
+                      <div />
+                      <div />
+                      <div className="col-span-2 flex gap-6">
+                        <div className="space-y-2">
+                          <div>
+                            <div className="text-xs uppercase tracking-[0.2em] text-white/40">ISWC</div>
+                            <div className="font-dm font-bold">{track.iswc}</div>
+                          </div>
+                          <div>
+                            <div className="text-xs uppercase tracking-[0.2em] text-white/40 mt-2">ISRC</div>
+                            <div className="font-dm font-bold">{track.isrc}</div>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="text-xs uppercase tracking-[0.2em] text-white/40">Writers/Composers</div>
+                          {track.writers.map((writer) => (
+                            <div key={writer} className="font-bold">{writer}</div>
+                          ))}
+                        </div>
+                      </div>
+                      {/* Other Genre — aligned under Genre */}
+                      <div className="space-y-2">
+                        <div className="text-xs uppercase tracking-[0.2em] text-white/40">Other Genre</div>
+                        {track.extraGenres.map((genre) => (
+                          <div key={genre}>{genre}</div>
+                        ))}
+                      </div>
+                      {/* Other Mood — aligned under Mood */}
+                      <div className="space-y-2">
+                        <div className="text-xs uppercase tracking-[0.2em] text-white/40">Other Mood</div>
+                        {track.extraMoods.map((mood) => (
+                          <div key={mood}>{mood}</div>
+                        ))}
+                      </div>
+                      {/* Empty under Details */}
+                      <div />
+                      {/* Add to Cart / Checkout — aligned under Prices */}
+                      <div className="flex flex-col gap-1.5">
+                        <button onClick={(e) => e.stopPropagation()} className="w-full px-3 py-1.5 rounded border border-purple-400/40 bg-purple-600/30 text-white text-xs font-medium hover:bg-purple-600/50 transition-colors flex items-center justify-center gap-1.5">
+                          <ShoppingCart className="h-3 w-3" />
+                          Add to Cart
+                        </button>
+                        <button onClick={(e) => e.stopPropagation()} className="w-full px-3 py-1.5 rounded border border-purple-400/60 bg-purple-600 text-white text-xs font-medium hover:bg-purple-700 transition-colors text-center">
+                          Checkout
+                        </button>
+                      </div>
+                      <div />
+                    </div>
                   </div>
                 )}
               </div>
