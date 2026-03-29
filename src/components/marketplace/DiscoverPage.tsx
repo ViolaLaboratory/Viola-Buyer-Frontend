@@ -257,13 +257,13 @@ export const DiscoverPage = () => {
                   <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_100px] gap-3 px-1 text-sm text-white items-start">
                     <div />
                     <div />
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <div>
                         <div className="text-xs uppercase tracking-[0.2em] text-white/40">ISWC</div>
                         <div className="font-dm font-bold">{track.iswc}</div>
                       </div>
                       <div>
-                        <div className="text-xs uppercase tracking-[0.2em] text-white/40">ISRC</div>
+                        <div className="text-xs uppercase tracking-[0.2em] text-white/40 mt-3">ISRC</div>
                         <div className="font-dm font-bold">{track.isrc}</div>
                       </div>
                     </div>
@@ -274,13 +274,13 @@ export const DiscoverPage = () => {
                       ))}
                     </div>
                     <div className="space-y-2">
-                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Genre</div>
+                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Other Genre</div>
                       {track.extraGenres.map((genre) => (
                         <div key={genre}>{genre}</div>
                       ))}
                     </div>
                     <div className="space-y-2">
-                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Mood</div>
+                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Other Mood</div>
                       {track.extraMoods.map((mood) => (
                         <div key={mood}>{mood}</div>
                       ))}
