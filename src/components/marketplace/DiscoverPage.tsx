@@ -179,12 +179,30 @@ export const DiscoverPage = () => {
               <div
                 key={track.id}
                 onClick={() => setExpandedTrackId(isExpanded ? null : track.id)}
-                className={`rounded-lg border px-4 py-3 transition cursor-pointer ${
+                className={`relative rounded-lg border px-4 py-3 transition cursor-pointer ${
                   isFirst
                     ? "border-white/20 bg-black/40 shadow-[0_0_22px_rgba(0,0,0,0.35)]"
                     : "border-blue-500/30 bg-blue-900/10 shadow-[0_0_12px_rgba(59,130,246,0.1)]"
                 } hover:bg-white/5`}
               >
+                {/* See Less — top right corner when expanded */}
+                {isExpanded && (
+                  <div className="absolute top-3 right-4 flex items-center gap-2">
+                    <span className="text-white/60 text-xs">See Less</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedTrackId(null);
+                      }}
+                      className="h-5 w-5 rounded-full bg-blue-500 text-white flex items-center justify-center flex-shrink-0"
+                      aria-label="Collapse"
+                    >
+                      <Minus className="h-3 w-3" />
+                    </button>
+                  </div>
+                )}
+
                 {/* Main row */}
                 <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_100px] gap-3 items-center">
                   <div className="text-white/80 font-dm">{index + 1}</div>
@@ -214,26 +232,24 @@ export const DiscoverPage = () => {
                       Contact Sales
                     </button>
                   </div>
-                  <div className="flex items-center justify-end gap-2">
-                    <span className="text-white/60 text-xs">
-                      {isExpanded ? "See Less" : "See more.."}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedTrackId(isExpanded ? null : track.id);
-                      }}
-                      className="h-5 w-5 rounded-full bg-blue-500 text-white flex items-center justify-center flex-shrink-0"
-                      aria-label="Toggle details"
-                    >
-                      {isExpanded ? (
-                        <Minus className="h-3 w-3" />
-                      ) : (
+                  {/* See more (only when collapsed) */}
+                  {!isExpanded && (
+                    <div className="flex items-center justify-end gap-2">
+                      <span className="text-white/60 text-xs">See more..</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedTrackId(track.id);
+                        }}
+                        className="h-5 w-5 rounded-full bg-blue-500 text-white flex items-center justify-center flex-shrink-0"
+                        aria-label="Expand"
+                      >
                         <Plus className="h-3 w-3" />
-                      )}
-                    </button>
-                  </div>
+                      </button>
+                    </div>
+                  )}
+                  {isExpanded && <div />}
                 </div>
 
                 {/* Expanded details */}
@@ -241,13 +257,13 @@ export const DiscoverPage = () => {
                   <div className="mt-4 grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_100px] gap-3 px-1 text-sm text-white items-start">
                     <div />
                     <div />
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <div>
                         <div className="text-xs uppercase tracking-[0.2em] text-white/40">ISWC</div>
                         <div className="font-dm font-bold">{track.iswc}</div>
                       </div>
                       <div>
-                        <div className="text-xs uppercase tracking-[0.2em] text-white/40">ISRC</div>
+                        <div className="text-xs uppercase tracking-[0.2em] text-white/40 mt-3">ISRC</div>
                         <div className="font-dm font-bold">{track.isrc}</div>
                       </div>
                     </div>
@@ -258,28 +274,28 @@ export const DiscoverPage = () => {
                       ))}
                     </div>
                     <div className="space-y-2">
-                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Genre</div>
+                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Other Genre</div>
                       {track.extraGenres.map((genre) => (
                         <div key={genre}>{genre}</div>
                       ))}
                     </div>
                     <div className="space-y-2">
-                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Mood</div>
+                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Other Mood</div>
                       {track.extraMoods.map((mood) => (
                         <div key={mood}>{mood}</div>
                       ))}
                     </div>
                     <div />
-                    <div />
                     <div className="flex flex-col gap-2">
-                      <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-purple-400/40 bg-purple-600/30 text-white text-xs font-medium hover:bg-purple-600/50 transition-colors flex items-center justify-center gap-1.5">
+                      <button onClick={(e) => e.stopPropagation()} className="w-full px-3 py-1.5 rounded border border-purple-400/40 bg-purple-600/30 text-white text-xs font-medium hover:bg-purple-600/50 transition-colors flex items-center justify-center gap-1.5">
                         <ShoppingCart className="h-3 w-3" />
                         Add to Cart
                       </button>
-                      <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-purple-400/60 bg-purple-600 text-white text-xs font-medium hover:bg-purple-700 transition-colors">
+                      <button onClick={(e) => e.stopPropagation()} className="w-full px-3 py-1.5 rounded border border-purple-400/60 bg-purple-600 text-white text-xs font-medium hover:bg-purple-700 transition-colors text-center">
                         Checkout
                       </button>
                     </div>
+                    <div />
                   </div>
                 )}
               </div>
