@@ -370,7 +370,7 @@ export const DiscoverPage = () => {
                 className={`border rounded-xl p-5 text-center transition-colors cursor-pointer ${
                   modalSelection === "30s · $1,200"
                     ? "border-purple-500 bg-purple-50 ring-2 ring-purple-500/30"
-                    : "border-gray-200 bg-gray-50/50 hover:bg-gray-100 hover:border-gray-300"
+                    : "border-gray-200 bg-gray-50/50 hover:bg-purple-50 hover:border-purple-300"
                 }`}
               >
                 <div className="text-sm text-gray-500 mb-1">30 sec</div>
@@ -381,7 +381,7 @@ export const DiscoverPage = () => {
                 className={`border rounded-xl p-5 text-center transition-colors cursor-pointer ${
                   modalSelection === "60s · $1,800"
                     ? "border-purple-500 bg-purple-50 ring-2 ring-purple-500/30"
-                    : "border-gray-200 bg-gray-50/50 hover:bg-gray-100 hover:border-gray-300"
+                    : "border-gray-200 bg-gray-50/50 hover:bg-purple-50 hover:border-purple-300"
                 }`}
               >
                 <div className="text-sm text-gray-500 mb-1">60 sec</div>
