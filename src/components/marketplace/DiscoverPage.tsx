@@ -4,8 +4,8 @@
  * Accessible from Marketplace "See All" on the Discover Sync Ready Tracks section.
  */
 
-import { useState } from "react";
-import { Search, Filter, ArrowUp, Plus, Minus, ShoppingCart, X } from "lucide-react";
+import { useState, useRef } from "react";
+import { Search, Filter, ArrowUp, Plus, Minus, ShoppingCart, X, Play, Pause } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 /* ─── TYPES ─── */
@@ -118,6 +118,7 @@ export const DiscoverPage = () => {
   const [pricingTrack, setPricingTrack] = useState<DiscoverTrack | null>(null);
   const [selectedPrices, setSelectedPrices] = useState<Record<string, string>>({});
   const [modalSelection, setModalSelection] = useState<string | null>(null);
+  const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,11 +192,28 @@ export const DiscoverPage = () => {
                 {/* Main row */}
                 <div className="grid grid-cols-[40px_48px_1fr_1fr_1fr_1fr_1fr_1fr_100px] gap-3 items-center">
                   <div className="text-white/80 font-dm">{index + 1}</div>
-                  <img
-                    src={track.cover}
-                    alt={track.title}
-                    className="h-10 w-10 rounded object-cover flex-shrink-0"
-                  />
+                  <div
+                    className="relative h-10 w-10 flex-shrink-0 group/cover"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPlayingTrackId(playingTrackId === track.id ? null : track.id);
+                    }}
+                  >
+                    <img
+                      src={track.cover}
+                      alt={track.title}
+                      className="h-10 w-10 rounded object-cover"
+                    />
+                    <div className={`absolute inset-0 rounded flex items-center justify-center transition-opacity ${
+                      playingTrackId === track.id ? "bg-black/50 opacity-100" : "bg-black/40 opacity-0 group-hover/cover:opacity-100"
+                    }`}>
+                      {playingTrackId === track.id ? (
+                        <Pause className="h-4 w-4 text-white" fill="white" />
+                      ) : (
+                        <Play className="h-4 w-4 text-white ml-0.5" fill="white" />
+                      )}
+                    </div>
+                  </div>
                   <div className="text-white text-sm font-medium truncate">{track.title}</div>
                   <div className="text-white/80 text-sm truncate">{track.artist}</div>
                   <div className="text-white/80 text-sm truncate">{track.genre}</div>
@@ -320,9 +338,6 @@ export const DiscoverPage = () => {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={() => {
-            if (modalSelection && pricingTrack) {
-              setSelectedPrices((prev) => ({ ...prev, [pricingTrack.id]: modalSelection }));
-            }
             setPricingTrack(null);
             setModalSelection(null);
           }}
@@ -334,9 +349,6 @@ export const DiscoverPage = () => {
             {/* Close button */}
             <button
               onClick={() => {
-                if (modalSelection && pricingTrack) {
-                  setSelectedPrices((prev) => ({ ...prev, [pricingTrack.id]: modalSelection }));
-                }
                 setPricingTrack(null);
                 setModalSelection(null);
               }}
@@ -378,8 +390,27 @@ export const DiscoverPage = () => {
             </div>
 
             {/* Contact Sales */}
-            <button className="w-full mt-4 py-3 rounded-xl bg-purple-600 text-white font-medium hover:bg-purple-700 transition-colors">
+            <button className="w-full mt-4 py-3 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-100 transition-colors">
               Contact Sales
+            </button>
+
+            {/* Confirm Price */}
+            <button
+              disabled={!modalSelection}
+              onClick={() => {
+                if (modalSelection && pricingTrack) {
+                  setSelectedPrices((prev) => ({ ...prev, [pricingTrack.id]: modalSelection }));
+                }
+                setPricingTrack(null);
+                setModalSelection(null);
+              }}
+              className={`w-full mt-3 py-3 rounded-xl font-medium transition-colors ${
+                modalSelection
+                  ? "bg-purple-600 text-white hover:bg-purple-700 cursor-pointer"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              Confirm Price
             </button>
           </div>
         </div>
