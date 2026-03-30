@@ -68,53 +68,101 @@ export const Dashboard = () => {
       {/* ─── OVERVIEW TAB ─── */}
       {activeTab === "Overview" && (
         <div className="space-y-6">
-          {/* ─── STAT CARDS ─── */}
-          <div className="grid grid-cols-3 gap-4">
-            {/* Total Revenue */}
-            <div className="rounded-xl border border-purple-500/30 bg-purple-900/20 p-5 space-y-3">
-              <div className="text-white/60 text-sm font-medium">Total Revenue</div>
-              <div className="text-white text-3xl font-bold font-dm">$175,833.00</div>
-            </div>
+          {/* ─── STAT CARDS + ANALYTICS ─── */}
+          <div className="grid grid-cols-12 gap-4">
+            {/* Left: 2x2 stat cards */}
+            <div className="col-span-5 grid grid-cols-2 gap-4">
+              {/* Total Revenue */}
+              <div className="rounded-xl border border-purple-500/30 bg-purple-900/20 p-4 space-y-2">
+                <div className="text-white/60 text-xs font-medium">Total Revenue</div>
+                <div className="text-white text-xl font-bold font-dm">$175,833.00</div>
+              </div>
 
-            {/* Total Sync Orders */}
-            <div className="rounded-xl border border-white/10 bg-white/5 p-5 space-y-3">
-              <div className="text-white/60 text-sm font-medium">Total Sync Orders</div>
-              <div className="text-white text-3xl font-bold font-dm">53</div>
-            </div>
+              {/* Total Sync Orders */}
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
+                <div className="text-white/60 text-xs font-medium">Total Sync Orders</div>
+                <div className="text-white text-xl font-bold font-dm">53</div>
+              </div>
 
-            {/* Analytics */}
-            <div className="rounded-xl border border-white/10 bg-white/5 p-5 space-y-3">
-              <div className="text-white/60 text-sm font-medium">Analytics</div>
-              <div className="flex items-end gap-1 h-16">
-                {[40, 65, 45, 80, 55, 70, 90, 60, 75, 50, 85, 65].map((h, i) => (
-                  <div
-                    key={i}
-                    className="flex-1 bg-purple-500/40 rounded-sm"
-                    style={{ height: `${h}%` }}
-                  />
-                ))}
+              {/* Total Catalog */}
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
+                <div className="text-white/60 text-xs font-medium">Total Catalog</div>
+                <div className="text-white text-xl font-bold font-dm">34,061 Songs</div>
+              </div>
+
+              {/* Top Earning Song */}
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
+                <div className="text-white/60 text-xs font-medium">Top Earning Song</div>
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-md bg-gradient-to-br from-purple-500/40 to-pink-500/40 flex-shrink-0" />
+                  <div>
+                    <div className="text-white text-xs font-medium">Fashion</div>
+                    <div className="text-white/50 text-[10px]">Cortis</div>
+                  </div>
+                </div>
+                <div className="text-green-400 text-lg font-bold font-dm">$150,000</div>
               </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            {/* Total Catalog */}
-            <div className="rounded-xl border border-white/10 bg-white/5 p-5 space-y-3">
-              <div className="text-white/60 text-sm font-medium">Total Catalog</div>
-              <div className="text-white text-3xl font-bold font-dm">34,061 Songs</div>
-            </div>
-
-            {/* Top Earning Song */}
-            <div className="rounded-xl border border-white/10 bg-white/5 p-5 space-y-3">
-              <div className="text-white/60 text-sm font-medium">Top Earning Song</div>
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-md bg-gradient-to-br from-purple-500/40 to-pink-500/40" />
-                <div>
-                  <div className="text-white text-sm font-medium">Fashion</div>
-                  <div className="text-white/50 text-xs">Cortis</div>
+            {/* Right: Analytics graph */}
+            <div className="col-span-7 rounded-xl border border-white/10 bg-white/5 p-5 flex flex-col">
+              <div className="text-white/60 text-sm font-medium mb-4">Analytics</div>
+              <div className="flex-1 relative min-h-0">
+                {/* Y-axis labels */}
+                <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[10px] text-white/30 w-8">
+                  <span>$50k</span>
+                  <span>$40k</span>
+                  <span>$30k</span>
+                  <span>$20k</span>
+                  <span>$10k</span>
+                  <span>$0</span>
+                </div>
+                {/* Graph area */}
+                <div className="ml-10 h-full flex flex-col">
+                  <div className="flex-1 relative">
+                    {/* Grid lines */}
+                    {[0, 20, 40, 60, 80, 100].map((pos) => (
+                      <div
+                        key={pos}
+                        className="absolute left-0 right-0 border-t border-white/5"
+                        style={{ top: `${pos}%` }}
+                      />
+                    ))}
+                    {/* Line graph */}
+                    <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 110 100">
+                      <defs>
+                        <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="rgb(168,85,247)" stopOpacity="0.3" />
+                          <stop offset="100%" stopColor="rgb(168,85,247)" stopOpacity="0" />
+                        </linearGradient>
+                      </defs>
+                      {/* Filled area */}
+                      <path
+                        d="M0,70 L10,55 L20,62 L30,35 L40,48 L50,40 L60,22 L70,45 L80,30 L90,38 L100,18 L110,25 L110,100 L0,100 Z"
+                        fill="url(#lineGrad)"
+                      />
+                      {/* Line */}
+                      <polyline
+                        points="0,70 10,55 20,62 30,35 40,48 50,40 60,22 70,45 80,30 90,38 100,18 110,25"
+                        fill="none"
+                        stroke="rgb(168,85,247)"
+                        strokeWidth="2"
+                        vectorEffect="non-scaling-stroke"
+                      />
+                      {/* Data points */}
+                      {[[0,70],[10,55],[20,62],[30,35],[40,48],[50,40],[60,22],[70,45],[80,30],[90,38],[100,18],[110,25]].map(([x,y], i) => (
+                        <circle key={i} cx={x} cy={y} r="3" fill="rgb(168,85,247)" vectorEffect="non-scaling-stroke" />
+                      ))}
+                    </svg>
+                  </div>
+                  {/* X-axis labels */}
+                  <div className="flex justify-between text-[10px] text-white/30 pt-2">
+                    {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m) => (
+                      <span key={m}>{m}</span>
+                    ))}
+                  </div>
                 </div>
               </div>
-              <div className="text-green-400 text-xl font-bold font-dm">$150,000</div>
             </div>
           </div>
 
