@@ -69,9 +69,9 @@ export const Dashboard = () => {
       {activeTab === "Overview" && (
         <div className="space-y-6">
           {/* ─── STAT CARDS + ANALYTICS ─── */}
-          <div className="grid grid-cols-12 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {/* Left: 2x2 stat cards */}
-            <div className="col-span-5 grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               {/* Total Revenue */}
               <div className="rounded-xl border border-purple-500/30 bg-purple-900/20 p-4 space-y-2">
                 <div className="text-white/60 text-xs font-medium">Total Revenue</div>
@@ -105,7 +105,7 @@ export const Dashboard = () => {
             </div>
 
             {/* Right: Analytics graph */}
-            <div className="col-span-7 rounded-xl border border-white/10 bg-white/5 p-5 flex flex-col">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-5 flex flex-col">
               <div className="text-white/60 text-sm font-medium mb-4">Analytics</div>
               <div className="flex-1 relative min-h-0">
                 {/* Y-axis labels */}
