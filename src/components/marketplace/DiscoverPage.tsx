@@ -116,6 +116,8 @@ export const DiscoverPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedTrackId, setExpandedTrackId] = useState<string | null>("t1");
   const [pricingTrack, setPricingTrack] = useState<DiscoverTrack | null>(null);
+  const [selectedPrices, setSelectedPrices] = useState<Record<string, string>>({});
+  const [modalSelection, setModalSelection] = useState<string | null>(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -209,10 +211,15 @@ export const DiscoverPage = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         setPricingTrack(track);
+                        setModalSelection(selectedPrices[track.id] || null);
                       }}
-                      className="px-4 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors"
+                      className={`px-4 py-1.5 rounded border text-xs font-medium transition-colors ${
+                        selectedPrices[track.id]
+                          ? "border-purple-400/40 bg-purple-600/30 text-white hover:bg-purple-600/50"
+                          : "border-white/20 bg-white/10 text-white hover:bg-white/20"
+                      }`}
                     >
-                      See Prices
+                      {selectedPrices[track.id] || "See Prices"}
                     </button>
                   </div>
                   {/* See more (only when collapsed) */}
@@ -312,7 +319,13 @@ export const DiscoverPage = () => {
       {pricingTrack && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-          onClick={() => setPricingTrack(null)}
+          onClick={() => {
+            if (modalSelection && pricingTrack) {
+              setSelectedPrices((prev) => ({ ...prev, [pricingTrack.id]: modalSelection }));
+            }
+            setPricingTrack(null);
+            setModalSelection(null);
+          }}
         >
           <div
             className="bg-white rounded-2xl shadow-2xl w-[460px] p-8 relative"
@@ -320,7 +333,13 @@ export const DiscoverPage = () => {
           >
             {/* Close button */}
             <button
-              onClick={() => setPricingTrack(null)}
+              onClick={() => {
+                if (modalSelection && pricingTrack) {
+                  setSelectedPrices((prev) => ({ ...prev, [pricingTrack.id]: modalSelection }));
+                }
+                setPricingTrack(null);
+                setModalSelection(null);
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X className="h-5 w-5" />
@@ -334,14 +353,28 @@ export const DiscoverPage = () => {
 
             {/* Price cards */}
             <div className="grid grid-cols-2 gap-4 mt-6">
-              <div className="border border-gray-200 rounded-xl p-5 text-center bg-gray-50/50">
+              <button
+                onClick={() => setModalSelection("30s · $1,200")}
+                className={`border rounded-xl p-5 text-center transition-colors cursor-pointer ${
+                  modalSelection === "30s · $1,200"
+                    ? "border-purple-500 bg-purple-50 ring-2 ring-purple-500/30"
+                    : "border-gray-200 bg-gray-50/50 hover:bg-gray-100 hover:border-gray-300"
+                }`}
+              >
                 <div className="text-sm text-gray-500 mb-1">30 sec</div>
                 <div className="text-2xl font-bold text-gray-900">$1,200</div>
-              </div>
-              <div className="border border-gray-200 rounded-xl p-5 text-center bg-gray-50/50">
+              </button>
+              <button
+                onClick={() => setModalSelection("60s · $1,800")}
+                className={`border rounded-xl p-5 text-center transition-colors cursor-pointer ${
+                  modalSelection === "60s · $1,800"
+                    ? "border-purple-500 bg-purple-50 ring-2 ring-purple-500/30"
+                    : "border-gray-200 bg-gray-50/50 hover:bg-gray-100 hover:border-gray-300"
+                }`}
+              >
                 <div className="text-sm text-gray-500 mb-1">60 sec</div>
                 <div className="text-2xl font-bold text-gray-900">$1,800</div>
-              </div>
+              </button>
             </div>
 
             {/* Contact Sales */}
