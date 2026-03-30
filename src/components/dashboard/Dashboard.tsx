@@ -149,10 +149,6 @@ export const Dashboard = () => {
                         strokeWidth="2"
                         vectorEffect="non-scaling-stroke"
                       />
-                      {/* Data points */}
-                      {[[0,70],[10,55],[20,62],[30,35],[40,48],[50,40],[60,22],[70,45],[80,30],[90,38],[100,18],[110,25]].map(([x,y], i) => (
-                        <circle key={i} cx={x} cy={y} r="3" fill="rgb(168,85,247)" vectorEffect="non-scaling-stroke" />
-                      ))}
                     </svg>
                   </div>
                   {/* X-axis labels */}
