@@ -320,9 +320,6 @@ export const DiscoverPage = () => {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={() => {
-            if (modalSelection && pricingTrack) {
-              setSelectedPrices((prev) => ({ ...prev, [pricingTrack.id]: modalSelection }));
-            }
             setPricingTrack(null);
             setModalSelection(null);
           }}
@@ -334,9 +331,6 @@ export const DiscoverPage = () => {
             {/* Close button */}
             <button
               onClick={() => {
-                if (modalSelection && pricingTrack) {
-                  setSelectedPrices((prev) => ({ ...prev, [pricingTrack.id]: modalSelection }));
-                }
                 setPricingTrack(null);
                 setModalSelection(null);
               }}
@@ -378,8 +372,27 @@ export const DiscoverPage = () => {
             </div>
 
             {/* Contact Sales */}
-            <button className="w-full mt-4 py-3 rounded-xl bg-purple-600 text-white font-medium hover:bg-purple-700 transition-colors">
+            <button className="w-full mt-4 py-3 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-100 transition-colors">
               Contact Sales
+            </button>
+
+            {/* Confirm Price */}
+            <button
+              disabled={!modalSelection}
+              onClick={() => {
+                if (modalSelection && pricingTrack) {
+                  setSelectedPrices((prev) => ({ ...prev, [pricingTrack.id]: modalSelection }));
+                }
+                setPricingTrack(null);
+                setModalSelection(null);
+              }}
+              className={`w-full mt-3 py-3 rounded-xl font-medium transition-colors ${
+                modalSelection
+                  ? "bg-purple-600 text-white hover:bg-purple-700 cursor-pointer"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              Confirm Price
             </button>
           </div>
         </div>
