@@ -5,7 +5,7 @@
  */
 
 import { useState } from "react";
-import { Search, Filter, ArrowUp, Plus, Minus, ShoppingCart } from "lucide-react";
+import { Search, Filter, ArrowUp, Plus, Minus, ShoppingCart, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 /* ─── TYPES ─── */
@@ -115,6 +115,7 @@ export const DiscoverPage = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedTrackId, setExpandedTrackId] = useState<string | null>("t1");
+  const [pricingTrack, setPricingTrack] = useState<DiscoverTrack | null>(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,15 +204,15 @@ export const DiscoverPage = () => {
                     <div>{track.key}</div>
                   </div>
                   {/* Prices */}
-                  <div className="flex flex-col gap-1.5">
-                    <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors">
-                      30 Seconds
-                    </button>
-                    <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors">
-                      1 Minute
-                    </button>
-                    <button onClick={(e) => e.stopPropagation()} className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors">
-                      Contact Sales
+                  <div className="flex items-center">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPricingTrack(track);
+                      }}
+                      className="px-4 py-1.5 rounded border border-white/20 bg-white/10 text-white text-xs font-medium hover:bg-white/20 transition-colors"
+                    >
+                      See Prices
                     </button>
                   </div>
                   {/* See more (only when collapsed) */}
@@ -306,6 +307,50 @@ export const DiscoverPage = () => {
           })}
         </div>
       </div>
+
+      {/* ─── PRICING MODAL ─── */}
+      {pricingTrack && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => setPricingTrack(null)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-[460px] p-8 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setPricingTrack(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Track info */}
+            <h2 className="text-xl font-bold text-gray-900">{pricingTrack.title}</h2>
+            <p className="text-gray-500 text-sm mt-1">
+              {pricingTrack.genre} · {pricingTrack.duration} · BPM {pricingTrack.bpm}
+            </p>
+
+            {/* Price cards */}
+            <div className="grid grid-cols-2 gap-4 mt-6">
+              <div className="border border-gray-200 rounded-xl p-5 text-center bg-gray-50/50">
+                <div className="text-sm text-gray-500 mb-1">30 sec</div>
+                <div className="text-2xl font-bold text-gray-900">$1,200</div>
+              </div>
+              <div className="border border-gray-200 rounded-xl p-5 text-center bg-gray-50/50">
+                <div className="text-sm text-gray-500 mb-1">60 sec</div>
+                <div className="text-2xl font-bold text-gray-900">$1,800</div>
+              </div>
+            </div>
+
+            {/* Contact Sales */}
+            <button className="w-full mt-4 py-3 rounded-xl bg-purple-600 text-white font-medium hover:bg-purple-700 transition-colors">
+              Contact Sales
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

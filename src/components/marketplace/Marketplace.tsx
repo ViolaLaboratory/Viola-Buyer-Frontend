@@ -101,6 +101,7 @@ const RECORD_LABELS: RecordLabel[] = [
   { id: "warner", name: "Warner Music Group", logo: "/logos/warner-music.svg" },
   { id: "88rising", name: "88rising", logo: "/logos/88rising.svg" },
   { id: "hybe", name: "HYBE Labels", logo: "/logos/hybe.svg" },
+  { id: "jyp", name: "JYP Entertainment", logo: "/logos/jyp.svg" },
 ];
 
 const DISCOVER_TRACKS: DiscoverTrack[] = [
@@ -286,21 +287,21 @@ export const Marketplace = () => {
               See All
             </button>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             {RECORD_LABELS.map((label) => (
               <button
                 key={label.id}
                 onClick={() => navigate(`/demo/marketplace/label/${label.id}`)}
-                className="flex items-center w-full rounded-full bg-black/60 border border-white/10 hover:border-white/25 transition-colors group/label overflow-hidden"
+                className="flex items-center w-full rounded-full bg-black/60 border border-white/10 hover:border-white/25 transition-colors group/label overflow-hidden p-2.5"
               >
-                <div className="flex items-center justify-center flex-shrink-0 w-20 h-12">
+                <div className="flex items-center justify-center flex-shrink-0 h-10 w-10">
                   <img
                     src={label.logo}
                     alt={label.name}
-                    className="h-10 w-16 object-contain"
+                    className="h-8 w-8 object-contain"
                   />
                 </div>
-                <span className="text-white/90 text-sm font-medium ml-auto pr-5 group-hover/label:text-white transition-colors">
+                <span className="text-white/90 text-sm font-medium ml-auto pr-3 group-hover/label:text-white transition-colors">
                   {label.name}
                 </span>
               </button>
