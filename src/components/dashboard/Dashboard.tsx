@@ -73,25 +73,25 @@ export const Dashboard = () => {
             {/* Left: 2x2 stat cards */}
             <div className="grid grid-cols-2 gap-4">
               {/* Total Revenue */}
-              <div className="rounded-xl border border-purple-500/30 bg-purple-900/20 p-4 space-y-2">
+              <div className="rounded-xl border border-purple-500/30 bg-purple-900/20 p-4 space-y-2 transition-all duration-300 hover:bg-gradient-to-br hover:from-[#CC78F9] hover:to-[#8D36C7] hover:border-transparent">
                 <div className="text-white/60 text-xs font-medium">Total Revenue</div>
                 <div className="text-white text-xl font-bold font-dm">$175,833.00</div>
               </div>
 
               {/* Total Sync Orders */}
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2 transition-all duration-300 hover:bg-gradient-to-br hover:from-[#CC78F9] hover:to-[#8D36C7] hover:border-transparent">
                 <div className="text-white/60 text-xs font-medium">Total Sync Orders</div>
                 <div className="text-white text-xl font-bold font-dm">53</div>
               </div>
 
               {/* Total Catalog */}
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2 transition-all duration-300 hover:bg-gradient-to-br hover:from-[#CC78F9] hover:to-[#8D36C7] hover:border-transparent">
                 <div className="text-white/60 text-xs font-medium">Total Catalog</div>
                 <div className="text-white text-xl font-bold font-dm">34,061 Songs</div>
               </div>
 
               {/* Top Earning Song */}
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2 transition-all duration-300 hover:bg-gradient-to-br hover:from-[#CC78F9] hover:to-[#8D36C7] hover:border-transparent">
                 <div className="text-white/60 text-xs font-medium">Top Earning Song</div>
                 <div className="flex items-center gap-2">
                   <div className="h-8 w-8 rounded-md bg-gradient-to-br from-purple-500/40 to-pink-500/40 flex-shrink-0" />
