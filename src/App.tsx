@@ -20,6 +20,7 @@ import { PitchBuilder } from "./components/PitchBuilder";
 import { MusicCatalog } from "./components/MusicCatalog";
 import { Marketplace } from "./components/marketplace/Marketplace";
 import { DiscoverPage } from "./components/marketplace/DiscoverPage";
+import { Dashboard } from "./components/dashboard/Dashboard";
 import { MusicPlayerProvider, useMusicPlayer } from "./contexts/MusicPlayerContext";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -81,6 +82,9 @@ const AppContent = () => {
               <Routes>
                 {/* HOME: Main search page with gradient background */}
                 <Route path="home" element={<DemoHome />} />
+
+                {/* DASHBOARD: Analytics and overview */}
+                <Route path="dashboard" element={<Dashboard />} />
 
                 {/* MARKETPLACE: Discover page with carousel, genres, labels, tracks */}
                 <Route path="marketplace" element={<Marketplace />} />
