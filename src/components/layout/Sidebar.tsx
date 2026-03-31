@@ -48,16 +48,16 @@ const VLogo = () => (
 /* NAVIGATION ITEMS: Configuration for main nav */
 const NAV_ITEMS = [
   {
-    id: "dashboard",
-    label: "Dashboard",
-    icon: LayoutGrid,
-    path: "/demo/dashboard",
-  },
-  {
     id: "marketplace",
     label: "Marketplace",
     icon: Home,
     path: "/demo/marketplace",
+  },
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    icon: LayoutGrid,
+    path: "/demo/dashboard",
   },
   {
     id: "search",
