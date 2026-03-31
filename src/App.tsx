@@ -21,6 +21,8 @@ import { MusicCatalog } from "./components/MusicCatalog";
 import { Marketplace } from "./components/marketplace/Marketplace";
 import { DiscoverPage } from "./components/marketplace/DiscoverPage";
 import { Dashboard } from "./components/dashboard/Dashboard";
+import { TransactionsPage } from "./components/dashboard/TransactionsPage";
+import { CountriesPage } from "./components/dashboard/CountriesPage";
 import { MusicPlayerProvider, useMusicPlayer } from "./contexts/MusicPlayerContext";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -85,6 +87,8 @@ const AppContent = () => {
 
                 {/* DASHBOARD: Analytics and overview */}
                 <Route path="dashboard" element={<Dashboard />} />
+                <Route path="dashboard/transactions" element={<TransactionsPage />} />
+                <Route path="dashboard/countries" element={<CountriesPage />} />
 
                 {/* MARKETPLACE: Discover page with carousel, genres, labels, tracks */}
                 <Route path="marketplace" element={<Marketplace />} />

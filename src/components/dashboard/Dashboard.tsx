@@ -8,6 +8,7 @@
  */
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 /* ─── TABS ─── */
@@ -73,25 +74,25 @@ export const Dashboard = () => {
             {/* Left: 2x2 stat cards */}
             <div className="grid grid-cols-2 gap-4">
               {/* Total Revenue */}
-              <div className="rounded-xl border border-purple-500/30 bg-purple-900/20 p-4 space-y-2">
+              <div className="rounded-xl border border-purple-500/30 bg-purple-900/20 p-4 space-y-2 transition-all duration-300 hover:bg-gradient-to-br hover:from-[#CC78F9] hover:to-[#8D36C7] hover:border-transparent">
                 <div className="text-white/60 text-xs font-medium">Total Revenue</div>
                 <div className="text-white text-xl font-bold font-dm">$175,833.00</div>
               </div>
 
               {/* Total Sync Orders */}
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2 transition-all duration-300 hover:bg-gradient-to-br hover:from-[#CC78F9] hover:to-[#8D36C7] hover:border-transparent">
                 <div className="text-white/60 text-xs font-medium">Total Sync Orders</div>
                 <div className="text-white text-xl font-bold font-dm">53</div>
               </div>
 
               {/* Total Catalog */}
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col justify-between transition-all duration-300 hover:bg-gradient-to-br hover:from-[#CC78F9] hover:to-[#8D36C7] hover:border-transparent">
                 <div className="text-white/60 text-xs font-medium">Total Catalog</div>
-                <div className="text-white text-xl font-bold font-dm">34,061 Songs</div>
+                <div className="text-white text-xl font-bold font-dm mt-auto">34,061 Songs</div>
               </div>
 
               {/* Top Earning Song */}
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
+              <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2 transition-all duration-300 hover:bg-gradient-to-br hover:from-[#CC78F9] hover:to-[#8D36C7] hover:border-transparent">
                 <div className="text-white/60 text-xs font-medium">Top Earning Song</div>
                 <div className="flex items-center gap-2">
                   <div className="h-8 w-8 rounded-md bg-gradient-to-br from-purple-500/40 to-pink-500/40 flex-shrink-0" />
@@ -168,9 +169,9 @@ export const Dashboard = () => {
             <div className="col-span-8 rounded-xl border border-white/10 bg-white/5 p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-white font-semibold text-base">Recent Transactions</h3>
-                <button className="text-white/50 text-xs hover:text-white/80 transition-colors">
+                <Link to="/demo/dashboard/transactions" className="text-white/50 text-xs hover:text-white/80 transition-colors">
                   See All
-                </button>
+                </Link>
               </div>
               <div className="space-y-0">
                 {/* Table header */}
@@ -207,7 +208,12 @@ export const Dashboard = () => {
 
             {/* By Country */}
             <div className="col-span-4 rounded-xl border border-white/10 bg-white/5 p-5">
-              <h3 className="text-white font-semibold text-base mb-4">By Country</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-white font-semibold text-base">By Country</h3>
+                <Link to="/demo/dashboard/countries" className="text-white/50 text-xs hover:text-white/80 transition-colors">
+                  See All
+                </Link>
+              </div>
               <div className="space-y-3">
                 {COUNTRIES.map((country) => (
                   <div key={country.name} className="space-y-1">
