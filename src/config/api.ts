@@ -46,12 +46,23 @@ export const API_ENDPOINTS = {
 
   // Batch track fetch (avoids N+1 queries)
   TRACKS_BATCH: `${API_BASE_URL}/music/tracks/batch/`,
+  CART_GET: `${API_BASE_URL}/music/cart/`,
+  CART_ADD_ITEM: `${API_BASE_URL}/music/cart/items/`,
+  CART_REMOVE_ITEM: (itemKey: string) => `${API_BASE_URL}/music/cart/items/${encodeURIComponent(itemKey)}/`,
+  CHECKOUT_QUOTE: `${API_BASE_URL}/music/checkout/quote/`,
+  CHECKOUT_SUBMIT: `${API_BASE_URL}/music/checkout/submit/`,
+  LICENSE_INITIATE: `${API_BASE_URL}/music/license/initiate/`,
+  LICENSE_UPLOAD_SIGNED: `${API_BASE_URL}/music/license/upload-signed/`,
 
   // Chat sessions (persist to DB)
   CHATS_LIST: `${API_BASE_URL}/chats/`,
   CHATS_SAVE: `${API_BASE_URL}/chats/save/`,
   CHATS_GET: (id: string) => `${API_BASE_URL}/chats/${id}/`,
   CHATS_DELETE: (id: string) => `${API_BASE_URL}/chats/${id}/delete/`,
+  DIRECT_CHAT_THREADS: `${API_BASE_URL}/chats/direct/threads/`,
+  DIRECT_CHAT_CREATE_OR_GET: `${API_BASE_URL}/chats/direct/threads/create-or-get/`,
+  DIRECT_CHAT_MESSAGES: (threadId: string) => `${API_BASE_URL}/chats/direct/threads/${threadId}/messages/`,
+  DIRECT_CHAT_SEND: (threadId: string) => `${API_BASE_URL}/chats/direct/threads/${threadId}/messages/send/`,
 };
 
 export default API_ENDPOINTS;

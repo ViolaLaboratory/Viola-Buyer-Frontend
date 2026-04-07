@@ -9,7 +9,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ListMusic, PanelLeft, Wrench, Trash2, Home, LayoutGrid } from "lucide-react";
+import { ListMusic, PanelLeft, Trash2, Home, ShoppingCart } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   ContextMenu,
@@ -54,12 +54,6 @@ const NAV_ITEMS = [
     path: "/demo/marketplace",
   },
   {
-    id: "dashboard",
-    label: "Dashboard",
-    icon: LayoutGrid,
-    path: "/demo/dashboard",
-  },
-  {
     id: "search",
     label: "Search",
     iconType: "image",
@@ -67,16 +61,16 @@ const NAV_ITEMS = [
     path: "/demo/search",
   },
   {
-    id: "pitchKit",
-    label: "Pitch Kit",
-    icon: Wrench,
-    path: "/demo/pitch-kit",
-  },
-  {
     id: "catalog",
     label: "Catalog",
     icon: ListMusic,
     path: "/demo/catalog",
+  },
+  {
+    id: "shoppingCart",
+    label: "Shopping Cart",
+    icon: ShoppingCart,
+    path: "/demo/checkout",
   },
 ] as const;
 

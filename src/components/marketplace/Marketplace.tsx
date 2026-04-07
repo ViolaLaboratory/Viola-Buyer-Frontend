@@ -11,6 +11,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useMusicPlayer } from "@/contexts/MusicPlayerContext";
 
 /* ─── TYPES ─── */
 interface TopPick {
@@ -117,6 +118,7 @@ const DISCOVER_TRACKS: DiscoverTrack[] = [
 export const Marketplace = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { playSong } = useMusicPlayer();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -148,6 +150,27 @@ export const Marketplace = () => {
   };
 
   const currentPick = TOP_PICKS[currentSlide];
+
+  const handleListenNow = () => {
+    const songId = Number(currentPick.id) || 1;
+    playSong({
+      id: songId,
+      title: currentPick.title,
+      artist: currentPick.artist,
+      album: "Marketplace Top Picks",
+      duration: "3:00",
+      thumbnail: currentPick.image,
+    });
+  };
+
+  const handleLearnMore = () => {
+    navigate("/demo/catalog", {
+      state: {
+        catalogQuery: currentPick.title,
+        expandFirstResult: true,
+      },
+    });
+  };
 
   return (
     <div className="h-screen overflow-y-auto overflow-x-hidden px-6 py-6 space-y-6">
@@ -195,10 +218,16 @@ export const Marketplace = () => {
             {currentPick.artist}
           </p>
           <div className="flex items-center gap-3 mt-4">
-            <button className="px-5 py-2 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-full border border-white/30 hover:bg-white/30 transition-colors">
+            <button
+              onClick={handleListenNow}
+              className="px-5 py-2 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-full border border-white/30 hover:bg-white/30 transition-colors"
+            >
               Listen Now
             </button>
-            <button className="px-5 py-2 bg-white/10 backdrop-blur-sm text-white text-sm font-medium rounded-full border border-white/20 hover:bg-white/20 transition-colors">
+            <button
+              onClick={handleLearnMore}
+              className="px-5 py-2 bg-white/10 backdrop-blur-sm text-white text-sm font-medium rounded-full border border-white/20 hover:bg-white/20 transition-colors"
+            >
               Learn More
             </button>
           </div>
@@ -256,7 +285,10 @@ export const Marketplace = () => {
         <div className="col-span-3 bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-white font-semibold text-base">Genres</h3>
-            <button className="text-white/50 text-xs hover:text-white/80 transition-colors">
+            <button
+              onClick={() => navigate("/demo/catalog")}
+              className="text-white/50 text-xs hover:text-white/80 transition-colors"
+            >
               See All
             </button>
           </div>
@@ -283,7 +315,10 @@ export const Marketplace = () => {
         <div className="col-span-4 bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-white font-semibold text-base">Record Labels</h3>
-            <button className="text-white/50 text-xs hover:text-white/80 transition-colors">
+            <button
+              onClick={() => navigate("/demo/marketplace/labels")}
+              className="text-white/50 text-xs hover:text-white/80 transition-colors"
+            >
               See All
             </button>
           </div>

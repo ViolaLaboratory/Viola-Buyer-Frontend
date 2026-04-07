@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { X, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { PitchBuilder } from "./PitchBuilder"; // Import your existing PitchBuilder
 import API_ENDPOINTS from "@/config/api";
 import { fetchTrackDetailsFromMongoDB } from "@/services/trackService";
 import {
@@ -160,7 +159,6 @@ export const SearchInterface = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [showPitchBuilder, setShowPitchBuilder] = useState(false);
   const [showPitchSelection, setShowPitchSelection] = useState(false);
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [selectedTrackIds, setSelectedTrackIds] = useState<Set<number>>(
@@ -867,10 +865,6 @@ export const SearchInterface = () => {
     loadSong(musicPlayerSong, queue);
     setSelectedSong(song);
   };
-
-  if (showPitchBuilder) {
-    return <PitchBuilder />;
-  }
 
   return (
     <div className="h-screen w-full relative overflow-hidden text-white font-dm">

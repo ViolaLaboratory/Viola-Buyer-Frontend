@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ArrowUp, Play, Pause, Plus, Minus, Loader2, SkipBack, SkipForward, FilePlus, Upload, Music2 } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -12,6 +13,8 @@ import {
 import API_ENDPOINTS from "@/config/api";
 import { useMusicPlayer, type Song as MusicPlayerSong } from "@/contexts/MusicPlayerContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { addCartItem, type CartPriceOption } from "@/services/cartService";
+import { useToast } from "@/hooks/use-toast";
 
 const ACCEPTED_AUDIO = ".mp3,.wav,.m4a,.flac,.ogg,.aac";
 
@@ -415,6 +418,9 @@ const defaultSongs: Song[] = [
 ];
 
 export const MusicCatalog = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { toast } = useToast();
   const [songs, setSongs] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -424,6 +430,8 @@ export const MusicCatalog = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [songDurations, setSongDurations] = useState<Record<string, string>>({});
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [selectedPriceBySong, setSelectedPriceBySong] = useState<Record<string, CartPriceOption>>({});
+  const [pendingExpandQuery, setPendingExpandQuery] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<{ uploaded: number; processing?: boolean; errors?: { file: string; error: string }[] } | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -631,6 +639,24 @@ export const MusicCatalog = () => {
     loadSongs(1, false, "");
   }, [loadSongs]);
 
+  useEffect(() => {
+    const state = (location.state || {}) as { catalogQuery?: string; expandFirstResult?: boolean };
+    if (!state.catalogQuery) return;
+    const q = state.catalogQuery.trim();
+    if (!q) return;
+    setSearchQuery(q);
+    setCurrentPage(1);
+    setPendingExpandQuery(state.expandFirstResult ? q : null);
+    loadSongs(1, false, q);
+  }, [location.state, loadSongs]);
+
+  useEffect(() => {
+    if (!pendingExpandQuery || songs.length === 0) return;
+    const matched = songs.find((s) => s.title.toLowerCase().includes(pendingExpandQuery.toLowerCase()));
+    setExpandedSongId(matched ? matched.id : songs[0].id);
+    setPendingExpandQuery(null);
+  }, [songs, pendingExpandQuery]);
+
   const handlePageChange = (page: number) => {
     if (page === currentPage || page < 1 || page > totalPages || isLoading) {
       return;
@@ -653,6 +679,18 @@ export const MusicCatalog = () => {
       pages.push(i);
     }
     return pages;
+  };
+
+  const getPriceAmount = (priceOption: CartPriceOption) => {
+    if (priceOption === "30_sec") return 10000;
+    if (priceOption === "contact_sales") return 0;
+    return 15000;
+  };
+
+  const getPriceLabel = (priceOption: CartPriceOption) => {
+    if (priceOption === "30_sec") return "30 Seconds";
+    if (priceOption === "contact_sales") return "Contact Sales";
+    return "1 Minute";
   };
 
   return (
@@ -736,16 +774,15 @@ export const MusicCatalog = () => {
             </div>
           ) : (
             <>
-              <div className="mt-8 grid grid-cols-[60px_90px_1fr_1fr_1fr_140px_140px_120px_120px] gap-4 px-2 text-sm text-white font-dm">
+              <div className="mt-8 grid grid-cols-[60px_90px_1fr_1fr_140px_140px_140px_260px] gap-4 px-2 text-sm text-white font-dm">
                 <div>#</div>
                 <div></div>
                 <div>Title</div>
                 <div>Artist</div>
-                <div>Album</div>
-                <div className="">Genre</div>
-                <div className="">Mood</div>
-                <div className="text-center">Duration</div>
-                <div className="">Details</div>
+                <div>Genre</div>
+                <div>Mood</div>
+                <div>Details</div>
+                <div>Price</div>
               </div>
 
               <div className="mt-4 flex-1 min-h-0 overflow-y-auto pr-2 space-y-3">
@@ -786,7 +823,7 @@ export const MusicCatalog = () => {
                       className="rounded-xl border border-white/20 bg-black/40 px-4 py-3 shadow-[0_0_22px_rgba(0,0,0,0.35)] transition cursor-pointer hover:bg-white/5"
                       onClick={handleSongClick}
                     >
-                      <div className="grid grid-cols-[60px_90px_1fr_1fr_1fr_140px_140px_120px_120px] gap-2 items-center">
+                      <div className="grid grid-cols-[60px_90px_1fr_1fr_140px_140px_140px_260px] gap-2 items-center">
                         <div className="text-white/80 font-dm">
                           {(currentPage - 1) * pageSize + index + 1}
                         </div>
@@ -804,11 +841,9 @@ export const MusicCatalog = () => {
                         </div>
                         <div className="text-white min-w-0 truncate" title={song.title}>{song.title}</div>
                         <div className="text-white/80 min-w-0 truncate">{song.artist}</div>
-                        <div className="text-white/80 min-w-0 truncate">{song.album}</div>
                         <div className="text-white/80 min-w-0 truncate">{song.genre && !/^(unknown|undefined)$/i.test(song.genre) ? song.genre : "N/A"}</div>
                         <div className="text-white/80 min-w-0 truncate max-w-[140px]" title={song.mood}>{song.mood && !/^(unknown|music|undefined)$/i.test(song.mood) ? song.mood : "N/A"}</div>
-                        <div className="text-white/80 min-w-[120px] shrink-0 text-center">{song.duration || "0:00"}</div>
-                        <div className="flex items-center justify-center gap-3 text-sm text-white/70 min-w-[120px] shrink-0">
+                        <div className="flex items-center justify-center gap-3 text-sm text-white/70 min-w-[140px] shrink-0">
                           <span>{isExpanded ? "Collapse" : "See more..."}</span>
                           <button
                             type="button"
@@ -826,47 +861,120 @@ export const MusicCatalog = () => {
                             )}
                           </button>
                         </div>
+                        <div className="text-white/80">
+                          {selectedPriceBySong[String(rowId)] ? getPriceLabel(selectedPriceBySong[String(rowId)]) : "Prices"}
+                        </div>
                       </div>
 
                       {isExpanded && (
-                        <div className="mt-4 grid grid-cols-[60px_90px_1fr_1fr_1fr_140px_140px_120px_120px] gap-4 px-1 text-sm text-white/70">
+                        <div className="mt-4 grid grid-cols-[60px_90px_1fr_1fr_140px_140px_140px_260px] gap-4 px-1 text-sm text-white/70 border-t border-white/10 pt-4">
                           <div />
                           <div />
                           <div className="space-y-3">
                             <div>
-                              <div className="text-xs uppercase tracking-[0.2em] text-white/40">ISWC</div>
-                              <div className="text-white font-dm">{detail.iswc}</div>
+                              <div className="text-[10px] uppercase tracking-[0.18em] text-white/35 mb-1">ISWC</div>
+                              <div className="text-white/85 font-dm">{detail.iswc}</div>
                             </div>
                             <div>
-                              <div className="text-xs uppercase tracking-[0.2em] text-white/40">ISRC</div>
-                              <div className="text-white font-dm">{detail.isrc}</div>
+                              <div className="text-[10px] uppercase tracking-[0.18em] text-white/35 mb-1">ISRC</div>
+                              <div className="text-white/85 font-dm">{detail.isrc}</div>
                             </div>
                           </div>
-                          <div className="space-y-2">
-                            <div className="text-xs uppercase tracking-[0.2em] text-white/40">Writers/Composers</div>
+                          <div className="space-y-1">
+                            <div className="text-[10px] uppercase tracking-[0.18em] text-white/35 mb-1">Writers/Composers</div>
                             {detail.writers.map((writer) => (
-                              <div key={writer} className="text-white">
+                              <div key={writer} className="text-white/85 leading-5">
                                 {writer}
                               </div>
                             ))}
                           </div>
-                          <div />
-                          <div className="space-y-2 text-center">
+                          <div className="space-y-1">
                             {detail.extraGenres.map((genre) => (
-                              <div key={genre} className="text-white">
+                              <div key={genre} className="text-white/85">
                                 {genre}
                               </div>
                             ))}
                           </div>
-                          <div className="space-y-2 text-center">
+                          <div className="space-y-1">
                             {detail.extraMoods.map((mood) => (
-                              <div key={mood} className="text-white">
+                              <div key={mood} className="text-white/85">
                                 {mood}
                               </div>
                             ))}
                           </div>
-                          <div />
-                          <div />
+                          <div className="space-y-1 text-white/85">
+                            <div>{song.duration || "0:00"}</div>
+                            <div>{song.album || "Unknown Album"}</div>
+                            <div>{song.licensing || "Standard"}</div>
+                          </div>
+                          <div>
+                            <div className="rounded-2xl border border-white/15 bg-[linear-gradient(140deg,rgba(120,72,190,0.25),rgba(255,255,255,0.06))] p-3 backdrop-blur-md">
+                              <div className="grid grid-cols-3 gap-2">
+                                {(["30_sec", "1_min", "contact_sales"] as CartPriceOption[]).map((option) => {
+                                  const selected = (selectedPriceBySong[String(rowId)] || "1_min") === option;
+                                  return (
+                                    <button
+                                      key={option}
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedPriceBySong((prev) => ({ ...prev, [String(rowId)]: option }));
+                                      }}
+                                      className={`rounded-full border px-2 py-2 text-xs transition ${
+                                        selected
+                                          ? "bg-[#cfb0ff] text-black border-[#cfb0ff] shadow-[0_0_14px_rgba(207,176,255,0.5)]"
+                                          : "bg-white/10 text-white border-white/30 hover:bg-white/20"
+                                      }`}
+                                    >
+                                      {getPriceLabel(option)}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              <div className="grid grid-cols-2 gap-2 mt-3">
+                                <button
+                                  type="button"
+                                  onClick={async (e) => {
+                                    e.stopPropagation();
+                                    const selected = selectedPriceBySong[String(rowId)] || "1_min";
+                                    try {
+                                      await addCartItem({
+                                        track_id: String(song.id),
+                                        title: song.title,
+                                        artist: song.artist,
+                                        price_option: selected,
+                                        unit_price: getPriceAmount(selected),
+                                        quantity: 1,
+                                      });
+                                      toast({
+                                        title: "Successfully added to cart",
+                                        description: `${song.title} (${getPriceLabel(selected)})`,
+                                      });
+                                    } catch {
+                                      toast({
+                                        title: "Failed to add to cart",
+                                        description: "Please try again.",
+                                        variant: "destructive",
+                                      });
+                                    }
+                                  }}
+                                  className="rounded-full bg-[#cfaeff] text-black px-3 py-2 text-xs font-medium hover:bg-[#dec7ff]"
+                                >
+                                  Add to Cart
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate("/demo/checkout");
+                                  }}
+                                  className="rounded-full bg-white/15 border border-white/30 text-white px-3 py-2 text-xs font-medium hover:bg-white/25"
+                                >
+                                  Checkout
+                                </button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
