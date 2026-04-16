@@ -53,3 +53,9 @@ export const removeCartItem = async (itemKey: string): Promise<CartResponse> => 
   if (!res.ok) throw new Error("Failed to remove cart item");
   return res.json();
 };
+
+export const hasTrackInCart = async (trackId: string): Promise<boolean> => {
+  const cart = await getCart();
+  const normalizedTrackId = String(trackId);
+  return (cart.items || []).some((item) => String(item.track_id) === normalizedTrackId);
+};

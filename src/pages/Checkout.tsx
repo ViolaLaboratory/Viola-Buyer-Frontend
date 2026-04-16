@@ -143,7 +143,7 @@ const Checkout = () => {
 
         <section>
           <h2 className="text-3xl font-dm mb-4">Your Cart</h2>
-          <div className="rounded-xl border border-white/20 p-4">
+          <div className="rounded-xl border border-white/20 p-4 max-h-[320px] overflow-y-auto">
             {cartLoading && <div className="text-white/60">Loading cart...</div>}
             {!cartLoading && cartItems.length === 0 && <div className="text-white/60">Your cart is empty.</div>}
             {cartItems.map((item) => (

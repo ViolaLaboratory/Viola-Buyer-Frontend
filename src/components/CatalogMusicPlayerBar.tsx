@@ -45,7 +45,7 @@ export const CatalogMusicPlayerBar = ({ sidebarWidth }: CatalogMusicPlayerBarPro
 
   const playerEl = (
     <div
-      className="fixed bottom-0 z-50 rounded-xl border border-white/15 bg-black/50 px-6 py-3 shadow-[0_0_18px_rgba(0,0,0,0.35)] text-white"
+      className="fixed bottom-0 z-50 rounded-xl border border-white/25 bg-black/85 backdrop-blur-md px-6 py-3 shadow-[0_0_28px_rgba(0,0,0,0.6)] text-white"
       style={{ left: sidebarWidth, right: 0 }}
     >
       <div className="flex items-center justify-between gap-6">

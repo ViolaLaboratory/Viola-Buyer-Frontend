@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { ArrowUp, Play, Pause, Plus, Minus, Loader2, SkipBack, SkipForward, FilePlus, Upload, Music2 } from "lucide-react";
+import { ArrowUp, Play, Pause, Plus, Minus, Loader2, SkipBack, SkipForward, FilePlus, Upload, Music2, AlertTriangle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -13,7 +13,7 @@ import {
 import API_ENDPOINTS from "@/config/api";
 import { useMusicPlayer, type Song as MusicPlayerSong } from "@/contexts/MusicPlayerContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { addCartItem, type CartPriceOption } from "@/services/cartService";
+import { addCartItem, hasTrackInCart, type CartPriceOption } from "@/services/cartService";
 import { useToast } from "@/hooks/use-toast";
 
 const ACCEPTED_AUDIO = ".mp3,.wav,.m4a,.flac,.ogg,.aac";
@@ -444,7 +444,7 @@ export const MusicCatalog = () => {
     `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(typeof song.id === "number" ? song.id : 0) % 10 + 1}.mp3`;
   
   /* Music Player Integration */
-  const { loadSong } = useMusicPlayer();
+  const { playSong } = useMusicPlayer();
   const { isAuthenticated } = useAuth();
 
   // Preload audio metadata for current page songs so catalog duration matches player bar
@@ -813,8 +813,8 @@ export const MusicCatalog = () => {
                       audioUrl: s.audioUrl,
                     }));
                     
-                    // Load the selected song with the queue (but don't auto-play)
-                    loadSong(musicPlayerSong, queue);
+                    // Play immediately when a catalog row is clicked.
+                    playSong(musicPlayerSong, queue);
                   };
 
                   return (
@@ -938,6 +938,19 @@ export const MusicCatalog = () => {
                                     e.stopPropagation();
                                     const selected = selectedPriceBySong[String(rowId)] || "1_min";
                                     try {
+                                      const alreadyInCart = await hasTrackInCart(String(song.id));
+                                      if (alreadyInCart) {
+                                        toast({
+                                          title: (
+                                            <span className="flex items-center gap-2 text-red-500">
+                                              <AlertTriangle className="h-4 w-4 text-red-500" />
+                                              <span>Already in Cart</span>
+                                            </span>
+                                          ),
+                                          description: `${song.title} is already in your cart.`,
+                                        });
+                                        return;
+                                      }
                                       await addCartItem({
                                         track_id: String(song.id),
                                         title: song.title,
@@ -964,9 +977,40 @@ export const MusicCatalog = () => {
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={(e) => {
+                                  onClick={async (e) => {
                                     e.stopPropagation();
-                                    navigate("/demo/checkout");
+                                    const selected = selectedPriceBySong[String(rowId)] || "1_min";
+                                    try {
+                                      const alreadyInCart = await hasTrackInCart(String(song.id));
+                                      if (alreadyInCart) {
+                                        toast({
+                                          title: (
+                                            <span className="flex items-center gap-2 text-red-500">
+                                              <AlertTriangle className="h-4 w-4 text-red-500" />
+                                              <span>Already in Cart</span>
+                                            </span>
+                                          ),
+                                          description: `${song.title} is already in your cart.`,
+                                        });
+                                        navigate("/demo/checkout");
+                                        return;
+                                      }
+                                      await addCartItem({
+                                        track_id: String(song.id),
+                                        title: song.title,
+                                        artist: song.artist,
+                                        price_option: selected,
+                                        unit_price: getPriceAmount(selected),
+                                        quantity: 1,
+                                      });
+                                      navigate("/demo/checkout");
+                                    } catch {
+                                      toast({
+                                        title: "Failed to continue to checkout",
+                                        description: "Could not add this track to cart.",
+                                        variant: "destructive",
+                                      });
+                                    }
                                   }}
                                   className="rounded-full bg-white/15 border border-white/30 text-white px-3 py-2 text-xs font-medium hover:bg-white/25"
                                 >

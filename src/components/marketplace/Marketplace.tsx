@@ -12,6 +12,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMusicPlayer } from "@/contexts/MusicPlayerContext";
+import API_ENDPOINTS from "@/config/api";
 
 /* ─── TYPES ─── */
 interface TopPick {
@@ -43,6 +44,17 @@ interface DiscoverTrack {
   bpm: number;
   duration: string;
   cover: string;
+}
+
+interface DiscoverApiRow {
+  id: string | number;
+  title?: string;
+  artist?: string;
+  genre?: string;
+  mood?: string;
+  bpm?: number | null;
+  duration?: string;
+  thumbnail?: string;
 }
 
 /* ─── MOCK DATA ─── */
@@ -105,7 +117,7 @@ const RECORD_LABELS: RecordLabel[] = [
   { id: "jyp", name: "JYP Entertainment", logo: "/logos/jyp.svg" },
 ];
 
-const DISCOVER_TRACKS: DiscoverTrack[] = [
+const DISCOVER_TRACKS_FALLBACK: DiscoverTrack[] = [
   { id: "t1", title: "Golden Hour", artist: "Kaia Lune", genre: "Pop", mood: "Happy", bpm: 120, duration: "3:24", cover: "https://picsum.photos/seed/golden-hour/200" },
   { id: "t2", title: "Velvet Haze", artist: "Noel Rivers", genre: "Indie", mood: "Chill", bpm: 98, duration: "4:01", cover: "https://picsum.photos/seed/velvet-haze/200" },
   { id: "t3", title: "Midnight Drive", artist: "Sable Moon", genre: "R&B", mood: "Moody", bpm: 110, duration: "3:45", cover: "https://picsum.photos/seed/midnight-drive/200" },
@@ -121,6 +133,7 @@ export const Marketplace = () => {
   const { playSong } = useMusicPlayer();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [discoverTracks, setDiscoverTracks] = useState<DiscoverTrack[]>(DISCOVER_TRACKS_FALLBACK);
 
   /* Auto-advance carousel */
   useEffect(() => {
@@ -128,6 +141,41 @@ export const Marketplace = () => {
       setCurrentSlide((prev) => (prev + 1) % TOP_PICKS.length);
     }, 6000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const loadDiscoverPreview = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.DISCOVER_TRACKS(1, 6), {
+          cache: "no-store",
+          headers: { Accept: "application/json" },
+          credentials: "include",
+        });
+        if (!response.ok) return;
+        const data = await response.json();
+        const rows: DiscoverApiRow[] = Array.isArray(data?.results) ? data.results : [];
+        if (!rows.length) return;
+
+        const mapped: DiscoverTrack[] = rows.map((row) => ({
+          id: String(row.id ?? Math.random().toString(36).slice(2)),
+          title: row.title || "Unknown Title",
+          artist: row.artist || "Unknown Artist",
+          genre: row.genre || "Unknown",
+          mood: row.mood || "N/A",
+          bpm: typeof row.bpm === "number" ? row.bpm : 0,
+          duration: row.duration || "0:00",
+          cover: row.thumbnail?.startsWith("http")
+            ? row.thumbnail
+            : `https://picsum.photos/seed/${encodeURIComponent(String(row.id ?? row.title ?? "track"))}/200`,
+        }));
+
+        setDiscoverTracks(mapped);
+      } catch {
+        // Keep fallback tracks on failure.
+      }
+    };
+
+    loadDiscoverPreview();
   }, []);
 
   const goToSlide = useCallback((index: number) => {
@@ -356,7 +404,7 @@ export const Marketplace = () => {
             </Link>
           </div>
           <div className="flex flex-col gap-1">
-            {DISCOVER_TRACKS.map((track, i) => (
+            {discoverTracks.map((track, i) => (
               <button
                 key={track.id}
                 className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/5 transition-colors group/track w-full text-left"

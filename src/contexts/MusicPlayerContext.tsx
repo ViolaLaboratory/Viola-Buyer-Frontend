@@ -61,6 +61,25 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({ childr
   const [volume, setVolumeState] = useState(1);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const currentSongRef = useRef<Song | null>(null);
+  const isPlayingRef = useRef(false);
+  const fallbackTriedRef = useRef(false);
+
+  const getFallbackAudioUrl = (songId: number | string) => {
+    const raw = String(songId ?? "");
+    const numericFromId = Number(raw);
+    const extracted = Number.isFinite(numericFromId)
+      ? numericFromId
+      : Number((raw.match(/\d+/)?.[0] ?? "1"));
+    const safeId = Number.isFinite(extracted) && extracted > 0 ? extracted : 1;
+    return `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${(safeId % 10) + 1}.mp3`;
+  };
+
+  const getPlayableAudioUrl = (song: Song) => {
+    const url = (song.audioUrl || "").trim();
+    if (url) return url;
+    return getFallbackAudioUrl(song.id);
+  };
 
   // Initialize audio element
   useEffect(() => {
@@ -82,6 +101,29 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({ childr
       
       audioRef.current.addEventListener('error', (e) => {
         console.error('Audio error:', e);
+        const song = currentSongRef.current;
+        if (!audioRef.current || !song) {
+          setIsPlaying(false);
+          return;
+        }
+
+        // If primary source fails, retry once with a known public sample source.
+        if (!fallbackTriedRef.current) {
+          fallbackTriedRef.current = true;
+          const fallbackUrl = getFallbackAudioUrl(song.id);
+          audioRef.current.src = fallbackUrl;
+          audioRef.current.load();
+          if (isPlayingRef.current) {
+            audioRef.current.play().then(() => {
+              setIsPlaying(true);
+            }).catch((fallbackErr) => {
+              console.error('Fallback audio play failed:', fallbackErr);
+              setIsPlaying(false);
+            });
+          }
+          return;
+        }
+
         setIsPlaying(false);
       });
     }
@@ -93,6 +135,14 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({ childr
       }
     };
   }, []);
+
+  useEffect(() => {
+    currentSongRef.current = currentSong;
+  }, [currentSong]);
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
 
   // Update volume when it changes
   useEffect(() => {
@@ -110,10 +160,9 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({ childr
     }
 
     setCurrentSong(song);
+    fallbackTriedRef.current = false;
     
-    // For demo purposes, we'll use a placeholder audio URL
-    // In production, you'd get this from your backend
-    const audioUrl = song.audioUrl || `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${song.id % 10 + 1}.mp3`;
+    const audioUrl = getPlayableAudioUrl(song);
     
     if (audioRef.current) {
       audioRef.current.src = audioUrl;
@@ -133,7 +182,22 @@ export const MusicPlayerProvider: React.FC<MusicPlayerProviderProps> = ({ childr
         setIsPlaying(true);
       }).catch((error) => {
         console.error('Error playing audio:', error);
-        // If audio fails to load, still show the song as selected
+        // If backend audio URL fails, retry once with stable public fallback.
+        if (audioRef.current) {
+          const fallbackUrl = getFallbackAudioUrl(song.id);
+          if (audioRef.current.src !== fallbackUrl) {
+            fallbackTriedRef.current = true;
+            audioRef.current.src = fallbackUrl;
+            audioRef.current.load();
+            audioRef.current.play().then(() => {
+              setIsPlaying(true);
+            }).catch((fallbackError) => {
+              console.error('Fallback audio failed:', fallbackError);
+              setIsPlaying(false);
+            });
+            return;
+          }
+        }
         setIsPlaying(false);
       });
     }

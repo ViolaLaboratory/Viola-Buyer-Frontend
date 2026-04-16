@@ -5,10 +5,12 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-import { Filter, ArrowUp, Plus, Minus, ShoppingCart, X, Play, Pause } from "lucide-react";
+import { Filter, ArrowUp, Plus, Minus, ShoppingCart, X, Play, Pause, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import API_ENDPOINTS from "@/config/api";
 import { useMusicPlayer, type Song } from "@/contexts/MusicPlayerContext";
+import { useToast } from "@/hooks/use-toast";
+import { addCartItem, hasTrackInCart, type CartPriceOption } from "@/services/cartService";
 
 /* ─── TYPES ─── */
 interface DiscoverTrack {
@@ -97,7 +99,8 @@ function trackToSong(t: DiscoverTrack): Song {
 /* ─── COMPONENT ─── */
 export const DiscoverPage = () => {
   const navigate = useNavigate();
-  const { playSong, pause, isPlaying, currentSong } = useMusicPlayer();
+  const { playSong, loadSong, pause, isPlaying, currentSong } = useMusicPlayer();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [tracks, setTracks] = useState<DiscoverTrack[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -160,6 +163,47 @@ export const DiscoverPage = () => {
   };
 
   const isTrackPlaying = (trackId: string) => currentSong?.id === trackId && isPlaying;
+  const getSelectedPriceOption = (trackId: string): CartPriceOption => {
+    const selected = selectedPrices[trackId];
+    if (selected === "30s · $1,200") return "30_sec";
+    if (selected === "Contact Sales") return "contact_sales";
+    return "1_min";
+  };
+
+  const getPriceAmount = (priceOption: CartPriceOption): number => {
+    if (priceOption === "30_sec") return 1200;
+    if (priceOption === "contact_sales") return 0;
+    return 1800;
+  };
+
+  const getPriceLabel = (priceOption: CartPriceOption): string => {
+    if (priceOption === "30_sec") return "30 Seconds";
+    if (priceOption === "contact_sales") return "Contact Sales";
+    return "1 Minute";
+  };
+
+  const addTrackToCart = async (track: DiscoverTrack) => {
+    const alreadyInCart = await hasTrackInCart(String(track.id));
+    if (alreadyInCart) {
+      return { added: false as const };
+    }
+
+    const selected = getSelectedPriceOption(track.id);
+    await addCartItem({
+      track_id: String(track.id),
+      title: track.title,
+      artist: track.artist,
+      price_option: selected,
+      unit_price: getPriceAmount(selected),
+      quantity: 1,
+    });
+
+    toast({
+      title: "Added to cart",
+      description: `${track.title} (${getPriceLabel(selected)})`,
+    });
+    return { added: true as const };
+  };
 
   return (
     <div className="h-screen overflow-y-auto overflow-x-hidden px-6 py-6 space-y-6">
@@ -229,7 +273,12 @@ export const DiscoverPage = () => {
             return (
               <div
                 key={track.id}
-                onClick={() => setExpandedTrackId(isExpanded ? null : track.id)}
+                onClick={() => {
+                  const selectedSong = trackToSong(track);
+                  const queue = tracks.map(trackToSong);
+                  loadSong(selectedSong, queue);
+                  setExpandedTrackId(isExpanded ? null : track.id);
+                }}
                 className={`relative rounded-lg border px-4 py-3 transition cursor-pointer ${
                   isFirst
                     ? "border-white/20 bg-black/40 shadow-[0_0_22px_rgba(0,0,0,0.35)]"
@@ -371,11 +420,62 @@ export const DiscoverPage = () => {
                       <div />
                       {/* Add to Cart / Checkout — under Prices */}
                       <div className="flex flex-col gap-1.5 pt-4">
-                        <button onClick={(e) => e.stopPropagation()} className="w-full px-3 py-1.5 rounded border border-purple-400/40 bg-purple-600/30 text-white text-xs font-medium hover:bg-purple-600/50 transition-colors flex items-center justify-center gap-1.5">
+                        <button
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            try {
+                              const result = await addTrackToCart(track);
+                              if (!result.added) {
+                                toast({
+                                  title: (
+                                    <span className="flex items-center gap-2 text-red-500">
+                                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                                      <span>Already in Cart</span>
+                                    </span>
+                                  ),
+                                  description: `${track.title} is already in your cart.`,
+                                });
+                              }
+                            } catch {
+                              toast({
+                                title: "Failed to add to cart",
+                                description: "Please try again.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                          className="w-full px-3 py-1.5 rounded border border-purple-400/40 bg-purple-600/30 text-white text-xs font-medium hover:bg-purple-600/50 transition-colors flex items-center justify-center gap-1.5"
+                        >
                           <ShoppingCart className="h-3 w-3" />
                           Add to Cart
                         </button>
-                        <button onClick={(e) => e.stopPropagation()} className="w-full px-3 py-1.5 rounded border border-purple-400/60 bg-purple-600 text-white text-xs font-medium hover:bg-purple-700 transition-colors text-center">
+                        <button
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            try {
+                              const result = await addTrackToCart(track);
+                              if (!result.added) {
+                                toast({
+                                  title: (
+                                    <span className="flex items-center gap-2 text-red-500">
+                                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                                      <span>Already in Cart</span>
+                                    </span>
+                                  ),
+                                  description: `${track.title} is already in your cart.`,
+                                });
+                              }
+                              navigate("/demo/checkout");
+                            } catch {
+                              toast({
+                                title: "Checkout failed",
+                                description: "Could not add track to cart.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                          className="w-full px-3 py-1.5 rounded border border-purple-400/60 bg-purple-600 text-white text-xs font-medium hover:bg-purple-700 transition-colors text-center"
+                        >
                           Checkout
                         </button>
                       </div>
