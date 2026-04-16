@@ -58,13 +58,13 @@ const NAV_ITEMS = [
     label: "Search",
     iconType: "image",
     iconSrc: "/flower.png",
-    path: "/demo/search",
+    path: "/demo/home",
   },
   {
     id: "catalog",
     label: "Catalog",
     icon: ListMusic,
-    path: "/demo/catalog",
+    path: "/demo/marketplace/discover",
   },
   {
     id: "shoppingCart",
@@ -120,19 +120,14 @@ export const Sidebar = () => {
     window.dispatchEvent(new Event("sidebarStateChanged"));
   };
 
-  /* HANDLER: Navigate to home page */
+  /* HANDLER: Navigate to marketplace page */
   const handleLogoClick = () => {
-    navigate('/demo/home');
+    navigate('/demo/marketplace');
   };
 
   /* HANDLER: Navigate to specific page */
   const handleNavClick = (path: string) => {
-    // If clicking Search button while already on Search page, reset the chat panel
-    if (path === '/demo/search' && location.pathname.startsWith('/demo/search')) {
-      navigate('/demo/search', { state: { reset: true }, replace: true });
-    } else {
-      navigate(path);
-    }
+    navigate(path);
   };
 
   /* HANDLER: Resume chat session */

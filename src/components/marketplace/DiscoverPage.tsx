@@ -4,121 +4,142 @@
  * Accessible from Marketplace "See All" on the Discover Sync Ready Tracks section.
  */
 
-import { useState, useRef } from "react";
-import { Search, Filter, ArrowUp, Plus, Minus, ShoppingCart, X, Play, Pause } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Filter, ArrowUp, Plus, Minus, ShoppingCart, X, Play, Pause } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import API_ENDPOINTS from "@/config/api";
+import { useMusicPlayer, type Song } from "@/contexts/MusicPlayerContext";
 
 /* ─── TYPES ─── */
 interface DiscoverTrack {
   id: string;
   title: string;
   artist: string;
+  album?: string;
   genre: string;
   mood: string;
   duration: string;
-  bpm: number;
-  key: string;
-  iswc: string;
-  isrc: string;
+  bpm: number | null;
+  key: string | null;
+  iswc: string | null;
+  isrc: string | null;
   writers: string[];
   extraGenres: string[];
   extraMoods: string[];
   cover: string;
+  audioUrl?: string;
 }
 
-/* ─── MOCK DATA ─── */
-const DISCOVER_TRACKS: DiscoverTrack[] = [
-  {
-    id: "t1",
-    title: "Golden Hour",
-    artist: "Kaia Lune",
-    genre: "Pop",
-    mood: "Happy",
-    duration: "3:24",
-    bpm: 120,
-    key: "C# Major",
-    iswc: "C0101010101",
-    isrc: "HLBD35793507",
-    writers: ["Jude Gabriel Kozielec", "Ryan Chan", "Kyung Tae Kim"],
-    extraGenres: ["R&B", "Afro-Beat"],
-    extraMoods: ["Playful", "Upbeat", "Soothing"],
-    cover: "https://picsum.photos/seed/golden-hour/200",
-  },
-  {
-    id: "t2",
-    title: "Velvet Haze",
-    artist: "Noel Rivers",
-    genre: "Indie",
-    mood: "Chill",
-    duration: "4:01",
-    bpm: 98,
-    key: "A Minor",
-    iswc: "C0202020202",
-    isrc: "HLBD33591588",
-    writers: ["Mina Park", "Damon Wu", "Clara Swift"],
-    extraGenres: ["Pop", "Synthwave"],
-    extraMoods: ["Moody", "Chill", "Focused"],
-    cover: "https://picsum.photos/seed/velvet-haze/200",
-  },
-  {
-    id: "t3",
-    title: "Midnight Drive",
-    artist: "Sable Moon",
-    genre: "R&B",
-    mood: "Moody",
-    duration: "3:45",
-    bpm: 110,
-    key: "F# Minor",
-    iswc: "C0303030303",
-    isrc: "HLBD28177421",
-    writers: ["Andre Sol", "Mira Voss"],
-    extraGenres: ["Indie", "Alt Rock"],
-    extraMoods: ["Reflective", "Warm"],
-    cover: "https://picsum.photos/seed/midnight-drive/200",
-  },
-  {
-    id: "t4",
-    title: "Neon Pulse",
-    artist: "ZEKRA",
-    genre: "Electronic",
-    mood: "Energetic",
-    duration: "3:12",
-    bpm: 128,
-    key: "Eb Major",
-    iswc: "C0404040404",
-    isrc: "HLBD35793507",
-    writers: ["Jude Gabriel Kozielec", "Ryan Chan", "Kyung Tae Kim"],
-    extraGenres: ["Synthwave", "Dance"],
-    extraMoods: ["Playful", "Upbeat", "Soothing"],
-    cover: "https://picsum.photos/seed/neon-pulse/200",
-  },
-  {
-    id: "t5",
-    title: "Southside Glow",
-    artist: "Dex Amari",
-    genre: "Hip-Hop",
-    mood: "Dark",
-    duration: "2:58",
-    bpm: 140,
-    key: "G Minor",
-    iswc: "C0505050505",
-    isrc: "HLBD33591588",
-    writers: ["Mina Park", "Damon Wu"],
-    extraGenres: ["Trap", "Lo-Fi"],
-    extraMoods: ["Moody", "Gritty"],
-    cover: "https://picsum.photos/seed/southside-glow/200",
-  },
-];
+interface DiscoverApiRow {
+  id: string | number;
+  title: string;
+  artist: string;
+  album?: string;
+  genre: string;
+  mood: string;
+  duration: string;
+  bpm: number | null;
+  key: string | null;
+  iswc: string | null;
+  isrc: string | null;
+  writers: string[];
+  extra_genres: string[];
+  extra_moods: string[];
+  thumbnail: string;
+  audio_url?: string;
+}
+
+function resolveCover(id: string, thumbnail?: string): string {
+  const t = thumbnail?.trim();
+  if (t && t.startsWith("http")) return t;
+  return `https://picsum.photos/seed/${encodeURIComponent(id)}/200`;
+}
+
+function normalizeGenre(g: string): string {
+  if (!g || /^undefined$/i.test(g)) return "Unknown";
+  return g;
+}
+
+function mapRowToTrack(row: DiscoverApiRow): DiscoverTrack {
+  const id = String(row.id);
+  return {
+    id,
+    title: row.title || "Unknown Title",
+    artist: row.artist || "Unknown Artist",
+    album: row.album,
+    genre: normalizeGenre(row.genre || ""),
+    mood: row.mood || "N/A",
+    duration: row.duration || "0:00",
+    bpm: row.bpm ?? null,
+    key: row.key ?? null,
+    iswc: row.iswc ?? null,
+    isrc: row.isrc ?? null,
+    writers: Array.isArray(row.writers) ? row.writers : [],
+    extraGenres: Array.isArray(row.extra_genres) ? row.extra_genres : [],
+    extraMoods: Array.isArray(row.extra_moods) ? row.extra_moods : [],
+    cover: resolveCover(id, row.thumbnail),
+    audioUrl: row.audio_url,
+  };
+}
+
+function trackToSong(t: DiscoverTrack): Song {
+  return {
+    id: t.id,
+    title: t.title,
+    artist: t.artist,
+    album: t.album,
+    duration: t.duration,
+    audioUrl: t.audioUrl,
+    thumbnail: t.cover,
+  };
+}
 
 /* ─── COMPONENT ─── */
 export const DiscoverPage = () => {
   const navigate = useNavigate();
+  const { playSong, pause, isPlaying, currentSong } = useMusicPlayer();
   const [searchQuery, setSearchQuery] = useState("");
-  const [expandedTrackId, setExpandedTrackId] = useState<string | null>("t1");
+  const [tracks, setTracks] = useState<DiscoverTrack[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [expandedTrackId, setExpandedTrackId] = useState<string | null>(null);
   const [pricingTrack, setPricingTrack] = useState<DiscoverTrack | null>(null);
   const [selectedPrices, setSelectedPrices] = useState<Record<string, string>>({});
   const [modalSelection, setModalSelection] = useState<string | null>(null);
-  const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
+
+  const fetchDiscoverTracks = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const response = await fetch(API_ENDPOINTS.DISCOVER_TRACKS(1, 500), {
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      const rows: DiscoverApiRow[] = data.results ?? [];
+      const next = rows.map(mapRowToTrack);
+      setTracks(next);
+      setExpandedTrackId((prev) => {
+        if (prev && next.some((t) => t.id === prev)) return prev;
+        return next[0]?.id ?? null;
+      });
+    } catch (e) {
+      console.error("Discover tracks fetch failed:", e);
+      setLoadError("Could not load tracks. Check MongoDB settings and try again.");
+      setTracks([]);
+      setExpandedTrackId(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchDiscoverTracks();
+  }, [fetchDiscoverTracks]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,6 +148,19 @@ export const DiscoverPage = () => {
     }
   };
 
+  const handleCoverPlayClick = (e: React.MouseEvent, track: DiscoverTrack) => {
+    e.stopPropagation();
+    const song = trackToSong(track);
+    const queue = tracks.map(trackToSong);
+    if (currentSong?.id === track.id && isPlaying) {
+      pause();
+    } else {
+      playSong(song, queue);
+    }
+  };
+
+  const isTrackPlaying = (trackId: string) => currentSong?.id === trackId && isPlaying;
+
   return (
     <div className="h-screen overflow-y-auto overflow-x-hidden px-6 py-6 space-y-6">
       {/* ─── HEADER ─── */}
@@ -134,11 +168,15 @@ export const DiscoverPage = () => {
         Discover
       </h1>
 
+      {loadError && (
+        <p className="text-sm text-amber-200/90 font-dm">{loadError}</p>
+      )}
+
       {/* ─── SEARCH BAR ─── */}
       <form onSubmit={handleSearch} className="relative">
         <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-5 py-3 border border-white/10 hover:border-white/20 transition-colors">
           <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-            <span className="text-white text-xs">✦</span>
+            <span className="text-white text-xs">{"\u2726"}</span>
           </div>
           <input
             type="text"
@@ -173,9 +211,18 @@ export const DiscoverPage = () => {
           <div></div>
         </div>
 
+        {loading && (
+          <div className="px-4 py-8 text-white/50 text-sm font-dm">Loading tracks…</div>
+        )}
+
         {/* Track rows */}
+        {!loading && tracks.length === 0 && !loadError && (
+          <div className="px-4 py-8 text-white/50 text-sm font-dm">No sync-ready tracks found.</div>
+        )}
+
         <div className="space-y-2">
-          {DISCOVER_TRACKS.map((track, index) => {
+          {!loading &&
+            tracks.map((track, index) => {
             const isExpanded = expandedTrackId === track.id;
             const isFirst = index === 0;
 
@@ -194,10 +241,7 @@ export const DiscoverPage = () => {
                   <div className="text-white/80 font-dm">{index + 1}</div>
                   <div
                     className="relative h-10 w-10 flex-shrink-0 group/cover"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setPlayingTrackId(playingTrackId === track.id ? null : track.id);
-                    }}
+                    onClick={(e) => handleCoverPlayClick(e, track)}
                   >
                     <img
                       src={track.cover}
@@ -205,9 +249,9 @@ export const DiscoverPage = () => {
                       className="h-10 w-10 rounded object-cover"
                     />
                     <div className={`absolute inset-0 rounded flex items-center justify-center transition-opacity ${
-                      playingTrackId === track.id ? "bg-black/50 opacity-100" : "bg-black/40 opacity-0 group-hover/cover:opacity-100"
+                      isTrackPlaying(track.id) ? "bg-black/50 opacity-100" : "bg-black/40 opacity-0 group-hover/cover:opacity-100"
                     }`}>
-                      {playingTrackId === track.id ? (
+                      {isTrackPlaying(track.id) ? (
                         <Pause className="h-4 w-4 text-white" fill="white" />
                       ) : (
                         <Play className="h-4 w-4 text-white ml-0.5" fill="white" />
@@ -220,8 +264,8 @@ export const DiscoverPage = () => {
                   <div className="text-white/80 text-sm truncate">{track.mood}</div>
                   {/* Details */}
                   <div className="text-white text-sm space-y-1">
-                    <div>{track.bpm} BPM</div>
-                    <div>{track.key}</div>
+                    <div>{track.bpm != null && track.bpm > 0 ? `${track.bpm} BPM` : "—"}</div>
+                    <div>{track.key || "—"}</div>
                   </div>
                   {/* Prices */}
                   <div className="flex items-center">
@@ -284,32 +328,44 @@ export const DiscoverPage = () => {
                       <div className="col-span-2 space-y-2">
                         <div>
                           <div className="text-xs uppercase tracking-[0.2em] text-white/40">ISWC</div>
-                          <div className="font-dm font-bold">{track.iswc}</div>
+                          <div className="font-dm font-bold">{track.iswc || "—"}</div>
                         </div>
                         <div>
                           <div className="text-xs uppercase tracking-[0.2em] text-white/40 mt-2">ISRC</div>
-                          <div className="font-dm font-bold">{track.isrc}</div>
+                          <div className="font-dm font-bold">{track.isrc || "—"}</div>
                         </div>
                       </div>
                       <div className="col-span-2 space-y-2">
                         <div className="text-xs uppercase tracking-[0.2em] text-white/40">Writers/Composers</div>
-                        {track.writers.map((writer) => (
-                          <div key={writer} className="font-bold">{writer}</div>
-                        ))}
+                        {track.writers.length > 0 ? (
+                          track.writers.map((writer) => (
+                            <div key={writer} className="font-bold">{writer}</div>
+                          ))
+                        ) : (
+                          <div className="font-dm text-white/50">—</div>
+                        )}
                       </div>
                       {/* Other Genre — under Genre column */}
                       <div className="space-y-2">
                         <div className="text-xs uppercase tracking-[0.2em] text-white/40">Other Genre</div>
-                        {track.extraGenres.map((genre) => (
-                          <div key={genre}>{genre}</div>
-                        ))}
+                        {track.extraGenres.length > 0 ? (
+                          track.extraGenres.map((genre) => (
+                            <div key={genre}>{genre}</div>
+                          ))
+                        ) : (
+                          <div className="text-white/50">—</div>
+                        )}
                       </div>
                       {/* Other Mood — under Mood column */}
                       <div className="space-y-2">
                         <div className="text-xs uppercase tracking-[0.2em] text-white/40">Other Mood</div>
-                        {track.extraMoods.map((mood) => (
-                          <div key={mood}>{mood}</div>
-                        ))}
+                        {track.extraMoods.length > 0 ? (
+                          track.extraMoods.map((mood) => (
+                            <div key={mood}>{mood}</div>
+                          ))
+                        ) : (
+                          <div className="text-white/50">—</div>
+                        )}
                       </div>
                       {/* Empty under Details */}
                       <div />
@@ -360,7 +416,8 @@ export const DiscoverPage = () => {
             {/* Track info */}
             <h2 className="text-xl font-bold text-gray-900">{pricingTrack.title}</h2>
             <p className="text-gray-500 text-sm mt-1">
-              {pricingTrack.genre} · {pricingTrack.duration} · BPM {pricingTrack.bpm}
+              {pricingTrack.genre} · {pricingTrack.duration}
+              {pricingTrack.bpm != null && pricingTrack.bpm > 0 ? ` · BPM ${pricingTrack.bpm}` : ""}
             </p>
 
             {/* Price cards */}

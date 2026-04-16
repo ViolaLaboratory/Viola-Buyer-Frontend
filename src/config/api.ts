@@ -25,6 +25,15 @@ export const API_ENDPOINTS = {
     params.set('_', Date.now().toString());
     return `${API_BASE_URL}/music/songs/?${params.toString()}`;
   },
+  /** Buyer Discover: deduplicated sync-ready tracks from MongoDB metadata collection */
+  DISCOVER_TRACKS: (page?: number, limit?: number, q?: string) => {
+    const params = new URLSearchParams();
+    if (page) params.set("page", page.toString());
+    if (limit) params.set("limit", limit.toString());
+    if (q && q.trim()) params.set("q", q.trim());
+    params.set("_", Date.now().toString());
+    return `${API_BASE_URL}/music/discover/tracks/?${params.toString()}`;
+  },
   SONGS_SEARCH: (query: string, page?: number, limit?: number) =>
     `${API_BASE_URL}/music/songs/search/?q=${encodeURIComponent(query)}${page ? `&page=${page}` : ''}${limit ? `&limit=${limit}` : ''}`,
   
