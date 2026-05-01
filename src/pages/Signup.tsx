@@ -213,16 +213,20 @@ const Signup = () => {
 
       // Log in with created user and go to demo
       const u = data.user;
-      if (u) {
+      if (u && typeof u === "object") {
+        const rec = u as Record<string, unknown>;
         login({
-          id: u.id,
-          username: u.username || username,
-          email: u.email || email,
-          profile_image: normalizeProfileImageUrl(u.profile_image),
+          id: Number(rec.id),
+          username: (rec.username as string) || username,
+          email: (rec.email as string) || email,
+          profile_image: normalizeProfileImageUrl(rec.profile_image as string | undefined),
           plan: "Free plan",
+          account_type: (rec.account_type as "buyer" | "seller") ?? "buyer",
+          seller_verified: Boolean(rec.seller_verified),
+          portal: "buyer",
         });
       }
-      navigate("/demo/home");
+      navigate("/demo/marketplace");
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to create account';
       setError(

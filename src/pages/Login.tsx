@@ -1,11 +1,11 @@
-import { useState, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useState, FormEvent, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth, type UserPortal } from "@/contexts/AuthContext";
 import API_ENDPOINTS from "@/config/api";
 import { normalizeProfileImageUrl } from "@/utils/profileImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 /**
  * LogoMark Component
@@ -33,19 +33,46 @@ const LogoMark = () => (
   </svg>
 );
 
+function firstApiError(data: Record<string, unknown>): string | null {
+  if (typeof data.detail === "string") return data.detail;
+  if (typeof data.error === "string") return data.error;
+  const nfe = data.non_field_errors;
+  if (Array.isArray(nfe) && nfe.length > 0) return String(nfe[0]);
+  if (typeof nfe === "string") return nfe;
+  const email = data.email;
+  if (typeof email === "string") return email;
+  if (Array.isArray(email) && email[0]) return String(email[0]);
+  const password = data.password;
+  if (typeof password === "string") return password;
+  if (Array.isArray(password) && password[0]) return String(password[0]);
+  return null;
+}
+
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
+  const state = location.state as { portal?: UserPortal } | undefined;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [portalChoice, setPortalChoice] = useState<UserPortal>("buyer");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (state?.portal === "seller") {
+      setPortalChoice("seller");
+    }
+  }, [state?.portal]);
+
+  const greetingName = portalChoice === "buyer" ? "Buyer" : "Seller";
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email || !password) return;
 
     setIsLoading(true);
-    
+
     try {
       const response = await fetch(API_ENDPOINTS.LOGIN, {
         method: "POST",
@@ -54,32 +81,37 @@ const Login = () => {
         body: JSON.stringify({
           email: email.trim(),
           password,
+          portal: portalChoice,
         }),
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as Record<string, unknown>;
 
       if (!response.ok) {
-        // Backend returns field-specific errors: { email: "..." } or { password: "..." }
         const msg =
-          data.error ||
-          (data.email ? (Array.isArray(data.email) ? data.email[0] : data.email) : null) ||
-          (data.password ? (Array.isArray(data.password) ? data.password[0] : data.password) : null) ||
-          "Invalid credentials.";
+          firstApiError(data) ??
+          ("Invalid credentials." as string);
         throw new Error(msg);
       }
 
-      if (data.user) {
-        const u = data.user;
+      if (data.user && typeof data.user === "object") {
+        const u = data.user as Record<string, unknown>;
+        const sessionPortal: UserPortal = data.portal === "seller" ? "seller" : "buyer";
         login({
-          id: u.id,
-          username: u.username,
-          email: u.email,
-          profile_image: normalizeProfileImageUrl(u.profile_image),
+          id: Number(u.id),
+          username: (u.username as string) ?? "User",
+          email: (u.email as string) ?? "",
+          profile_image: normalizeProfileImageUrl(u.profile_image as string | undefined),
           plan: "Free plan",
+          account_type:
+            ((u.account_type as string) === "seller" ? "seller" : "buyer"),
+          seller_verified: Boolean(u.seller_verified),
+          portal: sessionPortal,
         });
+        navigate("/demo/marketplace");
+        return;
       }
-      navigate("/demo/home");
+      navigate("/demo/marketplace");
     } catch (err) {
       alert(err instanceof Error ? err.message : "Login failed.");
     } finally {
@@ -96,35 +128,70 @@ const Login = () => {
           alt="Waveform background"
           className="absolute inset-0 w-full h-full object-cover"
           onError={(e) => {
-            // Fallback to gradient if image doesn't exist
             const target = e.target as HTMLImageElement;
-            target.style.display = 'none';
+            target.style.display = "none";
             const fallback = target.nextElementSibling as HTMLElement;
-            if (fallback) fallback.style.display = 'block';
+            if (fallback) fallback.style.display = "block";
           }}
         />
-        <div 
+        <div
           className="absolute inset-0 bg-gradient-to-br from-purple-600 via-red-500 to-yellow-400 opacity-90"
-          style={{ display: 'none' }}
+          style={{ display: "none" }}
         ></div>
       </div>
 
       {/* Right Side - Login Form */}
       <div className="w-full lg:w-1/2 bg-black flex items-center justify-center p-8">
         <div className="w-full max-w-md space-y-8">
-          {/* Logo */}
           <div className="flex justify-center">
             <div className="text-white">
               <LogoMark />
             </div>
           </div>
 
-          {/* Login Form */}
           <div className="space-y-6">
-            <div className="text-center">
-              <h1 className="text-3xl font-bold text-white mb-2">Login</h1>
-              <p className="text-gray-400 text-sm">or create a new account</p>
+            <div className="text-center space-y-1">
+              <h1 className="text-3xl font-bold text-white mb-2">Choose account type</h1>
+              <p className="text-gray-400 text-sm">Then sign in with your email and password</p>
             </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setPortalChoice("buyer")}
+                className={cn(
+                  "rounded-xl border-2 px-3 py-4 text-center transition-colors",
+                  portalChoice === "buyer"
+                    ? "border-sky-500 bg-white/10 text-white"
+                    : "border-white/15 text-gray-400 hover:border-white/30"
+                )}
+              >
+                <div className="text-xs uppercase tracking-wide text-gray-400 mb-1">I am a</div>
+                <div className="text-lg font-semibold">Buyer</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPortalChoice("seller")}
+                className={cn(
+                  "rounded-xl border-2 px-3 py-4 text-center transition-colors",
+                  portalChoice === "seller"
+                    ? "border-sky-500 bg-white/10 text-white"
+                    : "border-white/15 text-gray-400 hover:border-white/30"
+                )}
+              >
+                <div className="text-xs uppercase tracking-wide text-gray-400 mb-1">I am a</div>
+                <div className="text-lg font-semibold">Seller</div>
+              </button>
+            </div>
+
+            <p className="text-center text-sm text-gray-300">
+              Hello, {greetingName}! Complete the form below to continue.
+              {portalChoice === "seller" && (
+                <span className="block mt-2 text-xs text-amber-200/90">
+                  Seller access is invitation-only after admin verification.
+                </span>
+              )}
+            </p>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
@@ -160,13 +227,12 @@ const Login = () => {
               </Button>
             </form>
 
-            {/* Optional: Add link to create account */}
             <div className="text-center">
               <button
                 onClick={() => navigate("/signup")}
                 className="text-sm text-gray-400 hover:text-gray-300 underline"
               >
-                Don't have an account? Sign up
+                Don&apos;t have an account? Sign up as a Buyer
               </button>
             </div>
           </div>

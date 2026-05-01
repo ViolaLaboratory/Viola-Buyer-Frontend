@@ -18,10 +18,15 @@ import License from "./pages/License";
 /* NEW IMPORTS: Layout and pages for demo */
 import { AppLayout } from "./components/layout/AppLayout";
 import { SearchInterface } from "./components/SearchInterface";
+import { PitchBuilder } from "./components/PitchBuilder";
 import { MusicCatalog } from "./components/MusicCatalog";
 import { Marketplace } from "./components/marketplace/Marketplace";
 import { DiscoverPage } from "./components/marketplace/DiscoverPage";
 import { RecordLabelsPage } from "./components/marketplace/RecordLabelsPage";
+import { Dashboard } from "./components/dashboard/Dashboard";
+import { TransactionsPage } from "./components/dashboard/TransactionsPage";
+import { CountriesPage } from "./components/dashboard/CountriesPage";
+import { RequireSellerPortal, RequireBuyerPortal } from "./components/routing/PortalGuards";
 import { MusicPlayerProvider, useMusicPlayer } from "./contexts/MusicPlayerContext";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -37,8 +42,12 @@ const MusicNavigationHandler = () => {
     const currentPath = location.pathname;
     const prevPath = prevPathRef.current;
     
-    // If we were on catalog page and navigated away, stop music
-    if (prevPath && prevPath.includes('/catalog') && !currentPath.includes('/catalog')) {
+    if (
+      prevPath &&
+      (prevPath.includes("/catalog") || prevPath.includes("/pitch-kit")) &&
+      !currentPath.includes("/catalog") &&
+      !currentPath.includes("/pitch-kit")
+    ) {
       if (isPlaying) {
         pause();
       }
@@ -83,25 +92,86 @@ const AppContent = () => {
                 {/* HOME: Main search page with gradient background */}
                 <Route path="home" element={<DemoHome />} />
 
-                {/* MARKETPLACE: Discover page with carousel, genres, labels, tracks */}
+                {/* MARKETPLACE */}
                 <Route path="marketplace" element={<Marketplace />} />
                 <Route path="marketplace/discover" element={<DiscoverPage />} />
                 <Route path="marketplace/labels" element={<RecordLabelsPage />} />
                 <Route path="marketplace/*" element={<Marketplace />} />
 
-                {/* SEARCH: Music search interface (new session) */}
-                <Route path="search" element={<SearchInterface />} />
+                {/* SELLER: Dashboard + Pitch Kit */}
+                <Route
+                  path="dashboard"
+                  element={
+                    <RequireSellerPortal>
+                      <Dashboard />
+                    </RequireSellerPortal>
+                  }
+                />
+                <Route
+                  path="dashboard/transactions"
+                  element={
+                    <RequireSellerPortal>
+                      <TransactionsPage />
+                    </RequireSellerPortal>
+                  }
+                />
+                <Route
+                  path="dashboard/countries"
+                  element={
+                    <RequireSellerPortal>
+                      <CountriesPage />
+                    </RequireSellerPortal>
+                  }
+                />
+                <Route
+                  path="playlists"
+                  element={
+                    <RequireSellerPortal>
+                      <PitchBuilder />
+                    </RequireSellerPortal>
+                  }
+                />
+                <Route
+                  path="drive"
+                  element={
+                    <RequireSellerPortal>
+                      <PitchBuilder />
+                    </RequireSellerPortal>
+                  }
+                />
+                <Route
+                  path="pitch-kit"
+                  element={
+                    <RequireSellerPortal>
+                      <PitchBuilder />
+                    </RequireSellerPortal>
+                  }
+                />
 
-                {/* SEARCH: Resume chat session by ID */}
+                {/* SEARCH */}
+                <Route path="search" element={<SearchInterface />} />
                 <Route path="search/:sessionId" element={<SearchInterface />} />
 
-                {/* CATALOG: Music catalog browser */}
+                {/* CATALOG (full library view) */}
                 <Route path="catalog" element={<MusicCatalog />} />
 
-                {/* PROFILE: User profile page */}
                 <Route path="profile" element={<Profile />} />
-                <Route path="checkout" element={<Checkout />} />
-                <Route path="license" element={<License />} />
+                <Route
+                  path="checkout"
+                  element={
+                    <RequireBuyerPortal>
+                      <Checkout />
+                    </RequireBuyerPortal>
+                  }
+                />
+                <Route
+                  path="license"
+                  element={
+                    <RequireBuyerPortal>
+                      <License />
+                    </RequireBuyerPortal>
+                  }
+                />
               </Routes>
             </AppLayout>
           }

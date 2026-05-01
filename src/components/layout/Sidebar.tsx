@@ -9,7 +9,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ListMusic, PanelLeft, Trash2, Home, ShoppingCart } from "lucide-react";
+import { ListMusic, PanelLeft, Trash2, Home, ShoppingCart, Wrench, LayoutGrid } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   ContextMenu,
@@ -45,39 +45,37 @@ const VLogo = () => (
   </svg>
 );
 
-/* NAVIGATION ITEMS: Configuration for main nav */
-const NAV_ITEMS = [
-  {
-    id: "marketplace",
-    label: "Marketplace",
-    icon: Home,
-    path: "/demo/marketplace",
-  },
-  {
-    id: "search",
-    label: "Search",
-    iconType: "image",
-    iconSrc: "/flower.png",
-    path: "/demo/home",
-  },
-  {
-    id: "catalog",
-    label: "Catalog",
-    icon: ListMusic,
-    path: "/demo/marketplace/discover",
-  },
-  {
-    id: "shoppingCart",
-    label: "Shopping Cart",
-    icon: ShoppingCart,
-    path: "/demo/checkout",
-  },
-] as const;
+type NavItem =
+  | { readonly id: string; readonly label: string; readonly icon: typeof Home; readonly path: string }
+  | {
+      readonly id: string;
+      readonly label: string;
+      readonly iconType: "image";
+      readonly iconSrc: string;
+      readonly path: string;
+    };
+
+const BUYER_NAV_ITEMS: readonly NavItem[] = [
+  { id: "marketplace", label: "Marketplace", icon: Home, path: "/demo/marketplace" },
+  { id: "search", label: "Search", iconType: "image", iconSrc: "/flower.png", path: "/demo/home" },
+  { id: "catalog", label: "Catalog", icon: ListMusic, path: "/demo/marketplace/discover" },
+  { id: "shoppingCart", label: "Shopping Cart", icon: ShoppingCart, path: "/demo/checkout" },
+];
+
+const SELLER_NAV_ITEMS: readonly NavItem[] = [
+  { id: "marketplace", label: "Marketplace", icon: Home, path: "/demo/marketplace" },
+  { id: "dashboard", label: "Dashboard", icon: LayoutGrid, path: "/demo/dashboard" },
+  { id: "search", label: "Search", iconType: "image", iconSrc: "/flower.png", path: "/demo/home" },
+  { id: "pitchKit", label: "Pitch Kit", icon: Wrench, path: "/demo/pitch-kit" },
+  { id: "catalog", label: "Catalog", icon: ListMusic, path: "/demo/catalog" },
+];
 
 export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+
+  const navItems = user?.portal === "seller" ? SELLER_NAV_ITEMS : BUYER_NAV_ITEMS;
 
   /* STATE: Sidebar collapse/expand */
   const [isCollapsed, setIsCollapsed] = useState(() => getSidebarCollapsed());
@@ -120,14 +118,16 @@ export const Sidebar = () => {
     window.dispatchEvent(new Event("sidebarStateChanged"));
   };
 
-  /* HANDLER: Navigate to marketplace page */
   const handleLogoClick = () => {
-    navigate('/demo/marketplace');
+    navigate("/demo/marketplace");
   };
 
-  /* HANDLER: Navigate to specific page */
   const handleNavClick = (path: string) => {
-    navigate(path);
+    if (path === "/demo/search" && location.pathname.startsWith("/demo/search")) {
+      navigate("/demo/search", { state: { reset: true }, replace: true });
+    } else {
+      navigate(path);
+    }
   };
 
   /* HANDLER: Resume chat session */
@@ -158,6 +158,12 @@ export const Sidebar = () => {
   const isNavItemActive = (path: string) => {
     if (path === "/demo/search") {
       return location.pathname.startsWith(path);
+    }
+    if (path === "/demo/home") {
+      return (
+        location.pathname === "/demo/home" ||
+        location.pathname.startsWith("/demo/search")
+      );
     }
     return location.pathname === path;
   };
@@ -230,7 +236,7 @@ export const Sidebar = () => {
           flex flex-col gap-2
         `}
       >
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const isActive = isNavItemActive(item.path);
 
           return (

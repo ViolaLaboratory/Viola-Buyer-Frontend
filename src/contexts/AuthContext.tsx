@@ -5,12 +5,18 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 
+export type UserPortal = "buyer" | "seller";
+
 export interface User {
   id: number;
   username: string;
   email: string;
   profile_image?: string | null;
   plan?: string;
+  account_type: UserPortal;
+  seller_verified: boolean;
+  /** Active session (chooser at login) */
+  portal: UserPortal;
 }
 
 const AUTH_STORAGE_KEY = "viola_user";
@@ -31,6 +37,9 @@ const defaultUser: User = {
   email: "michael@example.com",
   profile_image: "/viola-logo.jpg",
   plan: "Free plan",
+  account_type: "buyer",
+  seller_verified: false,
+  portal: "buyer",
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -40,8 +49,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const stored = localStorage.getItem(AUTH_STORAGE_KEY);
       if (stored) {
-        const parsed = JSON.parse(stored) as User;
-        return { ...defaultUser, ...parsed };
+        const parsed = JSON.parse(stored) as Partial<User>;
+        return {
+          ...defaultUser,
+          ...parsed,
+          account_type: parsed.account_type ?? "buyer",
+          seller_verified: parsed.seller_verified ?? false,
+          portal: parsed.portal ?? "buyer",
+        };
       }
     } catch {
       // ignore
@@ -93,6 +108,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email: u.email ?? "",
       profile_image: u.profile_image ?? "/viola-logo.jpg",
       plan: u.plan ?? "Free plan",
+      account_type: u.account_type ?? "buyer",
+      seller_verified: u.seller_verified ?? false,
+      portal: u.portal ?? "buyer",
     });
   }, []);
 
