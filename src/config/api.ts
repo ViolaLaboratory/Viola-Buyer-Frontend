@@ -36,6 +36,10 @@ export const API_ENDPOINTS = {
   },
   SONGS_SEARCH: (query: string, page?: number, limit?: number) =>
     `${API_BASE_URL}/music/songs/search/?q=${encodeURIComponent(query)}${page ? `&page=${page}` : ''}${limit ? `&limit=${limit}` : ''}`,
+
+  // Dashboard APIs
+  DASHBOARD_OVERVIEW: `${API_BASE_URL}/dashboard/overview/`,
+  DASHBOARD_DETAILS: `${API_BASE_URL}/dashboard/details/`,
   
   // User Authentication APIs
   LOGIN: `${API_BASE_URL}/users/login/`,
@@ -62,6 +66,15 @@ export const API_ENDPOINTS = {
   CHECKOUT_SUBMIT: `${API_BASE_URL}/music/checkout/submit/`,
   LICENSE_INITIATE: `${API_BASE_URL}/music/license/initiate/`,
   LICENSE_UPLOAD_SIGNED: `${API_BASE_URL}/music/license/upload-signed/`,
+
+  // Rate Card
+  TERRITORIES: `${API_BASE_URL}/music/territories/`,
+  COUNTRIES: `${API_BASE_URL}/music/countries/`,
+  SONG_SETTINGS: (songId: string) => `${API_BASE_URL}/music/songs/${songId}/settings/`,
+  SONG_UPDATE_SETTINGS: (songId: string) => `${API_BASE_URL}/music/songs/${songId}/settings/`,
+  SONG_ADD_BRAND_RESTRICTION: (songId: string) => `${API_BASE_URL}/music/songs/${songId}/brand-restrictions/`,
+  SONG_REMOVE_BRAND_RESTRICTION: (songId: string, restrictionId: number) =>
+    `${API_BASE_URL}/music/songs/${songId}/brand-restrictions/${restrictionId}/`,
 
   // Chat sessions (persist to DB)
   CHATS_LIST: `${API_BASE_URL}/chats/`,
