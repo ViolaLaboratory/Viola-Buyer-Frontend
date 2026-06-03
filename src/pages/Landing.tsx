@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect, useCallback, MouseEvent, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Bug, X, CloudUpload, Drill, BrainCircuit, CheckCircle2, Check, FileCheck, ChevronRight, ChevronLeft } from "lucide-react";
+import { ArrowRight, Bug, X, CloudUpload, Drill, BrainCircuit, CheckCircle2, Check, ChevronRight, ChevronLeft } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Footer from "@/components/Footer";
 
@@ -59,15 +59,15 @@ const featureTabs = [
     label: "AI Search",
     icon: <BrainCircuit className="w-4 h-4" />,
     headline: "Find the perfect track in seconds",
-    body: "Type your brief in plain language — mood, tempo, genre, reference, story. Viola understands creative context, not just keywords. No more blind metadata filtering or endless scroll.",
+    body: "Type your brief in natural language, from mood, tempo, genre, and storyline. Viola understands the creative context and provides the best fitting songs.",
     video: searchVideo,
   },
   {
     id: "pitch",
     label: "Pitch Kit Builder",
     icon: <Drill className="w-4 h-4" />,
-    headline: "Curate and pitch with confidence",
-    body: "Build ready-to-send pitch kits in a few clicks. Viola auto-populates metadata, cover art, licensing info, and audio files — clean, consistent, and synced to your catalog every time.",
+    headline: "Access the songs you want to license with ease",
+    body: "Browse a marketplace of commercially recorded songs that are all pre-approved and ready for sync.",
     video: pitchVideo,
   },
   {
@@ -75,15 +75,7 @@ const featureTabs = [
     label: "Catalog Viewer",
     icon: <CloudUpload className="w-4 h-4" />,
     headline: "Everything in one workspace",
-    body: "Drag and drop your songs and have everything in one place. See metadata, mood, and licensing status at a glance — integrated with smart search and the pitch builder.",
-    video: catalogueVideo,
-  },
-  {
-    id: "license",
-    label: "Licensing",
-    icon: <FileCheck className="w-4 h-4" />,
-    headline: "Clear tracks faster than ever",
-    body: "Licensing information lives alongside your tracks. No separate systems, no chasing threads — approvals, status, and sign-offs all handled in the same workspace.",
+    body: "Find the song you want, select all the licensing terms to clear that song, and sign the licensing agreement all in one place.",
     video: catalogueVideo,
   },
 ];
