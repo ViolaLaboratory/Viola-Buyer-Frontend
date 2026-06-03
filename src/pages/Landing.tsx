@@ -300,7 +300,7 @@ const Landing = () => {
             <span className="text-white/50 italic">effortlessly.</span>
           </h1>
 
-          <p className="text-lg text-white/55 max-w-2xl mx-auto leading-relaxed font-dm opacity-0 fade-up [animation-delay:350ms]">
+          <p className="text-lg text-white max-w-2xl mx-auto leading-relaxed font-dm opacity-0 fade-up [animation-delay:350ms]">
             Viola is the all-in-one platform and marketplace that makes music licensing simple, efficient, and accessible for everyone's creative projects.
           </p>
 
