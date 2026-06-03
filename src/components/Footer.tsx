@@ -54,29 +54,25 @@ const Footer = () => {
       }}
     >
       {/* CTA Section */}
-      <section className="px-6 md:px-12 pt-16 md:pt-24 lg:pt-32 mx-auto lg:mx-6">
-        <div className="flex flex-col md:flex-row items-center justify-evenly w-full text-center md:text-left">
-          <div className="w-3/4">
-          <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-4 md:mb-6 font-zen w-full">
+      <section className="px-6 md:px-12 py-16 md:py-24 mx-auto max-w-3xl">
+        <div className="flex flex-col items-center text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 font-zen">
             Ready to <span className="italic">revolutionize</span> your music discovery?
           </h2>
-          <p className="text-base md:text-lg lg:text-xl text-white/60 font-dm mb-8 md:mb-12">
-            Join our waitlist and be among the first to{" "}
-            <span className="italic">locate, listen, & license</span> in &lt;30 mins.
+          <p className="text-base md:text-lg text-white/60 font-dm mb-8">
+            Join our waitlist to efficiently streamline the music licensing process.
           </p>
-          </div>
 
-          <div className="text-center mb-8">
-            <Button ref={(el) => (buttonRefs.current[3] = el)}
-                onMouseMove={(e) => handleMouseMove(e, 3)}
-                className="group relative transition duration-500 text-lg mb-10 px-8 py-6 bg-[#e4ea04] text-black hover:bg-[#e4ea04]/90 hover:shadow-[0_0_20px_rgba(228,234,4,0.5),0_0_40px_rgba(228,234,4,0.2)] overflow-hidden before:absolute before:inset-0 before:rounded-xl before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 before:bg-[radial-gradient(circle_100px_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.2),transparent)]"
-                onClick={handleJoinWaitlist}
-              >
-                <span className="relative z-10">Request Early Access</span>
-                <ArrowRight className="w-4 h-4 ml-2 relative z-10" />
-              </Button>
-            <p className="text-base md:text-lg font-medium mb-4">Follow the Journey</p>
-            <div className="flex gap-4 justify-center">
+          <Button ref={(el) => (buttonRefs.current[3] = el)}
+              onMouseMove={(e) => handleMouseMove(e, 3)}
+              className="group relative transition duration-500 text-base mb-12 px-8 py-6 bg-[#e4ea04] text-black hover:bg-[#e4ea04]/90 hover:shadow-[0_0_20px_rgba(228,234,4,0.5),0_0_40px_rgba(228,234,4,0.2)] overflow-hidden before:absolute before:inset-0 before:rounded-xl before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 before:bg-[radial-gradient(circle_100px_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.2),transparent)]"
+              onClick={handleJoinWaitlist}
+            >
+              <span className="relative z-10">Join the Waitlist</span>
+              <ArrowRight className="w-4 h-4 ml-2 relative z-10" />
+            </Button>
+
+          <div className="flex gap-4 justify-center">
               <a
                 href="https://www.instagram.com/viola.labs/"
                 target="_blank"
@@ -120,24 +116,16 @@ const Footer = () => {
                   />
                 </svg>
               </a>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Footer Content */}
-      <section className="pt-8 px2">
-        <div className="relative w-full h-[200px] overflow-hidden bg-black">
-          <img
-            src="/viola_text.svg"
-            className="w-full h-full object-cover object-top"
-            style={{ clipPath: "inset(0 0 0% 0)" }}
-          />
-          <p className="absolute bg-black p-2 rounded-full bottom-4 left-1/2 -translate-x-1/2 text-sm text-muted-foreground text-center">
-            &copy; {new Date().getFullYear()} Viola Labs LLC. All rights reserved.
-          </p>
-        </div>
-      </section>
+      {/* Bottom bar */}
+      <div className="border-t border-white/10 px-6 md:px-12 py-6">
+        <p className="text-xs text-white/40 text-center font-dm">
+          &copy; {new Date().getFullYear()} Viola Labs LLC. All rights reserved.
+        </p>
+      </div>
     </footer>
   );
 };
