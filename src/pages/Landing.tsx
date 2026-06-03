@@ -343,7 +343,14 @@ const Landing = () => {
                 <source src={searchVideo} type="video/mp4" />
               </video>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+            <button
+              onClick={() => navigate("/demo/marketplace")}
+              className="group absolute left-1/2 bottom-6 -translate-x-1/2 z-10 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#e4ea04] text-black text-sm font-semibold shadow-[0_8px_30px_rgba(228,234,4,0.4)] hover:bg-[#e4ea04]/90 hover:shadow-[0_0_36px_rgba(228,234,4,0.55)] transition-all duration-200"
+            >
+              Try the marketplace for free
+              <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+            </button>
           </div>
           <div className="absolute -bottom-px left-0 right-0 h-32 bg-gradient-to-t from-[#0e0e10] to-transparent pointer-events-none" />
         </div>
