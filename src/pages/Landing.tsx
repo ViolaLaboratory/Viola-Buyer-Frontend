@@ -57,7 +57,7 @@ const featureTabs = [
   },
   {
     id: "pitch",
-    label: "Pitch Kit Builder",
+    label: "Marketplace",
     icon: <Drill className="w-4 h-4" />,
     headline: "Access the songs you want to license with ease",
     body: "Browse a marketplace of commercially recorded songs that are all pre-approved and ready for sync.",
@@ -65,7 +65,7 @@ const featureTabs = [
   },
   {
     id: "catalog",
-    label: "Catalog Viewer",
+    label: "One Workspace",
     icon: <CloudUpload className="w-4 h-4" />,
     headline: "Everything in one workspace",
     body: "Find the song you want, select all the licensing terms to clear that song, sign the licensing agreement all in one place, and pay all in one place.",
@@ -104,6 +104,7 @@ const Landing = () => {
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const [scrolled, setScrolled]               = useState(false);
+  const [activeTab, setActiveTab]             = useState(0);
   const [videoErrors, setVideoErrors]         = useState<Record<string, boolean>>({});
   const [heroVideoFailed, setHeroVideoFailed] = useState(false);
   const [searchQuery, setSearchQuery]         = useState("");
@@ -146,6 +147,21 @@ const Landing = () => {
     const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setWithViolaVisible(true); }, { threshold: 0.3 });
     obs.observe(el);
     return () => obs.disconnect();
+  }, []);
+
+  // Scroll-spy: highlight active feature tab as each feature scrolls into view
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+    featureRefs.current.forEach((el, i) => {
+      if (!el) return;
+      const o = new IntersectionObserver(
+        ([e]) => { if (e.isIntersecting) setActiveTab(i); },
+        { rootMargin: "-40% 0px -45% 0px", threshold: 0 }
+      );
+      o.observe(el);
+      observers.push(o);
+    });
+    return () => observers.forEach(o => o.disconnect());
   }, []);
 
   // Typing animation
@@ -368,6 +384,28 @@ const Landing = () => {
             </h2>
           </div>
 
+          {/* Sticky jump-tabs — segmented control */}
+          <div className="sticky top-[72px] z-30 mb-16">
+            <div className="flex justify-center overflow-x-auto px-1 py-1">
+              <div className="inline-flex items-center gap-1 p-1 rounded-full border border-white/10 bg-[#0d0d10]/80 backdrop-blur-md shadow-lg shadow-black/30">
+                {featureTabs.map((tab, i) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                      activeTab === i
+                        ? "bg-[#e4ea04] text-black shadow-[0_0_16px_rgba(228,234,4,0.35)]"
+                        : "text-white/50 hover:text-white"
+                    }`}
+                  >
+                    {tab.icon}
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
           {/* All features stacked */}
           <div className="space-y-24 lg:space-y-32">
             {featureTabs.map((tab, i) => (
@@ -377,10 +415,6 @@ const Landing = () => {
                 className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center scroll-mt-32"
               >
                 <div className={`space-y-5 ${i % 2 === 1 ? "lg:order-2" : ""}`}>
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#e4ea04]/10 text-[#e4ea04] text-xs font-medium ring-1 ring-[#e4ea04]/30">
-                    {tab.icon}
-                    {tab.label}
-                  </div>
                   <h3 className="font-zen text-3xl md:text-4xl font-semibold text-white leading-snug">
                     {tab.headline}
                   </h3>
