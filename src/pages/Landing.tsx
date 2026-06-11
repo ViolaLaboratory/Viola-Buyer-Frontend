@@ -45,13 +45,6 @@ function useInView(threshold = 0.12) {
   return { ref, inView };
 }
 
-// ─── Marquee companies ────────────────────────────────────────────────────────
-const marqueeItems = [
-  "Netflix", "Apple TV+", "Amazon Studios", "Warner Bros.",
-  "Universal Pictures", "Sony Pictures", "Paramount+", "Hulu",
-  "Disney+", "A24", "HBO", "Peacock", "Lionsgate", "Spotify",
-];
-
 // ─── Feature tabs (Warp-style "Why Viola" switcher) ───────────────────────────
 const featureTabs = [
   {
@@ -75,7 +68,7 @@ const featureTabs = [
     label: "Catalog Viewer",
     icon: <CloudUpload className="w-4 h-4" />,
     headline: "Everything in one workspace",
-    body: "Find the song you want, select all the licensing terms to clear that song, and sign the licensing agreement all in one place.",
+    body: "Find the song you want, select all the licensing terms to clear that song, sign the licensing agreement all in one place, and pay all in one place.",
     video: catalogueVideo,
   },
 ];
@@ -111,7 +104,6 @@ const Landing = () => {
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const [scrolled, setScrolled]               = useState(false);
-  const [activeTab, setActiveTab]             = useState(0);
   const [videoErrors, setVideoErrors]         = useState<Record<string, boolean>>({});
   const [heroVideoFailed, setHeroVideoFailed] = useState(false);
   const [searchQuery, setSearchQuery]         = useState("");
@@ -133,7 +125,6 @@ const Landing = () => {
   };
   const featureRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const trustSection        = useInView(0.2);
   const whySection          = useInView(0.1);
   const outcomesSection     = useInView(0.1);
   const testimonialsSection = useInView(0.1);
@@ -155,21 +146,6 @@ const Landing = () => {
     const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setWithViolaVisible(true); }, { threshold: 0.3 });
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
-
-  // Scroll-spy: highlight active feature tab as each feature scrolls into view
-  useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-    featureRefs.current.forEach((el, i) => {
-      if (!el) return;
-      const o = new IntersectionObserver(
-        ([e]) => { if (e.isIntersecting) setActiveTab(i); },
-        { rootMargin: "-40% 0px -45% 0px", threshold: 0 }
-      );
-      o.observe(el);
-      observers.push(o);
-    });
-    return () => observers.forEach(o => o.disconnect());
   }, []);
 
   // Typing animation
@@ -356,25 +332,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── Trust / Logo Marquee ── */}
-      <div ref={trustSection.ref} className={`py-14 border-y border-white/6 mt-8 transition-all duration-700 ${trustSection.inView ? "opacity-100" : "opacity-0"}`}>
-        <p className="text-center text-white/30 text-xs uppercase tracking-widest mb-8 font-dm">
-          Trusted by teams placing music at
-        </p>
-        <div className="relative flex overflow-hidden">
-          <div className="flex gap-16 animate-marquee whitespace-nowrap select-none">
-            {[...marqueeItems, ...marqueeItems].map((name, i) => (
-              <span key={i} className="text-white/20 font-zen font-semibold text-sm uppercase tracking-widest hover:text-white/50 transition-colors duration-300 cursor-default">
-                {name}
-              </span>
-            ))}
-          </div>
-        </div>
-        <p className="text-center text-white/25 text-xs font-dm mt-8">
-          Trusted by sync teams, music supervisors, and licensing managers worldwide
-        </p>
-      </div>
-
       {/* ── Problem ── */}
       <section className="py-20 px-5">
         <div className="max-w-3xl mx-auto">
@@ -387,7 +344,7 @@ const Landing = () => {
           </h2>
           <div className="space-y-3">
             {[
-              "3–4 hours of manual searching and sifting tracks for every placement",
+              "Can take Months to license a song for your project",
               "Unorganized and inefficient communication for every music license negotiated",
               "Inaccessible music licenses leave money on the table",
             ].map((item) => (
@@ -409,28 +366,6 @@ const Landing = () => {
             <h2 className="font-zen text-4xl md:text-5xl font-semibold text-white leading-tight">
               Why Viola
             </h2>
-          </div>
-
-          {/* Sticky jump-tabs — segmented control */}
-          <div className="sticky top-[72px] z-30 mb-16">
-            <div className="flex justify-center overflow-x-auto px-1 py-1">
-              <div className="inline-flex items-center gap-1 p-1 rounded-full border border-white/10 bg-[#0d0d10]/80 backdrop-blur-md shadow-lg shadow-black/30">
-                {featureTabs.map((tab, i) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                      activeTab === i
-                        ? "bg-[#e4ea04] text-black shadow-[0_0_16px_rgba(228,234,4,0.35)]"
-                        : "text-white/50 hover:text-white"
-                    }`}
-                  >
-                    {tab.icon}
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* All features stacked */}
