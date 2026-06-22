@@ -991,7 +991,7 @@ export const SearchInterface = () => {
                   onClick={() => setShowPitchSelection(false)}
                   className="rounded-full"
                 >
-                  <X className="h-4 w-4 m-2 hover:bg-[#e4ea04]" />
+                  <X className="h-4 w-4 m-2 hover:bg-white/15" />
                 </Button>
               </div>
 

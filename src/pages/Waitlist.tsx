@@ -191,7 +191,7 @@ const Waitlist = () => {
           <Button
             ref={(el) => (buttonRefs.current[0] = el)}
             onMouseMove={(e) => handleMouseMove(e, 0)}
-            className="group relative transition duration-500 ease-in-out hover:cursor-pointer rounded-2xl border border-white px-6 py-2 font-medium bg-transparent text-white min-w-[150px] hover:border-[#e4ea04] hover:text-black hover:bg-[#e4ea04] overflow-hidden before:absolute before:inset-0 before:rounded-2xl before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 before:bg-[radial-gradient(circle_80px_at_var(--mouse-x)_var(--mouse-y),rgba(228,234,4,0.15),transparent)]"
+            className="group relative transition duration-500 ease-in-out hover:cursor-pointer rounded-2xl border border-white px-6 py-2 font-medium bg-transparent text-white min-w-[150px] hover:border-white/40 hover:bg-white/10 overflow-hidden before:absolute before:inset-0 before:rounded-2xl before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 before:bg-[radial-gradient(circle_80px_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.15),transparent)]"
             onClick={() => navigate("/")}
           >
             <span className="relative z-10 flex items-center justify-center gap-2">
@@ -231,7 +231,7 @@ const Waitlist = () => {
             />
             <div className="space-y-2 flip-up" style={{ animationDelay: "60ms" }}>
               <Label htmlFor="firstName" className="text-white font-medium">
-                First Name <span className="text-[#e4ea04]">*</span>
+                First Name <span className="text-amber">*</span>
               </Label>
               <Input
                 id="firstName"
@@ -241,13 +241,13 @@ const Waitlist = () => {
                 value={formData.firstName}
                 onChange={handleInputChange}
                 placeholder="John"
-                className="w-full bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-[#e4ea04] focus:ring-[#e4ea04]"
+                className="w-full bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-white/20"
               />
             </div>
 
             <div className="space-y-2 flip-up" style={{ animationDelay: "120ms" }}>
               <Label htmlFor="lastName" className="text-white font-medium">
-                Last Name <span className="text-[#e4ea04]">*</span>
+                Last Name <span className="text-amber">*</span>
               </Label>
               <Input
                 id="lastName"
@@ -257,13 +257,13 @@ const Waitlist = () => {
                 value={formData.lastName}
                 onChange={handleInputChange}
                 placeholder="Doe"
-                className="w-full bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-[#e4ea04] focus:ring-[#e4ea04]"
+                className="w-full bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-white/20"
               />
             </div>
 
             <div className="space-y-2 flip-up" style={{ animationDelay: "180ms" }}>
               <Label htmlFor="email" className="text-white font-medium">
-                Email <span className="text-[#e4ea04]">*</span>
+                Email <span className="text-amber">*</span>
               </Label>
               <Input
                 id="email"
@@ -273,13 +273,13 @@ const Waitlist = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="john@example.com"
-                className="w-full bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-[#e4ea04] focus:ring-[#e4ea04]"
+                className="w-full bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-white/20"
               />
             </div>
 
             <div className="space-y-2 flip-up" style={{ animationDelay: "240ms" }}>
               <Label htmlFor="relation" className="text-white font-medium">
-                Relation to the Music Industry <span className="text-[#e4ea04]">*</span>
+                Relation to the Music Industry <span className="text-amber">*</span>
               </Label>
               <Select
                 value={formData.relation}
@@ -294,7 +294,7 @@ const Waitlist = () => {
               >
                 <SelectTrigger
                   id="relation"
-                  className="w-full bg-white/5 border-white/20 text-white focus:border-[#e4ea04] focus:ring-[#e4ea04]"
+                  className="w-full bg-white/5 border-white/20 text-white focus:border-white/30 focus:ring-white/20"
                 >
                   <SelectValue placeholder="Select your relation to the music industry" />
                 </SelectTrigger>
@@ -333,7 +333,7 @@ const Waitlist = () => {
                     value={formData.customRelation}
                     onChange={handleInputChange}
                     placeholder="Please specify your relation"
-                    className="w-full bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-[#e4ea04] focus:ring-[#e4ea04]"
+                    className="w-full bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-white/20"
                   />
                 </div>
               )}
@@ -341,7 +341,7 @@ const Waitlist = () => {
 
             <div className="space-y-2 flip-up" style={{ animationDelay: "300ms" }}>
               <Label htmlFor="favoriteSong" className="text-white font-medium">
-                Favorite Song <span className="text-[#e4ea04]">*</span>
+                Favorite Song <span className="text-amber">*</span>
               </Label>
               <Textarea
                 id="favoriteSong"
@@ -350,14 +350,14 @@ const Waitlist = () => {
                 value={formData.favoriteSong}
                 onChange={handleInputChange}
                 placeholder="Artist - Song Title"
-                className="w-full resize-none bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-[#e4ea04] focus:ring-[#e4ea04]"
+                className="w-full resize-none bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-white/20"
                 rows={2}
               />
             </div>
 
             <div className="space-y-2 flip-up" style={{ animationDelay: "330ms" }}>
               <Label htmlFor="teamSize" className="text-white font-medium">
-                Team Size <span className="text-[#e4ea04]">*</span>
+                Team Size <span className="text-amber">*</span>
               </Label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
@@ -372,7 +372,7 @@ const Waitlist = () => {
                     onClick={() => setFormData((prev) => ({ ...prev, teamSize: option.value }))}
                     className={`px-4 py-3 rounded-lg text-sm font-bold transition-all duration-300 ${
                       formData.teamSize === option.value
-                        ? "bg-[#e4ea04]/30 text-white border border-[#e4ea04]/50 shadow-[0_0_15px_rgba(228,234,4,0.4)]"
+                        ? "bg-white/15 text-white border border-white/25"
                         : "bg-white/5 text-white border border-white/20 hover:border-[#EE481F]/50 hover:bg-white/10"
                     }`}
                   >
@@ -385,7 +385,7 @@ const Waitlist = () => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#e4ea04] text-black hover:bg-[#e4ea04]/90 hover:shadow-[0_0_20px_rgba(228,234,4,0.4),0_0_40px_rgba(228,234,4,0.2)] py-6 text-lg font-medium transition duration-500 flip-up"
+              className="w-full py-6 text-lg font-medium transition duration-500 flip-up rounded-md glass-btn glass-btn-primary"
               style={{ animationDelay: "390ms" }}
             >
               {isSubmitting ? "Submitting..." : "Submit"}

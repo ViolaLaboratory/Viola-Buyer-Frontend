@@ -460,7 +460,7 @@ export const ResultsPanel = ({
                     title="Click to seek"
                   >
                     <div
-                      className="absolute left-0 top-0 h-full bg-[#e4ea04] rounded-full transition-all duration-300"
+                      className="absolute left-0 top-0 h-full bg-amber rounded-full transition-all duration-300"
                       style={{ width: `${progress}%` }}
                     />
                     <div className="absolute inset-0 rounded-full group-hover:bg-white/10 transition-colors" />

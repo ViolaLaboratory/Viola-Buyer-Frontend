@@ -65,7 +65,7 @@ const Footer = () => {
 
           <Button ref={(el) => (buttonRefs.current[3] = el)}
               onMouseMove={(e) => handleMouseMove(e, 3)}
-              className="group relative transition duration-500 text-base mb-12 px-8 py-6 bg-[#e4ea04] text-black hover:bg-[#e4ea04]/90 hover:shadow-[0_0_20px_rgba(228,234,4,0.5),0_0_40px_rgba(228,234,4,0.2)] overflow-hidden before:absolute before:inset-0 before:rounded-xl before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 before:bg-[radial-gradient(circle_100px_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.2),transparent)]"
+              className="group relative transition duration-500 text-base mb-12 px-8 py-6 rounded-xl glass-btn glass-btn-primary overflow-hidden before:absolute before:inset-0 before:rounded-xl before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 before:bg-[radial-gradient(circle_100px_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.2),transparent)]"
               onClick={handleJoinWaitlist}
             >
               <span className="relative z-10">Join the Waitlist</span>
@@ -77,7 +77,7 @@ const Footer = () => {
                 href="https://www.instagram.com/viola.labs/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 flex items-center justify-center rounded-full border border-white hover:border-[#e4ea04] hover:bg-[#e4ea04] hover:text-black transition duration-500 hover:shadow-sm hover:shadow-[#e4ea04]"
+                className="w-10 h-10 flex items-center justify-center rounded-full border border-white/30 hover:border-white/50 hover:bg-white/10 hover:text-white transition duration-500"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path
@@ -91,7 +91,7 @@ const Footer = () => {
                 href="https://www.linkedin.com/company/violalabs/posts/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 flex items-center justify-center rounded-full border border-white hover:border-[#e4ea04] hover:bg-[#e4ea04] hover:text-black transition duration-500 hover:shadow-sm hover:shadow-[#e4ea04]"
+                className="w-10 h-10 flex items-center justify-center rounded-full border border-white/30 hover:border-white/50 hover:bg-white/10 hover:text-white transition duration-500"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
@@ -99,7 +99,7 @@ const Footer = () => {
               </a>
               <a
                 href="mailto:viola@theviola.co"
-                className="w-10 h-10 flex items-center justify-center rounded-full border border-white hover:border-[#e4ea04] hover:bg-[#e4ea04] hover:text-black transition duration-500 hover:shadow-sm hover:shadow-[#e4ea04]"
+                className="w-10 h-10 flex items-center justify-center rounded-full border border-white/30 hover:border-white/50 hover:bg-white/10 hover:text-white transition duration-500"
               >
                 <svg
                   className="w-5 h-5"

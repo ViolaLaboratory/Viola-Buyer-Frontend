@@ -175,7 +175,7 @@ Best,`,
         `}
       </style>
       <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(228,234,4,0.12),transparent_45%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(122,35,204,0.16),transparent_45%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_50%,rgba(238,72,31,0.12),transparent_45%)]"></div>
         <div className="absolute inset-0 opacity-10 mix-blend-screen viola-glow-bg scale-[1.05] animate-heatwave heatwave-allow-mobile"></div>
       </div>
@@ -188,7 +188,7 @@ Best,`,
           <Button
             ref={(el) => (buttonRefs.current[0] = el)}
             onMouseMove={(e) => handleMouseMove(e, 0)}
-            className="group relative transition duration-500 ease-in-out hover:cursor-pointer rounded-2xl border border-white px-6 py-2 font-medium bg-transparent text-white min-w-[150px] hover:border-[#e4ea04] hover:text-black hover:bg-[#e4ea04] overflow-hidden before:absolute before:inset-0 before:rounded-2xl before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 before:bg-[radial-gradient(circle_80px_at_var(--mouse-x)_var(--mouse-y),rgba(228,234,4,0.15),transparent)]"
+            className="group relative transition duration-500 ease-in-out hover:cursor-pointer rounded-2xl border border-white px-6 py-2 font-medium bg-transparent text-white min-w-[150px] hover:border-white/40 hover:bg-white/10 overflow-hidden before:absolute before:inset-0 before:rounded-2xl before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 before:bg-[radial-gradient(circle_80px_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.15),transparent)]"
             onClick={() => navigate("/")}
           >
             <span className="relative z-10 flex items-center justify-center gap-2">
@@ -230,7 +230,7 @@ Best,`,
                 />
                 <Button
                   onClick={handleCopy}
-                  className="w-full sm:w-auto bg-[#e4ea04] text-black hover:bg-[#e4ea04]/90 hover:shadow-[0_0_20px_rgba(228,234,4,0.4),0_0_40px_rgba(228,234,4,0.2)] px-6 transition duration-500"
+                  className="w-full sm:w-auto px-6 rounded-md transition duration-500 glass-btn glass-btn-primary"
                 >
                   {copied ? (
                     <>

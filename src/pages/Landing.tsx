@@ -202,7 +202,7 @@ const Landing = () => {
           background: `
             radial-gradient(circle at 12% 12%, rgba(108,36,232,0.40), transparent 38%),
             radial-gradient(circle at 88% 28%, rgba(238,72,31,0.30), transparent 38%),
-            radial-gradient(circle at 50% 92%, rgba(228,234,4,0.24), transparent 42%),
+            radial-gradient(circle at 50% 92%, rgba(255,214,92,0.20), transparent 42%),
             #09090b
           `,
         }}
@@ -264,7 +264,7 @@ const Landing = () => {
               ref={(el) => (buttonRefs.current[0] = el)}
               onMouseMove={(e) => handleMouseMove(e, 0)}
               onClick={() => navigate("/waitlist")}
-              className="group relative bg-[#e4ea04] text-black hover:bg-[#e4ea04]/90 text-sm px-5 py-2 h-auto rounded-lg font-semibold overflow-hidden transition-all duration-200 hover:shadow-[0_0_20px_rgba(228,234,4,0.4)] focus-visible:ring-0 focus-visible:outline-none"
+              className="group relative text-sm px-5 py-2 h-auto rounded-lg font-semibold overflow-hidden glass-btn glass-btn-primary"
             >
               <span className="relative z-10 flex items-center gap-1.5">
                 Request Access
@@ -287,7 +287,7 @@ const Landing = () => {
             <source src={heroVideo} type="video/mp4" />
           </video>
         )}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(228,234,4,0.07),transparent)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(255,214,92,0.07),transparent)] pointer-events-none" />
 
         <div className="max-w-4xl mx-auto text-center relative z-10 space-y-6">
           <h1 className="font-zen text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[1.08] tracking-tight opacity-0 fade-up [animation-delay:200ms]">
@@ -304,7 +304,7 @@ const Landing = () => {
               ref={(el) => (buttonRefs.current[1] = el)}
               onMouseMove={(e) => handleMouseMove(e, 1)}
               onClick={() => navigate("/waitlist")}
-              className="group bg-[#e4ea04] text-black hover:bg-[#e4ea04]/90 px-7 py-3 h-auto text-base font-semibold rounded-xl transition-all duration-200 hover:shadow-[0_0_30px_rgba(228,234,4,0.35)] focus-visible:ring-0 focus-visible:outline-none"
+              className="group px-7 py-3 h-auto text-base font-semibold rounded-xl glass-btn glass-btn-primary"
             >
               <span className="flex items-center gap-2">
                 Join the Waitlist
@@ -341,7 +341,7 @@ const Landing = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
             <button
               onClick={() => navigate("/demo/marketplace")}
-              className="group absolute left-1/2 bottom-6 -translate-x-1/2 z-10 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#e4ea04] text-black text-sm font-semibold shadow-[0_8px_30px_rgba(228,234,4,0.4)] hover:bg-[#e4ea04]/90 hover:shadow-[0_0_36px_rgba(228,234,4,0.55)] transition-all duration-200"
+              className="group absolute left-1/2 bottom-6 -translate-x-1/2 z-10 gap-2 px-6 py-3 rounded-full text-sm font-semibold glass-btn glass-btn-primary"
             >
               Try the marketplace for free
               <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -397,7 +397,7 @@ const Landing = () => {
                     onClick={() => featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" })}
                     className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                       activeTab === i
-                        ? "bg-[#e4ea04] text-black shadow-[0_0_16px_rgba(228,234,4,0.35)]"
+                        ? "bg-white text-black shadow-[0_0_16px_rgba(255,255,255,0.25)]"
                         : "text-white/50 hover:text-white"
                     }`}
                   >
@@ -426,7 +426,7 @@ const Landing = () => {
                   </p>
                   <button
                     onClick={() => navigate("/waitlist")}
-                    className="inline-flex items-center gap-2 text-[#e4ea04] text-sm font-medium hover:gap-3 transition-all duration-200"
+                    className="inline-flex items-center gap-2 text-white/90 hover:text-amber text-sm font-medium hover:gap-3 transition-all duration-200"
                   >
                     Join the Waitlist <ChevronRight className="w-4 h-4" />
                   </button>
@@ -454,7 +454,7 @@ const Landing = () => {
 
       {/* ── Callout Banner ── */}
       <section className="px-5 py-6">
-        <div className="max-w-6xl mx-auto overflow-hidden rounded-2xl bg-[#e4ea04] text-black py-16 px-8 text-center space-y-3">
+        <div className="max-w-6xl mx-auto overflow-hidden rounded-2xl border border-white/15 bg-white/[0.06] backdrop-blur-sm text-white py-16 px-8 text-center space-y-3">
           <p className="uppercase tracking-[0.25em] text-xs font-dm opacity-60">Locate · Listen · License</p>
           <h2 className="font-zen font-semibold text-2xl md:text-3xl lg:text-4xl leading-tight max-w-4xl mx-auto">
             <span className="md:whitespace-nowrap">From Negotiation that feels Endless to</span>{" "}
@@ -512,10 +512,10 @@ const Landing = () => {
 
             <div
               ref={withViolaRef}
-              className={`rounded-2xl border border-[#e4ea04]/50 bg-gradient-to-br from-[#e4ea04] via-[#e4ea04]/95 to-[#e4ea04] text-black p-6 md:p-8 space-y-5 shadow-[0_0_80px_rgba(228,234,4,0.45)] ${withViolaVisible ? "flicker-on" : "opacity-80"}`}
+              className={`rounded-2xl border border-white/20 bg-gradient-to-br from-white/15 via-white/10 to-white/[0.06] text-white p-6 md:p-8 space-y-5 shadow-[0_0_60px_rgba(255,255,255,0.08)] ${withViolaVisible ? "flicker-on" : "opacity-80"}`}
             >
-              <div className="inline-flex items-center gap-2 text-black text-xs uppercase tracking-widest font-dm font-bold">
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-black shadow-sm"><Check className="w-3.5 h-3.5 text-[#e4ea04]" /></span>
+              <div className="inline-flex items-center gap-2 text-white text-xs uppercase tracking-widest font-dm font-bold">
+                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/15 shadow-sm"><Check className="w-3.5 h-3.5 text-white" /></span>
                 With Viola
               </div>
 
@@ -538,14 +538,14 @@ const Landing = () => {
                 },
               ].map((section) => (
                 <div key={section.group} className="space-y-3">
-                  <p className="font-dm text-black/60 text-xs font-bold uppercase tracking-wider">{section.group}</p>
-                  <ul className="space-y-2.5 text-black text-sm list-none">
+                  <p className="font-dm text-white/50 text-xs font-bold uppercase tracking-wider">{section.group}</p>
+                  <ul className="space-y-2.5 text-white/80 text-sm list-none">
                     {section.items.map((item) => (
                       <li key={item.main} className="flex items-start gap-2.5">
-                        <Check className="w-4 h-4 text-black/80 mt-0.5 flex-shrink-0" />
+                        <Check className="w-4 h-4 text-white/70 mt-0.5 flex-shrink-0" />
                         <span className="flex flex-col">
                           <span className="font-semibold">{item.main}</span>
-                          {item.sub && <span className="text-black/60">{item.sub}</span>}
+                          {item.sub && <span className="text-white/50">{item.sub}</span>}
                         </span>
                       </li>
                     ))}
@@ -593,14 +593,14 @@ const Landing = () => {
                       <div className="space-y-5 select-none">
                         <div className="flex gap-1">
                           {Array.from({ length: 5 }).map((_, i) => (
-                            <svg key={i} className="w-4 h-4 text-[#e4ea04]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg key={i} className="w-4 h-4 text-amber" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                           ))}
                         </div>
                         <p className="font-zen text-xl md:text-2xl text-white/90 leading-relaxed">
                           "{t.quote}"
                         </p>
                         <div className="flex items-center gap-3 text-sm text-white/45 font-dm">
-                          <div className="h-px w-8 bg-[#e4ea04]/60 flex-shrink-0" />
+                          <div className="h-px w-8 bg-white/30 flex-shrink-0" />
                           <span>{t.name} · {t.role}{t.company ? ` @ ${t.company}` : ""}</span>
                         </div>
                       </div>
@@ -614,14 +614,14 @@ const Landing = () => {
             <button
               aria-label="Previous testimonial"
               onClick={() => goToTestimonial(testimonialIndex - 1)}
-              className="absolute left-0 md:-left-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-white/15 bg-[#0d0d10]/80 backdrop-blur-md flex items-center justify-center text-white/70 hover:text-black hover:bg-[#e4ea04] hover:border-[#e4ea04] transition-all duration-300"
+              className="absolute left-0 md:-left-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-white/15 bg-[#0d0d10]/80 backdrop-blur-md flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 hover:border-white/30 transition-all duration-300"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               aria-label="Next testimonial"
               onClick={() => goToTestimonial(testimonialIndex + 1)}
-              className="absolute right-0 md:-right-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-white/15 bg-[#0d0d10]/80 backdrop-blur-md flex items-center justify-center text-white/70 hover:text-black hover:bg-[#e4ea04] hover:border-[#e4ea04] transition-all duration-300"
+              className="absolute right-0 md:-right-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-white/15 bg-[#0d0d10]/80 backdrop-blur-md flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 hover:border-white/30 transition-all duration-300"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -634,7 +634,7 @@ const Landing = () => {
                 key={t.name}
                 aria-label={`Go to testimonial ${i + 1}`}
                 onClick={() => goToTestimonial(i)}
-                className={`h-2 rounded-full transition-all duration-300 ${i === testimonialIndex ? "w-8 bg-[#e4ea04]" : "w-2 bg-white/20 hover:bg-white/40"}`}
+                className={`h-2 rounded-full transition-all duration-300 ${i === testimonialIndex ? "w-8 bg-white" : "w-2 bg-white/20 hover:bg-white/40"}`}
               />
             ))}
           </div>
@@ -649,13 +649,13 @@ const Landing = () => {
             <h2 className="text-3xl md:text-4xl font-zen font-semibold text-white">Built for people who have musical taste</h2>
           </div>
           <div className="grid md:grid-cols-2 gap-5">
-            <div className="relative p-8 space-y-4 rounded-2xl border border-[#e4ea04]/25 bg-gradient-to-br from-[#e4ea04]/8 via-transparent to-transparent hover:border-[#e4ea04]/45 transition-all duration-300">
-              <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-[#e4ea04] shadow-[0_0_8px_rgba(228,234,4,0.8)]" />
-              <p className="text-[#e4ea04] text-xs uppercase tracking-widest font-zen font-semibold">Perfect if you are a</p>
+            <div className="relative p-8 space-y-4 rounded-2xl border border-white/15 bg-gradient-to-br from-white/[0.06] via-transparent to-transparent hover:border-white/25 transition-all duration-300">
+              <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-amber shadow-[0_0_8px_rgba(255,214,92,0.7)]" />
+              <p className="text-white/50 text-xs uppercase tracking-widest font-zen font-semibold">Perfect if you are a</p>
               <ul className="space-y-2.5 text-white/70 text-sm">
                 {["Music Supervisor", "Sync Licensing Manager", "Sync Agency Owner", "Record Label or Publishing Company Team Member"].map(r => (
                   <li key={r} className="flex items-center gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-[#e4ea04] flex-shrink-0" />{r}
+                    <CheckCircle2 className="w-4 h-4 text-white/70 flex-shrink-0" />{r}
                   </li>
                 ))}
               </ul>
@@ -712,7 +712,7 @@ const Landing = () => {
               ref={(el) => (buttonRefs.current[2] = el)}
               onMouseMove={(e) => handleMouseMove(e, 2)}
               onClick={() => navigate("/waitlist")}
-              className="group bg-[#e4ea04] text-black hover:bg-[#e4ea04]/90 px-8 py-4 h-auto text-base font-semibold rounded-xl transition-all duration-200 hover:shadow-[0_0_30px_rgba(228,234,4,0.4)] focus-visible:ring-0 focus-visible:outline-none min-w-[220px]"
+              className="group px-8 py-4 h-auto text-base font-semibold rounded-xl min-w-[220px] glass-btn glass-btn-primary"
             >
               <span className="flex items-center justify-center gap-2">
                 Join the Waitlist
@@ -744,17 +744,17 @@ const Landing = () => {
               <AccordionItem
                 key={item.q}
                 value={`item-${idx}`}
-                className="overflow-hidden rounded-xl border border-white/8 bg-white/3 transition-colors duration-200 data-[state=open]:bg-[#e4ea04] data-[state=open]:border-[#e4ea04]"
+                className="overflow-hidden rounded-xl border border-white/8 bg-white/3 transition-colors duration-200 data-[state=open]:bg-white/10 data-[state=open]:border-white/20"
               >
-                <AccordionTrigger className="px-5 py-4 text-left text-white text-sm font-semibold hover:no-underline group transition-colors duration-200 data-[state=open]:text-black">
+                <AccordionTrigger className="px-5 py-4 text-left text-white text-sm font-semibold hover:no-underline group transition-colors duration-200 data-[state=open]:text-white">
                   <span className="flex items-center gap-3">
-                    <span className="inline-flex h-6 w-6 p-4 items-center justify-center rounded-full bg-white/10 text-white text-xs transition-colors duration-200 group-data-[state=open]:bg-black/10 group-data-[state=open]:text-black">
+                    <span className="inline-flex h-6 w-6 p-4 items-center justify-center rounded-full bg-white/10 text-white text-xs transition-colors duration-200 group-data-[state=open]:bg-white/15 group-data-[state=open]:text-white">
                       {idx + 1}
                     </span>
                     {item.q}
                   </span>
                 </AccordionTrigger>
-                <AccordionContent className="px-5 pb-4 text-sm leading-relaxed text-black data-[state=open]:text-black">
+                <AccordionContent className="px-5 pb-4 text-sm leading-relaxed text-white/70 data-[state=open]:text-white/70">
                   {item.a}
                 </AccordionContent>
               </AccordionItem>

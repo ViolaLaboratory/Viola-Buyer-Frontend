@@ -91,7 +91,7 @@ export const Navigation = ({ currentView, onViewChange }: NavigationProps) => {
           </Button>
           <Button
             onClick={() => navigate("/waitlist")}
-            className="rounded-2xl border border-[#e4ea04] px-6 py-2 font-medium transition-all duration-300 bg-[#e4ea04] text-black hover:bg-[#e4ea04]/90 hover:shadow-[0_0_20px_rgba(228,234,4,0.4)]"
+            className="rounded-2xl px-6 py-2 font-medium glass-btn glass-btn-primary"
           >
             Join Waitlist
           </Button>
