@@ -150,20 +150,16 @@
   }
 
   .glass-btn {
-    @apply relative inline-flex items-center justify-center border text-white backdrop-blur-md
+    @apply relative inline-flex items-center justify-center overflow-hidden border text-white backdrop-blur-md
            transition-[background-color,border-color,transform,box-shadow] duration-150 ease-out-quint
            active:scale-[0.97]
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber/60 focus-visible:ring-offset-0;
     /* bright top inner highlight + soft outer shadow = reads as glass */
     box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.22), 0 8px 24px -10px rgba(0, 0, 0, 0.7);
   }
-  .glass-btn-primary {
-    @apply overflow-hidden bg-white/15 border-white/25 hover:bg-white/25 hover:border-white/40;
-  }
-  /* cursor-following white spotlight on hover — the footer-button look, now standard.
-     The nav/hero/bottom/footer CTAs feed --mouse-x/--mouse-y via onMouseMove;
-     buttons without a handler fall back to a centered glow. */
-  .glass-btn-primary::before {
+  /* cursor-following white spotlight on hover — the footer-button look, on EVERY glass button.
+     CTAs with an onMouseMove handler feed --mouse-x/--mouse-y; the rest fall back to a centered glow. */
+  .glass-btn::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -177,13 +173,16 @@
       transparent
     );
   }
-  .glass-btn-primary:hover::before {
+  .glass-btn:hover::before {
     opacity: 1;
   }
-  /* keep button label/icons above the spotlight */
-  .glass-btn-primary > * {
+  /* keep label/icons above the spotlight */
+  .glass-btn > * {
     position: relative;
     z-index: 1;
+  }
+  .glass-btn-primary {
+    @apply bg-white/15 border-white/25 hover:bg-white/25 hover:border-white/40;
   }
   .glass-btn-secondary {
     @apply bg-white/5 border-white/15 hover:bg-white/10 hover:border-white/25;

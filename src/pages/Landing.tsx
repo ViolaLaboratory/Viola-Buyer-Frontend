@@ -106,6 +106,8 @@ const Landing = () => {
 
   const [scrolled, setScrolled]               = useState(false);
   const [activeTab, setActiveTab]             = useState(0);
+  const [tabsStuck, setTabsStuck]             = useState(false);
+  const tabsSentinelRef = useRef<HTMLDivElement>(null);
   const [videoErrors, setVideoErrors]         = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery]         = useState("");
   const [hasSearched, setHasSearched]         = useState(false);
@@ -139,6 +141,19 @@ const Landing = () => {
   }, []);
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  // Stuck-state for the feature jump-tabs: when the sentinel scrolls above the
+  // sticky offset, the tabs pin as a full-bleed glass nav bar.
+  useEffect(() => {
+    const el = tabsSentinelRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => setTabsStuck(!e.isIntersecting),
+      { rootMargin: "-65px 0px 0px 0px", threshold: 0 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   // Flicker animation for "With Viola" card
   useEffect(() => {
@@ -264,7 +279,7 @@ const Landing = () => {
               ref={(el) => (buttonRefs.current[0] = el)}
               onMouseMove={(e) => handleMouseMove(e, 0)}
               onClick={() => navigate("/waitlist")}
-              className="group relative text-sm px-5 py-2 h-auto rounded-lg font-semibold overflow-hidden glass-btn glass-btn-primary"
+              className="group relative hidden md:inline-flex text-sm px-5 py-2 h-auto rounded-lg font-semibold overflow-hidden glass-btn glass-btn-primary"
             >
               <span className="relative z-10 flex items-center gap-1.5">
                 Request Access
@@ -307,7 +322,7 @@ const Landing = () => {
             <Button
               variant="ghost"
               onClick={() => window.location.href = "mailto:viola@theviola.co"}
-              className="text-white/60 hover:text-white hover:bg-white/8 px-7 py-3 h-auto text-base rounded-xl transition-all duration-200 border border-white/10 hover:border-white/25"
+              className="glass-btn glass-btn-secondary px-7 py-3 h-auto text-base rounded-xl hover:bg-white/10 hover:text-white"
             >
               Talk to Our Team
             </Button>
@@ -336,7 +351,8 @@ const Landing = () => {
               onClick={() => navigate("/demo/marketplace")}
               className="group absolute left-1/2 bottom-6 -translate-x-1/2 z-10 gap-2 px-6 py-3 rounded-full text-sm font-semibold glass-btn glass-btn-primary"
             >
-              Try the marketplace for free
+              <span className="sm:hidden">Try it now</span>
+              <span className="hidden sm:inline">Try the marketplace for free</span>
               <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
             </button>
           </div>
@@ -379,29 +395,36 @@ const Landing = () => {
               Why Viola
             </h2>
           </div>
+        </div>
 
-          {/* Sticky jump-tabs — segmented control */}
-          <div className="sticky top-[72px] z-30 mb-16">
-            <div className="flex justify-center overflow-x-auto px-1 py-1">
-              <div className="inline-flex items-center gap-1 p-1 rounded-full border border-white/10 bg-[#0d0d10]/80 backdrop-blur-md shadow-lg shadow-black/30">
-                {featureTabs.map((tab, i) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                      activeTab === i
-                        ? "bg-white text-black shadow-[0_0_16px_rgba(255,255,255,0.25)]"
-                        : "text-white/50 hover:text-white"
-                    }`}
-                  >
-                    {tab.icon}
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
+        {/* Sticky jump-tabs — becomes a full-bleed glass nav bar once you scroll past it (mobile + desktop) */}
+        <div ref={tabsSentinelRef} aria-hidden className="h-px w-full" />
+        <div
+          className={`sticky top-[56px] md:top-[64px] z-30 mb-16 -mx-5 px-5 py-3 transition-colors duration-300 ${
+            tabsStuck ? "border-b border-white/10 bg-[#0b0b0e]/85 backdrop-blur-xl" : ""
+          }`}
+        >
+          <div className="flex justify-center overflow-x-auto px-1 py-1">
+            <div className="inline-flex items-center gap-1 p-1 rounded-full border border-white/10 bg-[#0d0d10]/80 backdrop-blur-md shadow-lg shadow-black/30">
+              {featureTabs.map((tab, i) => (
+                <button
+                  key={tab.id}
+                  onClick={() => featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                    activeTab === i
+                      ? "bg-white text-black shadow-[0_0_16px_rgba(255,255,255,0.25)]"
+                      : "text-white/50 hover:text-white"
+                  }`}
+                >
+                  {tab.icon}
+                  {tab.label}
+                </button>
+              ))}
             </div>
           </div>
+        </div>
 
+        <div className="max-w-6xl mx-auto">
           {/* All features stacked */}
           <div className="space-y-24 lg:space-y-32">
             {featureTabs.map((tab, i) => (
@@ -641,28 +664,46 @@ const Landing = () => {
             <p className="text-white/40 text-xs uppercase tracking-widest font-dm mb-3">Who It's For</p>
             <h2 className="text-3xl md:text-4xl font-zen font-semibold text-white">Built for people who have musical taste</h2>
           </div>
-          <div className="grid md:grid-cols-2 gap-5">
-            <div className="relative p-8 space-y-4 rounded-2xl border border-white/15 bg-gradient-to-br from-white/[0.06] via-transparent to-transparent hover:border-white/25 transition-all duration-300">
-              <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-amber shadow-[0_0_8px_rgba(255,214,92,0.7)]" />
-              <p className="text-white/50 text-xs uppercase tracking-widest font-zen font-semibold">Perfect if you are a</p>
-              <ul className="space-y-2.5 text-white/70 text-sm">
-                {["Music Supervisor", "Sync Licensing Manager", "Sync Agency Owner", "Record Label or Publishing Company Team Member"].map(r => (
-                  <li key={r} className="flex items-center gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-white/70 flex-shrink-0" />{r}
-                  </li>
-                ))}
-              </ul>
+          <div className="grid gap-5 md:grid-cols-2">
+            {/* FIT — who Viola is for */}
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-7 md:p-8 backdrop-blur-sm transition-all duration-300 ease-out-quint hover:-translate-y-1 hover:border-amber/30 hover:bg-white/[0.05]">
+              <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-amber/10 opacity-60 blur-3xl transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="relative space-y-6">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-amber/15 text-amber ring-1 ring-amber/20">
+                    <Check className="h-4 w-4" strokeWidth={2.5} />
+                  </span>
+                  <p className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-amber/90">Perfect if you are a</p>
+                </div>
+                <ul className="space-y-3.5">
+                  {["Music Supervisor", "Sync Licensing Manager", "Sync Agency Owner", "Record Label or Publishing Company Team Member"].map(r => (
+                    <li key={r} className="flex items-start gap-3 text-[15px] leading-snug text-white/80">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber/70" />
+                      <span>{r}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <div className="relative p-8 space-y-4 rounded-2xl border border-[#ee481f]/25 bg-gradient-to-br from-[#ee481f]/8 via-transparent to-transparent hover:border-[#ee481f]/45 transition-all duration-300">
-              <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-[#ee481f] shadow-[0_0_8px_rgba(238,72,31,0.8)]" />
-              <p className="text-[#ee481f] text-xs uppercase tracking-widest font-zen font-semibold">And you're tired of</p>
-              <ul className="space-y-2.5 text-white/70 text-sm">
-                {["Digging through clunky library interfaces", "Unfulfilled and missed sync orders", "Losing months to the licensing negotiation process"].map(r => (
-                  <li key={r} className="flex items-center gap-2.5">
-                    <X className="w-4 h-4 text-[#ee481f] flex-shrink-0" />{r}
-                  </li>
-                ))}
-              </ul>
+            {/* PAIN — what they're tired of */}
+            <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-7 md:p-8 backdrop-blur-sm transition-all duration-300 ease-out-quint hover:-translate-y-1 hover:border-red-orange/30 hover:bg-white/[0.05]">
+              <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-red-orange/10 opacity-60 blur-3xl transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="relative space-y-6">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-orange/15 text-red-orange ring-1 ring-red-orange/20">
+                    <X className="h-4 w-4" strokeWidth={2.5} />
+                  </span>
+                  <p className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-red-orange/90">And you're tired of</p>
+                </div>
+                <ul className="space-y-3.5">
+                  {["Digging through clunky library interfaces", "Unfulfilled and missed sync orders", "Losing months to the licensing negotiation process"].map(r => (
+                    <li key={r} className="flex items-start gap-3 text-[15px] leading-snug text-white/80">
+                      <span className="mt-[7px] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-orange/70" />
+                      <span>{r}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -715,7 +756,7 @@ const Landing = () => {
             <Button
               variant="ghost"
               onClick={() => window.location.href = "mailto:viola@theviola.co?subject=Talk%20with%20Viola&body=Hi%20Viola%20team%2C%0A%0AI%27d%20love%20to%20connect."}
-              className="text-white/50 hover:text-white border border-white/10 hover:border-white/25 hover:bg-white/5 px-8 py-4 h-auto text-base rounded-xl transition-all duration-200 min-w-[220px]"
+              className="glass-btn glass-btn-secondary px-8 py-4 h-auto text-base rounded-xl min-w-[220px] hover:bg-white/10 hover:text-white"
             >
               Talk to Our Team
             </Button>

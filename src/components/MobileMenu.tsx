@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Menu, X, ArrowRight } from "lucide-react";
 
 /**
  * Mobile nav menu (Pass 2). Mirrors the desktop nav links (which are `hidden md:flex`).
@@ -14,6 +15,7 @@ const LINKS = [
 
 export default function MobileMenu() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   const go = (id: string) => {
     setOpen(false);
@@ -59,6 +61,16 @@ export default function MobileMenu() {
                 className="block w-full rounded-xl px-4 py-3 text-left text-sm text-white/70 transition-colors duration-150 ease-out-quint hover:bg-white/5 hover:text-white"
               >
                 Contact
+              </button>
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  navigate("/waitlist");
+                }}
+                className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-xl px-4 py-3 text-sm font-semibold glass-btn glass-btn-primary"
+              >
+                Request Access
+                <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
