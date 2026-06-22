@@ -241,6 +241,7 @@ const Landing = () => {
       `}</style>
 
       {/* ── Sticky Nav ── */}
+      <header>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-[#0e0e10]/90 backdrop-blur-xl border-b border-white/8 shadow-xl shadow-black/40" : "bg-transparent"}`}>
         <div className="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-8">
@@ -273,7 +274,9 @@ const Landing = () => {
           </div>
         </div>
       </nav>
+      </header>
 
+      <main>
       {/* ── Hero ── */}
       <section className="relative pt-32 pb-0 px-5 overflow-hidden">
         {!heroVideoFailed && (
@@ -326,7 +329,7 @@ const Landing = () => {
         <div className="relative mt-16 max-w-6xl mx-auto opacity-0 fade-up [animation-delay:800ms]">
           <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60 shadow-[0_40px_120px_rgba(0,0,0,0.8)] aspect-video">
             {videoErrors["hero"] ? (
-              <img src={fallbackPoster} alt="Viola product" className="w-full h-full object-cover brightness-75" />
+              <img src={fallbackPoster} alt="viola product interface preview" className="w-full h-full object-cover brightness-75" />
             ) : (
               <video autoPlay muted loop playsInline preload="metadata" poster={fallbackPoster} crossOrigin="anonymous"
                 onError={() => setVideoErrors(v => ({ ...v, hero: true }))}
@@ -584,7 +587,7 @@ const Landing = () => {
                           <div className="absolute top-4 left-4 z-10">
                             <LogoMark className="h-6 w-auto" />
                           </div>
-                          <img src="/calloutImage.png" alt="Industry testimonial" className="w-full h-full object-cover" />
+                          <img src="/calloutImage.png" alt="Music industry professional" className="w-full h-full object-cover" />
                         </div>
                       </div>
                       <div className="space-y-5 select-none">
@@ -687,7 +690,7 @@ const Landing = () => {
               <div className="relative">
                 <img
                   src="/flower.png"
-                  alt="Viola"
+                  alt=""
                   className={`absolute invert left-4 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full object-cover transition-all duration-300 ${isSearchFocused ? "opacity-100 scale-100" : "opacity-0 scale-0"}`}
                 />
                 <Input
@@ -760,6 +763,7 @@ const Landing = () => {
         </div>
       </section>
 
+      </main>
       <Footer />
     </div>
   );
