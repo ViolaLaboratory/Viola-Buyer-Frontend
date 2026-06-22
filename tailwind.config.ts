@@ -21,6 +21,13 @@ export default {
         exo: ['"Exo 2"', 'sans-serif'],
       },
       colors: {
+        /* Pass 2 brand palette — pulled from the real app gradient (source of truth) */
+        amber: "#FFD65C",
+        orange: "#F76213",
+        violet: "#7A23CC",
+        "purple-deep": "#2D0351",
+        ink: "#16042F",
+        "ink-900": "#100020",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -76,6 +83,11 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      transitionTimingFunction: {
+        /* Pass 2 motion — crisper than the built-in CSS curves */
+        "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "out-quint": "cubic-bezier(0.22, 1, 0.36, 1)",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -112,10 +124,10 @@ export default {
         },
         "glow-rotate": {
           "0%": {
-            boxShadow: "0 0 0px rgba(228,234,4,0)",
+            boxShadow: "0 0 0px rgba(255,255,255,0)",
           },
           "100%": {
-            boxShadow: "0 0 20px rgba(228,234,4,1), 0 0 40px rgba(228,234,4,0.6)",
+            boxShadow: "0 0 20px rgba(255,255,255,0.5), 0 0 40px rgba(255,255,255,0.25)",
           },
         },
         "flip-up": {
