@@ -14,7 +14,9 @@ import { MeshGradient, meshGradientPresets } from "@paper-design/shaders-react";
  *   - prefers-reduced-motion: reduce
  *   - mobile / small screens (battery + runtime smoothness)
  */
-const SPECTRUM = ["#FFD65C", "#F76213", "#7A23CC", "#16042F"];
+// Seeded from the real product background: red-orange → magenta → bright purple → violet.
+// No near-black here — the page bg + scrim supply the dark, so the mesh itself stays vivid.
+const SPECTRUM = ["#E0481F", "#C81FB5", "#8E2BE8", "#7A23CC"];
 
 function canRunShader(): boolean {
   if (typeof window === "undefined") return false;
@@ -54,9 +56,10 @@ export default function HeroShader() {
         grainOverlay={0.16}
         className="absolute inset-0 h-full w-full"
       />
-      {/* radial bloom from one region + top/bottom dark scrim → headline legibility */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_30%,transparent,rgba(9,9,11,0.55)_78%)]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#09090b]/30 via-transparent to-[#09090b]" />
+      {/* top + bottom dark scrim (headline legibility up top, page blend at the bottom);
+          light center vignette keeps the mid/lower color vivid like the product bg */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#09090b] via-transparent to-[#09090b]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_95%_75%_at_50%_58%,transparent,rgba(9,9,11,0.30)_88%)]" />
     </div>
   );
 }

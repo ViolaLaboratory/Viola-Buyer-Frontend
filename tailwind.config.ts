@@ -24,6 +24,8 @@ export default {
         /* Pass 2 brand palette — pulled from the real app gradient (source of truth) */
         amber: "#FFD65C",
         orange: "#F76213",
+        "red-orange": "#E0481F",
+        magenta: "#C81FB5",
         violet: "#7A23CC",
         "purple-deep": "#2D0351",
         ink: "#16042F",

@@ -58,6 +58,8 @@
     /* Pass 2 brand palette (hex; mirrors the Tailwind tokens) */
     --amber: #FFD65C;
     --orange: #F76213;
+    --red-orange: #E0481F;
+    --magenta: #C81FB5;
     --violet: #7A23CC;
     --purple-deep: #2D0351;
     --ink: #16042F;
@@ -163,9 +165,12 @@
   }
 
   .hero-gradient-fallback {
+    /* mirrors the real product bg: dark top, warm red-orange + magenta + violet blooming from the lower region */
     background-image:
-      radial-gradient(circle at 55% 42%, rgba(255, 214, 92, 0.45), rgba(247, 98, 19, 0.35) 18%, rgba(122, 35, 204, 0.5) 44%, rgba(22, 4, 47, 0.85) 72%),
-      linear-gradient(160deg, var(--ink-900), var(--ink));
+      radial-gradient(circle at 22% 92%, rgba(224, 72, 31, 0.42), transparent 45%),
+      radial-gradient(circle at 62% 104%, rgba(200, 31, 181, 0.45), transparent 52%),
+      radial-gradient(circle at 50% 60%, rgba(122, 35, 204, 0.40), transparent 58%),
+      linear-gradient(180deg, var(--ink-900) 0%, var(--ink) 60%, #1a0530 100%);
   }
 }
 
