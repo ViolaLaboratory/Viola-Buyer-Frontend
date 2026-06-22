@@ -65,7 +65,7 @@ const Footer = () => {
 
           <Button ref={(el) => (buttonRefs.current[3] = el)}
               onMouseMove={(e) => handleMouseMove(e, 3)}
-              className="group relative transition duration-500 text-base mb-12 px-8 py-6 rounded-xl glass-btn glass-btn-primary overflow-hidden before:absolute before:inset-0 before:rounded-xl before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 before:bg-[radial-gradient(circle_100px_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.2),transparent)]"
+              className="group relative transition duration-500 text-base mb-12 px-8 py-6 rounded-xl glass-btn glass-btn-primary"
               onClick={handleJoinWaitlist}
             >
               <span className="relative z-10">Join the Waitlist</span>
