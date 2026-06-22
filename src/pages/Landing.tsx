@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, Bug, X, CloudUpload, Drill, BrainCircuit, CheckCircle2, Check, ChevronRight, ChevronLeft } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Footer from "@/components/Footer";
+import HeroShader from "@/components/HeroShader";
+import MobileMenu from "@/components/MobileMenu";
 
 // ─── Assets ──────────────────────────────────────────────────────────────────
 const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
-const heroVideo      = asset("viola_background.mp4");
 const searchVideo    = asset("violaSearch.mp4");
 const pitchVideo     = asset("violaPitchBuilder.mp4");
 const catalogueVideo = asset("violaCatalogue.mp4");
@@ -106,7 +107,6 @@ const Landing = () => {
   const [scrolled, setScrolled]               = useState(false);
   const [activeTab, setActiveTab]             = useState(0);
   const [videoErrors, setVideoErrors]         = useState<Record<string, boolean>>({});
-  const [heroVideoFailed, setHeroVideoFailed] = useState(false);
   const [searchQuery, setSearchQuery]         = useState("");
   const [hasSearched, setHasSearched]         = useState(false);
   const [placeholderText, setPlaceholderText] = useState("Find ");
@@ -271,6 +271,7 @@ const Landing = () => {
                 <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
               </span>
             </Button>
+            <MobileMenu />
           </div>
         </div>
       </nav>
@@ -279,20 +280,12 @@ const Landing = () => {
       <main>
       {/* ── Hero ── */}
       <section className="relative pt-32 pb-0 px-5 overflow-hidden">
-        {!heroVideoFailed && (
-          <video autoPlay muted loop playsInline preload="metadata" crossOrigin="anonymous"
-            onError={() => setHeroVideoFailed(true)}
-            className="absolute invert top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl blur-[80px] opacity-20 pointer-events-none hidden sm:block"
-          >
-            <source src={heroVideo} type="video/mp4" />
-          </video>
-        )}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(255,214,92,0.07),transparent)] pointer-events-none" />
+        <HeroShader />
 
         <div className="max-w-4xl mx-auto text-center relative z-10 space-y-6">
-          <h1 className="font-zen text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[1.08] tracking-tight opacity-0 fade-up [animation-delay:200ms]">
+          <h1 className="font-zen text-[clamp(2.75rem,8vw,5.5rem)] font-semibold leading-[1.05] tracking-tight opacity-0 fade-up [animation-delay:200ms]">
             License music<br />
-            <span className="text-white/50 italic">effortlessly.</span>
+            <span className="text-white italic">effortlessly.</span>
           </h1>
 
           <p className="text-lg text-white max-w-2xl mx-auto leading-relaxed font-dm opacity-0 fade-up [animation-delay:350ms]">
