@@ -16,6 +16,7 @@ import {
 import Footer from "@/components/Footer";
 import AnimatedVLogo from "@/components/AnimatedVLogo";
 import API_ENDPOINTS from "@/config/api";
+import { useDocumentMeta } from "@/hooks/useDocumentMeta";
 
 /**
  * LogoMark Component
@@ -56,6 +57,12 @@ const LogoMark = () => (
 const Waitlist = () => {
   // React Router navigation hook
   const navigate = useNavigate();
+
+  // Per-route SEO metadata (SPA has no server head; restores "/" defaults on unmount)
+  useDocumentMeta(
+    "Request Early Access · viola",
+    "Request early access to Viola — the AI music workspace for sync teams and tastemakers."
+  );
 
   // Refs for button hover effects (currently unused but kept for future enhancements)
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
