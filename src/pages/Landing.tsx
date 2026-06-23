@@ -386,16 +386,16 @@ const Landing = () => {
 
         {/* Floating bottom tab dock — slides in only while the features section is in view (Apple-style) */}
         <div
-          className={`fixed inset-x-0 bottom-5 z-40 flex justify-center px-4 transition-all duration-300 ease-out-quint ${
-            tabsVisible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-6 opacity-0"
+          className={`fixed inset-x-0 bottom-8 z-40 flex justify-center px-3 transition-[transform,opacity] duration-[400ms] ease-out-quint will-change-transform ${
+            tabsVisible ? "translate-y-0 scale-100 opacity-100" : "pointer-events-none translate-y-10 scale-95 opacity-0"
           }`}
         >
-          <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-white/10 bg-[#0d0d10]/85 p-1 shadow-2xl shadow-black/60 backdrop-blur-xl">
+          <div className="flex max-w-[calc(100vw-1.25rem)] items-center gap-0.5 overflow-x-auto rounded-full border border-white/10 bg-[#0d0d10]/90 p-0.5 shadow-2xl shadow-black/60 backdrop-blur-xl sm:gap-1 sm:p-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {featureTabs.map((tab, i) => (
               <button
                 key={tab.id}
                 onClick={() => featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs font-medium transition-colors duration-200 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm ${
                   activeTab === i
                     ? "bg-white text-black shadow-[0_0_16px_rgba(255,255,255,0.25)]"
                     : "text-white/50 hover:text-white"
