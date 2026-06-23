@@ -110,6 +110,18 @@ const Landing = () => {
   const tabBtnRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const tabIndicatorRef = useRef<HTMLSpanElement>(null);
   const prevTabRef = useRef(0);
+  const spyLockedRef = useRef(false);
+  const settleTimerRef = useRef<number>();
+
+  // Jump to a feature via the dock: set the active tab immediately, then smooth-scroll —
+  // locking the scroll-spy so sections passed mid-scroll don't yank the selector around.
+  const goToTab = (i: number) => {
+    setActiveTab(i);
+    spyLockedRef.current = true;
+    window.clearTimeout(settleTimerRef.current);
+    settleTimerRef.current = window.setTimeout(() => { spyLockedRef.current = false; }, 700);
+    featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
   const [videoErrors, setVideoErrors]         = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery]         = useState("");
   const [hasSearched, setHasSearched]         = useState(false);
@@ -218,13 +230,24 @@ const Landing = () => {
     featureRefs.current.forEach((el, i) => {
       if (!el) return;
       const o = new IntersectionObserver(
-        ([e]) => { if (e.isIntersecting) setActiveTab(i); },
+        ([e]) => { if (e.isIntersecting && !spyLockedRef.current) setActiveTab(i); },
         { rootMargin: "-40% 0px -45% 0px", threshold: 0 }
       );
       o.observe(el);
       observers.push(o);
     });
     return () => observers.forEach(o => o.disconnect());
+  }, []);
+
+  // Release the scroll-spy lock once a click-triggered smooth scroll settles.
+  useEffect(() => {
+    const onScroll = () => {
+      if (!spyLockedRef.current) return;
+      window.clearTimeout(settleTimerRef.current);
+      settleTimerRef.current = window.setTimeout(() => { spyLockedRef.current = false; }, 150);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // Typing animation
@@ -452,10 +475,7 @@ const Landing = () => {
               <button
                 key={tab.id}
                 ref={(el) => (tabBtnRefs.current[i] = el)}
-                onClick={() => {
-                  setActiveTab(i);
-                  featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" });
-                }}
+                onClick={() => goToTab(i)}
                 className={`relative z-10 flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs font-medium transition-colors duration-300 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm ${
                   activeTab === i ? "text-black" : "text-white/55 hover:text-white"
                 }`}
