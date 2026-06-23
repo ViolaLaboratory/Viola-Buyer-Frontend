@@ -210,19 +210,8 @@ const Landing = () => {
   return (
     <div className="relative min-h-screen text-white font-inter overflow-x-hidden">
 
-      {/* ── Gradient backdrop (purple · orange · yellow) ── */}
-      <div
-        className="fixed inset-0 -z-10 pointer-events-none"
-        style={{
-          background: `
-            radial-gradient(circle at 12% 12%, rgba(108,36,232,0.40), transparent 38%),
-            radial-gradient(circle at 88% 28%, rgba(238,72,31,0.30), transparent 38%),
-            radial-gradient(circle at 50% 92%, rgba(255,214,92,0.20), transparent 42%),
-            #09090b
-          `,
-        }}
-      />
-      <div className="fixed inset-0 -z-10 pointer-events-none bg-gradient-to-b from-transparent via-[#09090b]/30 to-[#09090b]/70" />
+      {/* ── Background — one consistent near-black; all color lives in the hero shader ── */}
+      <div className="fixed inset-0 -z-10 pointer-events-none bg-[#09090b]" />
 
       {/* ── Keyframes ── */}
       <style>{`
