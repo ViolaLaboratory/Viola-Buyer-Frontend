@@ -189,12 +189,14 @@
   }
 
   .hero-gradient-fallback {
-    /* mirrors the real product bg: dark top, warm red-orange + magenta + violet blooming from the lower region */
+    /* mirrors the real product bg: dark top, warm red-orange + magenta + violet blooming from the
+       lower region. Top layer fades the bottom into the page black so the shader never hard-edges. */
     background-image:
+      linear-gradient(to bottom, transparent 68%, rgba(9, 9, 11, 0.85) 90%, #09090b 100%),
       radial-gradient(circle at 22% 92%, rgba(224, 72, 31, 0.42), transparent 45%),
       radial-gradient(circle at 62% 104%, rgba(200, 31, 181, 0.45), transparent 52%),
       radial-gradient(circle at 50% 60%, rgba(122, 35, 204, 0.40), transparent 58%),
-      linear-gradient(180deg, var(--ink-900) 0%, var(--ink) 60%, #1a0530 100%);
+      linear-gradient(180deg, var(--ink-900) 0%, var(--ink) 60%, #09090b 100%);
   }
 }
 

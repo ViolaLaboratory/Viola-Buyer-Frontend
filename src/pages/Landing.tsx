@@ -107,6 +107,9 @@ const Landing = () => {
   const [scrolled, setScrolled]               = useState(false);
   const [activeTab, setActiveTab]             = useState(0);
   const [tabsVisible, setTabsVisible]         = useState(false);
+  const tabBtnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const tabIndicatorRef = useRef<HTMLSpanElement>(null);
+  const prevTabRef = useRef(0);
   const [videoErrors, setVideoErrors]         = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery]         = useState("");
   const [hasSearched, setHasSearched]         = useState(false);
@@ -152,6 +155,51 @@ const Landing = () => {
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
+
+  // Dock indicator — the pill pinches to a dot and shoots to the active tab.
+  // WAAPI: hardware-accelerated, off-main-thread, interruptible (Emil-style movement).
+  useEffect(() => {
+    const ind = tabIndicatorRef.current;
+    const to = tabBtnRefs.current[activeTab];
+    if (!ind || !to) return;
+    const from = tabBtnRefs.current[prevTabRef.current] ?? to;
+    const tf = (l: number, w: number) => `translateX(${l}px) scaleX(${w / 100})`;
+    ind.style.height = `${to.offsetHeight}px`;
+    ind.style.top = `${to.offsetTop}px`;
+    ind.getAnimations().forEach((a) => a.cancel());
+    ind.style.transform = tf(to.offsetLeft, to.offsetWidth); // resting target holds after the run
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prevTabRef.current !== activeTab && !reduce) {
+      const dotW = to.offsetHeight; // collapse to a round dot mid-flight
+      const fromCenter = from.offsetLeft + from.offsetWidth / 2;
+      const toCenter = to.offsetLeft + to.offsetWidth / 2;
+      const midL = (fromCenter + toCenter) / 2 - dotW / 2;
+      ind.animate(
+        [
+          { transform: tf(from.offsetLeft, from.offsetWidth) },
+          { transform: tf(midL, dotW), offset: 0.5 },
+          { transform: tf(to.offsetLeft, to.offsetWidth) },
+        ],
+        { duration: 440, easing: "cubic-bezier(0.77, 0, 0.175, 1)" }
+      );
+    }
+    prevTabRef.current = activeTab;
+  }, [activeTab]);
+
+  // Keep the indicator aligned on resize / breakpoint change (no animation).
+  useEffect(() => {
+    const reposition = () => {
+      const ind = tabIndicatorRef.current;
+      const to = tabBtnRefs.current[activeTab];
+      if (!ind || !to) return;
+      ind.getAnimations().forEach((a) => a.cancel());
+      ind.style.height = `${to.offsetHeight}px`;
+      ind.style.top = `${to.offsetTop}px`;
+      ind.style.transform = `translateX(${to.offsetLeft}px) scaleX(${to.offsetWidth / 100})`;
+    };
+    window.addEventListener("resize", reposition);
+    return () => window.removeEventListener("resize", reposition);
+  }, [activeTab]);
 
   // Flicker animation for "With Viola" card
   useEffect(() => {
@@ -343,7 +391,7 @@ const Landing = () => {
               <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
             </button>
           </div>
-          <div className="absolute -bottom-px left-0 right-0 h-32 bg-gradient-to-t from-[#0e0e10] to-transparent pointer-events-none" />
+          <div className="absolute -bottom-px left-0 right-0 h-48 bg-gradient-to-t from-[#09090b] via-[#09090b]/80 to-transparent pointer-events-none" />
         </div>
       </section>
 
@@ -390,15 +438,24 @@ const Landing = () => {
             tabsVisible ? "translate-y-0 scale-100 opacity-100" : "pointer-events-none translate-y-10 scale-95 opacity-0"
           }`}
         >
-          <div className="flex max-w-[calc(100vw-1.25rem)] items-center gap-0.5 overflow-x-auto rounded-full border border-white/10 bg-[#0d0d10]/90 p-0.5 shadow-2xl shadow-black/60 backdrop-blur-xl sm:gap-1 sm:p-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="relative flex max-w-[calc(100vw-1.25rem)] items-center gap-0.5 overflow-x-auto rounded-full border border-white/10 bg-[#0d0d10]/90 p-0.5 shadow-2xl shadow-black/60 backdrop-blur-xl sm:gap-1 sm:p-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {/* shared indicator — pinches to a dot and shoots to the active tab (WAAPI) */}
+            <span
+              ref={tabIndicatorRef}
+              aria-hidden
+              className="pointer-events-none absolute left-0 top-0 z-0 rounded-full bg-white shadow-[0_0_16px_rgba(255,255,255,0.3)]"
+              style={{ width: 100, transformOrigin: "left center", willChange: "transform" }}
+            />
             {featureTabs.map((tab, i) => (
               <button
                 key={tab.id}
-                onClick={() => featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                className={`flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs font-medium transition-colors duration-200 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm ${
-                  activeTab === i
-                    ? "bg-white text-black shadow-[0_0_16px_rgba(255,255,255,0.25)]"
-                    : "text-white/50 hover:text-white"
+                ref={(el) => (tabBtnRefs.current[i] = el)}
+                onClick={() => {
+                  setActiveTab(i);
+                  featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" });
+                }}
+                className={`relative z-10 flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs font-medium transition-colors duration-300 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm ${
+                  activeTab === i ? "text-black" : "text-white/55 hover:text-white"
                 }`}
               >
                 {tab.icon}
