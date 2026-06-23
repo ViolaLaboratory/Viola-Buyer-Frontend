@@ -120,6 +120,13 @@ const Footer = () => {
         </div>
       </section>
 
+      {/* Fun oversized brand wordmark — animated brand-gradient fill, speeds up on hover */}
+      <div className="select-none overflow-hidden px-4">
+        <h2 className="footer-wordmark text-center font-zen font-semibold leading-[0.8] tracking-tight text-[clamp(3.5rem,19vw,14rem)]">
+          viola
+        </h2>
+      </div>
+
       {/* Bottom bar */}
       <div className="border-t border-white/10 px-6 md:px-12 py-6">
         <p className="text-xs text-white/40 text-center font-dm">

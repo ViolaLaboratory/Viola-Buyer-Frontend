@@ -106,8 +106,7 @@ const Landing = () => {
 
   const [scrolled, setScrolled]               = useState(false);
   const [activeTab, setActiveTab]             = useState(0);
-  const [tabsStuck, setTabsStuck]             = useState(false);
-  const tabsSentinelRef = useRef<HTMLDivElement>(null);
+  const [tabsVisible, setTabsVisible]         = useState(false);
   const [videoErrors, setVideoErrors]         = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery]         = useState("");
   const [hasSearched, setHasSearched]         = useState(false);
@@ -142,14 +141,13 @@ const Landing = () => {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  // Stuck-state for the feature jump-tabs: when the sentinel scrolls above the
-  // sticky offset, the tabs pin as a full-bleed glass nav bar.
+  // Floating tab dock: show it only while the features section is in view.
   useEffect(() => {
-    const el = tabsSentinelRef.current;
+    const el = document.getElementById("features");
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([e]) => setTabsStuck(!e.isIntersecting),
-      { rootMargin: "-65px 0px 0px 0px", threshold: 0 }
+      ([e]) => setTabsVisible(e.isIntersecting),
+      { rootMargin: "-10% 0px -15% 0px", threshold: 0 }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -386,30 +384,27 @@ const Landing = () => {
           </div>
         </div>
 
-        {/* Sticky jump-tabs — becomes a full-bleed glass nav bar once you scroll past it (mobile + desktop) */}
-        <div ref={tabsSentinelRef} aria-hidden className="h-px w-full" />
+        {/* Floating bottom tab dock — slides in only while the features section is in view (Apple-style) */}
         <div
-          className={`sticky top-[56px] md:top-[64px] z-30 mb-16 -mx-5 px-5 py-3 transition-colors duration-300 ${
-            tabsStuck ? "border-b border-white/10 bg-[#0b0b0e]/85 backdrop-blur-xl" : ""
+          className={`fixed inset-x-0 bottom-5 z-40 flex justify-center px-4 transition-all duration-300 ease-out-quint ${
+            tabsVisible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-6 opacity-0"
           }`}
         >
-          <div className="flex justify-center overflow-x-auto px-1 py-1">
-            <div className="inline-flex items-center gap-1 p-1 rounded-full border border-white/10 bg-[#0d0d10]/80 backdrop-blur-md shadow-lg shadow-black/30">
-              {featureTabs.map((tab, i) => (
-                <button
-                  key={tab.id}
-                  onClick={() => featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                    activeTab === i
-                      ? "bg-white text-black shadow-[0_0_16px_rgba(255,255,255,0.25)]"
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  {tab.icon}
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+          <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-white/10 bg-[#0d0d10]/85 p-1 shadow-2xl shadow-black/60 backdrop-blur-xl">
+            {featureTabs.map((tab, i) => (
+              <button
+                key={tab.id}
+                onClick={() => featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                  activeTab === i
+                    ? "bg-white text-black shadow-[0_0_16px_rgba(255,255,255,0.25)]"
+                    : "text-white/50 hover:text-white"
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -596,13 +591,9 @@ const Landing = () => {
                         </div>
                       </div>
                       <div className="space-y-5 select-none">
-                        <div className="flex gap-1">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <svg key={i} className="w-4 h-4 text-amber" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                          ))}
-                        </div>
+                        <span aria-hidden className="block font-zen text-6xl leading-[0.5] text-white/15">&ldquo;</span>
                         <p className="font-zen text-xl md:text-2xl text-white/90 leading-relaxed">
-                          "{t.quote}"
+                          {t.quote}
                         </p>
                         <div className="flex items-center gap-3 text-sm text-white/45 font-dm">
                           <div className="h-px w-8 bg-white/30 flex-shrink-0" />
@@ -699,8 +690,9 @@ const Landing = () => {
       </section>
 
       {/* ── Try Our Demo ── */}
-      <section className="py-20 px-5 border-t border-white/6">
-        <div className="max-w-3xl mx-auto text-center space-y-5">
+      <section className="relative overflow-hidden py-20 px-5 border-t border-white/6">
+        <HeroShader ambient />
+        <div className="relative z-10 max-w-3xl mx-auto text-center space-y-5">
           <p className="text-white/40 text-xs uppercase tracking-widest font-dm">Try Our Demo</p>
           <h2 className="font-zen text-4xl md:text-6xl font-semibold text-white leading-tight">
             See Viola in action.

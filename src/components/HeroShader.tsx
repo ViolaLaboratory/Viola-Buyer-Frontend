@@ -30,7 +30,7 @@ function canRunShader(): boolean {
   }
 }
 
-export default function HeroShader() {
+export default function HeroShader({ ambient = false }: { ambient?: boolean }) {
   const [on, setOn] = useState(false);
 
   useEffect(() => {
@@ -42,24 +42,31 @@ export default function HeroShader() {
 
   // Static fallback: pre-mount, no-WebGL, reduced-motion, and mobile all land here.
   if (!on) {
-    return <div aria-hidden className="absolute inset-0 hero-gradient-fallback" />;
+    return <div aria-hidden className={`absolute inset-0 hero-gradient-fallback ${ambient ? "opacity-40" : ""}`} />;
   }
 
   return (
-    <div aria-hidden className="absolute inset-0">
+    <div aria-hidden className={`absolute inset-0 ${ambient ? "opacity-45" : ""}`}>
       <MeshGradient
         {...meshGradientPresets[0].params}
         colors={SPECTRUM}
-        speed={0.3}
+        speed={ambient ? 0.22 : 0.3}
         distortion={0.85}
         swirl={0.12}
         grainOverlay={0.16}
         className="absolute inset-0 h-full w-full"
       />
-      {/* top + bottom dark scrim (headline legibility up top, page blend at the bottom);
-          light center vignette keeps the mid/lower color vivid like the product bg */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#09090b] via-transparent to-[#09090b]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_95%_75%_at_50%_58%,transparent,rgba(9,9,11,0.30)_88%)]" />
+      {ambient ? (
+        /* ambient (mid-page) variant: soft all-round vignette, no hard top/bottom scrim */
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_85%_at_50%_50%,transparent,rgba(9,9,11,0.7)_90%)]" />
+      ) : (
+        <>
+          {/* top + bottom dark scrim (headline legibility up top, page blend at the bottom);
+              light center vignette keeps the mid/lower color vivid like the product bg */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#09090b] via-transparent to-[#09090b]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_95%_75%_at_50%_58%,transparent,rgba(9,9,11,0.30)_88%)]" />
+        </>
+      )}
     </div>
   );
 }
