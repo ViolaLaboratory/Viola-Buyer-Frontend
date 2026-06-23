@@ -29,6 +29,7 @@ import { CountriesPage } from "./components/dashboard/CountriesPage";
 import { RequireSellerPortal, RequireBuyerPortal } from "./components/routing/PortalGuards";
 import { MusicPlayerProvider, useMusicPlayer } from "./contexts/MusicPlayerContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import GlassSpotlight from "./components/GlassSpotlight";
 
 const queryClient = new QueryClient();
 
@@ -189,6 +190,7 @@ const App = () => (
     <TooltipProvider>
       <AuthProvider>
         <MusicPlayerProvider>
+        <GlassSpotlight />
         <Toaster />
         <Sonner />
         <BrowserRouter>
