@@ -13,7 +13,6 @@ const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
 const searchVideo    = asset("violaSearch.mp4");
 const pitchVideo     = asset("violaPitchBuilder.mp4");
 const catalogueVideo = asset("violaCatalogue.mp4");
-const fallbackPoster = asset("viola.jpg");
 
 // ─── Typing phrases ───────────────────────────────────────────────────────────
 const typingPhrases = [
@@ -395,11 +394,11 @@ const Landing = () => {
 
         {/* Hero product screenshot */}
         <div className="relative mt-16 max-w-6xl mx-auto opacity-0 fade-up [animation-delay:800ms]">
-          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60 shadow-[0_40px_120px_rgba(0,0,0,0.8)] aspect-video">
+          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-[0_40px_120px_rgba(0,0,0,0.8)] aspect-video">
             {videoErrors["hero"] ? (
-              <img src={fallbackPoster} alt="viola product interface preview" className="w-full h-full object-cover brightness-75" />
+              <div className="w-full h-full bg-black" />
             ) : (
-              <video autoPlay muted loop playsInline preload="metadata" poster={fallbackPoster} crossOrigin="anonymous"
+              <video autoPlay muted loop playsInline preload="metadata" crossOrigin="anonymous"
                 onError={() => setVideoErrors(v => ({ ...v, hero: true }))}
                 className="w-full h-full object-cover"
               >
@@ -511,11 +510,11 @@ const Landing = () => {
                   </button>
                 </div>
                 <div className={i % 2 === 1 ? "lg:order-1" : ""}>
-                  <div className="relative overflow-hidden rounded-xl border border-white/10 bg-black/50 shadow-[0_20px_60px_rgba(0,0,0,0.6)] aspect-video">
+                  <div className="relative overflow-hidden rounded-xl border border-white/10 bg-black shadow-[0_20px_60px_rgba(0,0,0,0.6)] aspect-video">
                     {videoErrors[tab.id] ? (
-                      <img src={fallbackPoster} alt={tab.label} className="w-full h-full object-cover brightness-75 grayscale" />
+                      <div className="w-full h-full bg-black" />
                     ) : (
-                      <video autoPlay muted loop playsInline preload="metadata" poster={fallbackPoster} crossOrigin="anonymous"
+                      <video autoPlay muted loop playsInline preload="metadata" crossOrigin="anonymous"
                         onError={() => setVideoErrors(v => ({ ...v, [tab.id]: true }))}
                         className="w-full h-full object-cover lg:-translate-y-4 md:-translate-y-3"
                       >
