@@ -163,11 +163,12 @@ const Landing = () => {
     const to = tabBtnRefs.current[activeTab];
     if (!ind || !to) return;
     const from = tabBtnRefs.current[prevTabRef.current] ?? to;
-    const tf = (l: number, w: number) => `translateX(${l}px) scaleX(${w / 100})`;
     ind.style.height = `${to.offsetHeight}px`;
     ind.style.top = `${to.offsetTop}px`;
     ind.getAnimations().forEach((a) => a.cancel());
-    ind.style.transform = tf(to.offsetLeft, to.offsetWidth); // resting target holds after the run
+    // resting target holds after the run (width keeps rounded-full perfectly circular)
+    ind.style.width = `${to.offsetWidth}px`;
+    ind.style.transform = `translateX(${to.offsetLeft}px)`;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prevTabRef.current !== activeTab && !reduce) {
       const dotW = to.offsetHeight; // collapse to a round dot mid-flight
@@ -176,9 +177,9 @@ const Landing = () => {
       const midL = (fromCenter + toCenter) / 2 - dotW / 2;
       ind.animate(
         [
-          { transform: tf(from.offsetLeft, from.offsetWidth) },
-          { transform: tf(midL, dotW), offset: 0.5 },
-          { transform: tf(to.offsetLeft, to.offsetWidth) },
+          { width: `${from.offsetWidth}px`, transform: `translateX(${from.offsetLeft}px)` },
+          { width: `${dotW}px`, transform: `translateX(${midL}px)`, offset: 0.5 },
+          { width: `${to.offsetWidth}px`, transform: `translateX(${to.offsetLeft}px)` },
         ],
         { duration: 440, easing: "cubic-bezier(0.77, 0, 0.175, 1)" }
       );
@@ -195,7 +196,8 @@ const Landing = () => {
       ind.getAnimations().forEach((a) => a.cancel());
       ind.style.height = `${to.offsetHeight}px`;
       ind.style.top = `${to.offsetTop}px`;
-      ind.style.transform = `translateX(${to.offsetLeft}px) scaleX(${to.offsetWidth / 100})`;
+      ind.style.width = `${to.offsetWidth}px`;
+      ind.style.transform = `translateX(${to.offsetLeft}px)`;
     };
     window.addEventListener("resize", reposition);
     return () => window.removeEventListener("resize", reposition);
@@ -444,7 +446,7 @@ const Landing = () => {
               ref={tabIndicatorRef}
               aria-hidden
               className="pointer-events-none absolute left-0 top-0 z-0 rounded-full bg-white shadow-[0_0_16px_rgba(255,255,255,0.3)]"
-              style={{ width: 100, transformOrigin: "left center", willChange: "transform" }}
+              style={{ willChange: "transform, width" }}
             />
             {featureTabs.map((tab, i) => (
               <button
