@@ -198,28 +198,6 @@
   }
 }
 
-/* Fun footer wordmark — giant brand name with a slowly-panning brand-gradient fill;
-   speeds up on hover. The animated color lives in the text, not a big surface. */
-.footer-wordmark {
-  background: linear-gradient(100deg, #e0481f, #c81fb5, #7a23cc, #c81fb5, #e0481f);
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: footer-wordmark-pan 9s linear infinite;
-  transition: filter 300ms ease;
-}
-.footer-wordmark:hover {
-  animation-duration: 2.8s;
-  filter: brightness(1.15);
-}
-@keyframes footer-wordmark-pan {
-  to { background-position: 300% 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .footer-wordmark { animation: none; }
-}
-
 .demo-cursor,
 .demo-cursor * {
   cursor: none;
