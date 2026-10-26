@@ -120,7 +120,7 @@ const featureTabs = [
     id: "pitch",
     label: "Marketplace",
     url: "demo.theviola.co/marketplace",
-    headline: "Access the songs you want to license with ease",
+    headline: "License songs you want with ease",
     body: "Browse through a marketplace of record label and publisher partnered catalogs.",
     points: ["Commercially recorded catalog", "Ready for sync licensing", "Browse available metadata for each song"],
     video: marketplaceVideo,
@@ -431,7 +431,7 @@ const Landing = () => {
                   <Reveal>
                     <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-white/[0.01]">
                       <div className="pointer-events-none absolute -top-40 right-0 h-80 w-80 rounded-full bg-[radial-gradient(closest-side,rgba(108,36,232,0.18),transparent)]" />
-                      <div className="relative grid items-center gap-10 p-6 sm:p-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14 lg:p-14">
+                      <div className={`relative grid items-center gap-10 p-6 sm:p-10 lg:gap-14 lg:p-14 ${i % 2 === 1 ? "lg:grid-cols-[1.15fr_0.85fr]" : "lg:grid-cols-[0.85fr_1.15fr]"}`}>
                         <div className={`space-y-6 ${i % 2 === 1 ? "lg:order-2" : ""}`}>
                           <h3 className="text-balance text-3xl md:text-4xl font-semibold tracking-[-0.03em] leading-[1.1]">{tab.headline}</h3>
                           <p className="text-base leading-relaxed text-white/55">{tab.body}</p>
