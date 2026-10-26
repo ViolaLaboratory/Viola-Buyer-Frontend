@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect, FormEvent, ReactNode } from "react";
 import { Input } from "@/components/ui/input";
 import {
-  ArrowRight, ArrowUpRight, X, Check, CloudUpload, Drill, BrainCircuit, Search,
+  ArrowRight, ArrowUpRight, X, Check, Search,
   Headphones, FileCheck2, Quote, Sparkles,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -10,10 +10,13 @@ import LandingFooter from "@/components/LandingFooter";
 
 // ─── Assets ──────────────────────────────────────────────────────────────────
 const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
-const searchVideo    = asset("violaSearch.mp4");
-const pitchVideo     = asset("violaPitchBuilder.mp4");
-const catalogueVideo = asset("violaCatalogue.mp4");
-const fallbackPoster = asset("viola.jpg");
+// Demo clips recorded from the live app (demo.theviola.co); posters are matching stills
+const searchVideo       = asset("demo-search.mp4");
+const marketplaceVideo  = asset("demo-marketplace.mp4");
+const workspaceVideo    = asset("demo-workspace.mp4");
+const searchPoster      = asset("demo-search.jpg");
+const marketplacePoster = asset("demo-marketplace.jpg");
+const workspacePoster   = asset("demo-workspace.jpg");
 
 const CONTACT_MAILTO = "mailto:viola@theviola.co?subject=Talk%20with%20Viola&body=Hi%20Viola%20team%2C%0A%0AI%27d%20love%20to%20connect.";
 
@@ -106,32 +109,32 @@ const featureTabs = [
   {
     id: "search",
     label: "AI Search",
-    icon: BrainCircuit,
-    url: "theviola.co/search",
+    url: "demo.theviola.co/search",
     headline: "Find the perfect track in seconds",
     body: "Type your brief in natural language, from mood, tempo, genre, and storyline. Viola understands the creative context and provides the best fitting songs.",
     points: ["Natural-language briefs", "Mood, tempo, and metadata", "Instant previews"],
     video: searchVideo,
+    poster: searchPoster,
   },
   {
     id: "pitch",
     label: "Marketplace",
-    icon: Drill,
-    url: "theviola.co/marketplace",
+    url: "demo.theviola.co/marketplace",
     headline: "Access the songs you want to license with ease",
     body: "Browse through a marketplace of record label and publisher partnered catalogs.",
     points: ["Commercially recorded catalog", "Ready for sync licensing", "Browse available metadata for each song"],
-    video: pitchVideo,
+    video: marketplaceVideo,
+    poster: marketplacePoster,
   },
   {
     id: "catalog",
     label: "One Workspace",
-    icon: CloudUpload,
-    url: "theviola.co/catalog",
+    url: "demo.theviola.co/checkout",
     headline: "Everything in one workspace",
     body: "Complete the licensing process all in one place.",
     points: ["Find the song you want", "Select licensing terms", "Sign agreements", "Pay in one place"],
-    video: catalogueVideo,
+    video: workspaceVideo,
+    poster: workspacePoster,
   },
 ];
 
@@ -220,11 +223,9 @@ const Landing = () => {
   const navigate = useNavigate();
 
   const [scrolled, setScrolled]               = useState(false);
-  const [activeTab, setActiveTab]             = useState(0);
   const [videoErrors, setVideoErrors]         = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery]         = useState("");
   const [placeholderText, setPlaceholderText] = useState("Find ");
-  const featureRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Scroll-aware nav
   useEffect(() => {
@@ -235,21 +236,6 @@ const Landing = () => {
   }, []);
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
-
-  // Scroll-spy: highlight active feature tab as each feature scrolls into view
-  useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-    featureRefs.current.forEach((el, i) => {
-      if (!el) return;
-      const o = new IntersectionObserver(
-        ([e]) => { if (e.isIntersecting) setActiveTab(i); },
-        { rootMargin: "-40% 0px -45% 0px", threshold: 0 }
-      );
-      o.observe(el);
-      observers.push(o);
-    });
-    return () => observers.forEach(o => o.disconnect());
-  }, []);
 
   // Typing animation
   useEffect(() => {
@@ -272,13 +258,13 @@ const Landing = () => {
     navigate("/waitlist");
   };
 
-  const renderVideo = (key: string, src: string, alt: string, className = "") =>
+  const renderVideo = (key: string, src: string, poster: string, alt: string) =>
     videoErrors[key] ? (
-      <img src={fallbackPoster} alt={alt} className="w-full h-full object-cover brightness-75" />
+      <img src={poster} alt={alt} className="w-full h-full object-cover" />
     ) : (
-      <video autoPlay muted loop playsInline preload="metadata" poster={fallbackPoster} crossOrigin="anonymous"
+      <video autoPlay muted loop playsInline preload="metadata" poster={poster}
         onError={() => setVideoErrors(v => ({ ...v, [key]: true }))}
-        className={`w-full h-full object-cover ${className}`}
+        className="w-full h-full object-cover"
       >
         <source src={src} type="video/mp4" />
       </video>
@@ -360,7 +346,7 @@ const Landing = () => {
           <h1 className="text-balance text-[44px] leading-[1.02] sm:text-7xl lg:text-[88px] font-semibold tracking-[-0.045em] opacity-0 fade-up [animation-delay:120ms]">
             <span className="bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">License music</span>
             <br />
-            <span className="font-serif italic font-normal tracking-[-0.02em] text-shine pr-2">effortlessly.</span>
+            <span className="font-dm italic text-shine pr-2">effortlessly.</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-white/60 opacity-0 fade-up [animation-delay:240ms]">
@@ -382,9 +368,9 @@ const Landing = () => {
         <div className="relative z-10 mx-auto mt-16 sm:mt-20 max-w-6xl opacity-0 fade-up [animation-delay:500ms]">
           <div className="pointer-events-none absolute -inset-x-10 top-10 bottom-0 rounded-[40px] bg-[radial-gradient(ellipse_at_center,rgba(108,36,232,0.35),transparent_65%)] blur-2xl" />
           <div className="relative">
-            <BrowserFrame url="theviola.co/search">
+            <BrowserFrame url="demo.theviola.co/search">
               <div className="relative aspect-video">
-                {renderVideo("hero", searchVideo, "Viola AI search")}
+                {renderVideo("hero", searchVideo, searchPoster, "Viola AI search")}
               </div>
             </BrowserFrame>
           </div>
@@ -403,21 +389,20 @@ const Landing = () => {
       </section>
 
       {/* ── Problem ── */}
-      <section className="px-4 py-24 sm:py-32">
+      <section className="px-4 pt-24 pb-12 sm:pt-32 sm:pb-16">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-20 items-start">
           <Reveal className="lg:sticky lg:top-32">
             <SectionHeader
               align="left"
               eyebrow="The problem"
-              title={<>The work is creative.<br /><span className="text-white/40">The workflow still isn't.</span></>}
-              sub="Viola gives you the tools to streamline the busy work."
+              title={<>The work is creative.<br /><span className="text-[#a77bff]">The workflow still isn't.</span></>}
             />
           </Reveal>
           <div className="space-y-3">
             {problems.map((item, i) => (
               <Reveal key={item} delay={i * 80}>
                 <div className="group flex items-start gap-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 transition-colors hover:border-white/15 hover:bg-white/[0.04]">
-                  <span className="font-mono text-xs text-white/30 pt-1">0{i + 1}</span>
+                  <span className="font-mono text-xs text-[#a77bff] pt-1">0{i + 1}</span>
                   <div className="flex-1 text-base sm:text-lg leading-snug text-white/85">{item}</div>
                   <span className="mt-0.5 inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#ee481f]/10 text-[#ee481f]">
                     <X className="h-3.5 w-3.5" />
@@ -430,50 +415,24 @@ const Landing = () => {
       </section>
 
       {/* ── Features ── */}
-      <section id="features" className="relative px-4 py-24 sm:py-32 border-t border-white/[0.06] scroll-mt-20">
+      <section id="features" className="relative px-4 pt-12 pb-24 sm:pt-16 sm:pb-32 border-t border-white/[0.06] scroll-mt-20">
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <SectionHeader
               eyebrow="Product"
-              title={<>Everything you need to go from <span className="font-serif italic font-normal">brief</span> to <span className="font-serif italic font-normal text-[#e4ea04]">licensed.</span></>}
+              title={<>Everything you need to go from <span className="font-dm italic">brief</span> to <span className="font-dm italic text-[#e4ea04]">licensed.</span></>}
             />
           </Reveal>
 
-          {/* Sticky jump-tabs */}
-          <div className="sticky top-[76px] z-30 mt-12 mb-14 flex justify-center">
-            <div className="inline-flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-white/10 bg-[#0c0c0f]/80 p-1 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
-              {featureTabs.map((tab, i) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                    className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
-                      activeTab === i ? "bg-white text-black" : "text-white/50 hover:text-white"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="space-y-6">
+          <div className="mt-14 space-y-6">
             {featureTabs.map((tab, i) => {
-              const Icon = tab.icon;
               return (
-                <div key={tab.id} ref={(el) => (featureRefs.current[i] = el)} className="scroll-mt-40">
+                <div key={tab.id}>
                   <Reveal>
                     <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-white/[0.01]">
                       <div className="pointer-events-none absolute -top-40 right-0 h-80 w-80 rounded-full bg-[radial-gradient(closest-side,rgba(108,36,232,0.18),transparent)]" />
                       <div className="relative grid items-center gap-10 p-6 sm:p-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14 lg:p-14">
                         <div className={`space-y-6 ${i % 2 === 1 ? "lg:order-2" : ""}`}>
-                          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-white/60">
-                            <Icon className="h-3.5 w-3.5 text-[#e4ea04]" />
-                            0{i + 1} · {tab.label}
-                          </div>
                           <h3 className="text-balance text-3xl md:text-4xl font-semibold tracking-[-0.03em] leading-[1.1]">{tab.headline}</h3>
                           <p className="text-base leading-relaxed text-white/55">{tab.body}</p>
                           <ul className="space-y-2.5">
@@ -491,7 +450,7 @@ const Landing = () => {
                         <div className={i % 2 === 1 ? "lg:order-1" : ""}>
                           <BrowserFrame url={tab.url}>
                             <div className="relative aspect-video overflow-hidden">
-                              {renderVideo(tab.id, tab.video, tab.label, "lg:-translate-y-4 md:-translate-y-3")}
+                              {renderVideo(tab.id, tab.video, tab.poster, tab.label)}
                             </div>
                           </BrowserFrame>
                         </div>
@@ -512,7 +471,7 @@ const Landing = () => {
           <Reveal>
             <Eyebrow>Locate · Listen · License</Eyebrow>
             <h2 className="mt-6 text-balance text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-0.04em] leading-[1.05]">
-              From negotiation that feels endless to <span className="font-serif italic font-normal text-shine pr-1">licensed in minutes.</span>
+              From negotiation that feels endless to <span className="font-dm italic text-shine pr-1">licensed in minutes.</span>
             </h2>
           </Reveal>
           <div className="relative mt-16 grid gap-4 sm:grid-cols-3">
@@ -544,7 +503,7 @@ const Landing = () => {
             <SectionHeader
               eyebrow="Outcomes"
               title="What changes when you use Viola"
-              sub={<>More of your day goes to <span className="font-serif italic text-white text-xl">music taste</span>, not paperwork and negotiation.</>}
+              sub={<>More of your day goes to <span className="font-dm italic text-white">music taste</span>, not paperwork and negotiation.</>}
             />
           </Reveal>
 
@@ -642,7 +601,7 @@ const Landing = () => {
       <section className="px-4 py-24 sm:py-32 border-t border-white/[0.06]">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <SectionHeader eyebrow="Who it's for" title={<>Built for people who have <span className="font-serif italic font-normal">musical taste.</span></>} />
+            <SectionHeader eyebrow="Who it's for" title={<>Built for people who have <span className="font-dm italic">musical taste.</span></>} />
           </Reveal>
           <div className="mt-14 grid gap-4 md:grid-cols-2">
             <Reveal>
@@ -683,7 +642,7 @@ const Landing = () => {
             <div className="relative mx-auto max-w-2xl space-y-6">
               <Eyebrow>Try our demo</Eyebrow>
               <h2 className="text-balance text-4xl sm:text-6xl font-semibold tracking-[-0.04em] leading-[1.02]">
-                See Viola <span className="font-serif italic font-normal">in action.</span>
+                See Viola <span className="font-dm italic">in action.</span>
               </h2>
               <p className="mx-auto max-w-md text-white/55">Type a brief the way you actually write it and watch Viola go to work.</p>
 

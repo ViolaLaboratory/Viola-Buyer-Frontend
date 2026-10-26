@@ -20,7 +20,6 @@ export default {
         zen: ['"Zen Dots"', 'sans-serif'],
         exo: ['"Exo 2"', 'sans-serif'],
         geist: ['Geist', 'Inter', 'sans-serif'],
-        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
