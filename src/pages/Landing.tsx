@@ -6,7 +6,7 @@ import {
   Headphones, FileCheck2, Quote, Sparkles,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import Footer from "@/components/Footer";
+import LandingFooter from "@/components/LandingFooter";
 
 // ─── Assets ──────────────────────────────────────────────────────────────────
 const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
@@ -745,7 +745,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <Footer />
+      <LandingFooter />
     </div>
   );
 };
