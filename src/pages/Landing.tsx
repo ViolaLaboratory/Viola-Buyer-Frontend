@@ -1,18 +1,21 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useRef, useEffect, useCallback, MouseEvent, FormEvent } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useRef, useEffect, FormEvent, ReactNode } from "react";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Bug, X, CloudUpload, Drill, BrainCircuit, CheckCircle2, Check, ChevronRight, ChevronLeft } from "lucide-react";
+import {
+  ArrowRight, ArrowUpRight, X, Check, CloudUpload, Drill, BrainCircuit, Search,
+  Headphones, FileCheck2, Quote, Sparkles,
+} from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Footer from "@/components/Footer";
 
 // ─── Assets ──────────────────────────────────────────────────────────────────
 const asset = (file: string) => `${import.meta.env.BASE_URL}${file}`;
-const heroVideo      = asset("viola_background.mp4");
 const searchVideo    = asset("violaSearch.mp4");
 const pitchVideo     = asset("violaPitchBuilder.mp4");
 const catalogueVideo = asset("violaCatalogue.mp4");
 const fallbackPoster = asset("viola.jpg");
+
+const CONTACT_MAILTO = "mailto:viola@theviola.co?subject=Talk%20with%20Viola&body=Hi%20Viola%20team%2C%0A%0AI%27d%20love%20to%20connect.";
 
 // ─── Typing phrases ───────────────────────────────────────────────────────────
 const typingPhrases = [
@@ -25,51 +28,160 @@ const typingPhrases = [
 // ─── Logo mark ────────────────────────────────────────────────────────────────
 const LogoMark = ({ className = "h-7 w-auto" }: { className?: string }) => (
   <svg viewBox="0 0 72 55" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <path d="M35.1375 54.8993C35.0844 55.8883 32.5205 49.348 31.3059 46.0832C30.7393 44.5589 36.4796 44.8638 38.059 44.4916C43.6789 43.1622 55.2446 38.3589 56.4097 21.2373C56.9727 12.96 47.7159 9.45769 47.7974 5.56189C47.9143 1.0616e-06 55.6802 0.127614 55.6802 0.127614L69.3741 0C71.2723 0.0460832 72.5223 1.98867 71.7857 3.73983L50.9491 53.2438C50.5277 54.2435 49.5503 54.8922 48.4667 54.8922H35.1375V54.8993Z" fill="white"/>
-    <path d="M16.1494 4.20421L37.6163 51.4359C38.3635 53.0807 37.0604 54.8993 35.1339 54.8993H24.8396C23.7559 54.8993 22.7786 54.2966 22.3572 53.375L1.23368 4.20421" fill="white"/>
-    <path d="M23.4124 53.5274L0.213799 4.07659C-0.533402 2.38215 0.769773 0.506915 2.69621 0.506915H12.9906C14.0742 0.506915 15.0516 1.12727 15.473 2.08083L37.8324 52.7582" fill="white"/>
+    <path d="M35.1375 54.8993C35.0844 55.8883 32.5205 49.348 31.3059 46.0832C30.7393 44.5589 36.4796 44.8638 38.059 44.4916C43.6789 43.1622 55.2446 38.3589 56.4097 21.2373C56.9727 12.96 47.7159 9.45769 47.7974 5.56189C47.9143 1.0616e-06 55.6802 0.127614 55.6802 0.127614L69.3741 0C71.2723 0.0460832 72.5223 1.98867 71.7857 3.73983L50.9491 53.2438C50.5277 54.2435 49.5503 54.8922 48.4667 54.8922H35.1375V54.8993Z" fill="currentColor"/>
+    <path d="M16.1494 4.20421L37.6163 51.4359C38.3635 53.0807 37.0604 54.8993 35.1339 54.8993H24.8396C23.7559 54.8993 22.7786 54.2966 22.3572 53.375L1.23368 4.20421" fill="currentColor"/>
+    <path d="M23.4124 53.5274L0.213799 4.07659C-0.533402 2.38215 0.769773 0.506915 2.69621 0.506915H12.9906C14.0742 0.506915 15.0516 1.12727 15.473 2.08083L37.8324 52.7582" fill="currentColor"/>
   </svg>
 );
 
 // ─── useInView ────────────────────────────────────────────────────────────────
-function useInView(threshold = 0.12) {
-  const ref = useRef<HTMLDivElement>(null);
+function useInView<T extends HTMLElement = HTMLDivElement>() {
+  const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold });
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } },
+      { rootMargin: "0px 0px -8% 0px" }
+    );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [threshold]);
+  }, []);
   return { ref, inView };
 }
 
-// ─── Feature tabs (Warp-style "Why Viola" switcher) ───────────────────────────
+// Fades children up once they scroll into view
+const Reveal = ({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) => {
+  const { ref, inView } = useInView();
+  return (
+    <div
+      ref={ref}
+      style={{ transitionDelay: `${delay}ms` }}
+      className={`transition-all duration-700 ease-out motion-reduce:transition-none ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"} ${className}`}
+    >
+      {children}
+    </div>
+  );
+};
+
+const Eyebrow = ({ children }: { children: ReactNode }) => (
+  <p className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.2em] text-white/45">
+    <span className="h-1 w-1 rounded-full bg-[#e4ea04]" />
+    {children}
+  </p>
+);
+
+const SectionHeader = ({ eyebrow, title, sub, align = "center" }: { eyebrow: string; title: ReactNode; sub?: ReactNode; align?: "center" | "left" }) => (
+  <div className={`space-y-4 ${align === "center" ? "text-center mx-auto max-w-2xl" : "max-w-xl"}`}>
+    <Eyebrow>{eyebrow}</Eyebrow>
+    <h2 className="text-balance text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.035em] leading-[1.05] text-white">
+      {title}
+    </h2>
+    {sub && <p className="text-base md:text-lg text-white/55 leading-relaxed">{sub}</p>}
+  </div>
+);
+
+// App-window chrome around product videos
+const BrowserFrame = ({ children, url = "theviola.co" }: { children: ReactNode; url?: string }) => (
+  <div className="rounded-2xl p-px bg-gradient-to-b from-white/20 via-white/[0.06] to-white/[0.02] shadow-[0_30px_100px_-20px_rgba(0,0,0,0.9)]">
+    <div className="overflow-hidden rounded-[15px] bg-[#0b0b0e]">
+      <div className="flex items-center gap-2 border-b border-white/[0.06] px-4 py-3">
+        <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
+        <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
+        <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
+        <div className="mx-auto flex items-center gap-1.5 rounded-md bg-white/[0.05] px-3 py-1 text-[11px] text-white/40">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#e4ea04]/80" />
+          {url}
+        </div>
+        <span className="w-[46px]" />
+      </div>
+      {children}
+    </div>
+  </div>
+);
+
+// ─── Feature tabs ─────────────────────────────────────────────────────────────
 const featureTabs = [
   {
     id: "search",
     label: "AI Search",
-    icon: <BrainCircuit className="w-4 h-4" />,
+    icon: BrainCircuit,
+    url: "theviola.co/search",
     headline: "Find the perfect track in seconds",
     body: "Type your brief in natural language, from mood, tempo, genre, and storyline. Viola understands the creative context and provides the best fitting songs.",
+    points: ["Natural-language briefs", "Mood, tempo, and metadata", "Instant previews"],
     video: searchVideo,
   },
   {
     id: "pitch",
     label: "Marketplace",
-    icon: <Drill className="w-4 h-4" />,
+    icon: Drill,
+    url: "theviola.co/marketplace",
     headline: "Access the songs you want to license with ease",
-    body: "Browse a marketplace of commercially recorded songs that are all pre-approved and ready for sync.",
+    body: "Browse through a marketplace of record label and publisher partnered catalogs.",
+    points: ["Commercially recorded catalog", "Ready for sync licensing", "Browse available metadata for each song"],
     video: pitchVideo,
   },
   {
     id: "catalog",
     label: "One Workspace",
-    icon: <CloudUpload className="w-4 h-4" />,
+    icon: CloudUpload,
+    url: "theviola.co/catalog",
     headline: "Everything in one workspace",
-    body: "Find the song you want, select all the licensing terms to clear that song, sign the licensing agreement all in one place, and pay all in one place.",
+    body: "Complete the licensing process all in one place.",
+    points: ["Find the song you want", "Select licensing terms", "Sign agreements", "Pay in one place"],
     video: catalogueVideo,
+  },
+];
+
+const steps = [
+  { icon: Search,     title: "Locate",  body: "Describe the brief the way you'd write it." },
+  { icon: Headphones, title: "Listen",  body: "Shortlist sync-ready tracks from partnered catalogs." },
+  { icon: FileCheck2, title: "License", body: "Pick terms, sign, and pay — in one place." },
+];
+
+const problems = [
+  "Can take months to license a song for your project",
+  "Unorganized and inefficient communication for every music license negotiated",
+  "Many unattended sync deals result in money left on the table",
+];
+
+const withoutViola = [
+  {
+    group: "For music licensees",
+    items: [
+      "Delays in submitting a brief and receiving songs",
+      "Inefficient back-and-forth negotiation wastes valuable time and energy",
+      "Cannot fully own music taste",
+    ],
+  },
+  {
+    group: "For record labels & publishers",
+    items: [
+      "Inefficient manual music licensing processes mean missed sync orders and lost revenue at scale",
+      "Manual music searching and pitch packaging per brief is time consuming",
+      "Tight deadlines of up to 48 hours turnaround time for certain briefs",
+    ],
+  },
+];
+
+const withViola = [
+  {
+    group: "For music licensees",
+    items: [
+      { main: "Complete briefs efficiently", sub: "Search, shortlist, clear songs, and checkout" },
+      { main: "1 workspace for everything", sub: "Music licensing done in one platform" },
+    ],
+  },
+  {
+    group: "For record labels & publishers",
+    items: [
+      { main: "Goodbye to cluttered inboxes", sub: "No back-and-forth negotiation — clear songs faster" },
+      { main: "Track sync orders, revenue, and analytics in one dashboard" },
+      { main: "Fulfill sync orders that were once missed" },
+      { main: "Maximize catalog revenue and focus efforts more wisely" },
+    ],
   },
 ];
 
@@ -89,6 +201,9 @@ const testimonials = [
   },
 ];
 
+const roles = ["Music Supervisor", "Sync Licensing Manager", "Sync Agency Owner", "Record Label Team", "Publishing Company Team"];
+const painPoints = ["Digging through clunky library interfaces", "Unfulfilled and missed sync orders", "Losing months to the licensing negotiation process"];
+
 // ─── FAQ ──────────────────────────────────────────────────────────────────────
 const faqItems = [
   { q: "Are you replacing sync agents, sync managers, and music supervisors?", a: "No. Viola is a workflow tool and marketplace that accelerates the music licensing process, taking the load of intermediary steps off your shoulders." },
@@ -98,56 +213,28 @@ const faqItems = [
   { q: "What does early access include?", a: "Hands-on onboarding, direct feedback channel with our team, and preferred pricing when we launch public plans." },
 ];
 
+const initials = (name: string) => name.split(" ").map(p => p[0]).slice(0, 2).join("");
+
 // ─── Landing ──────────────────────────────────────────────────────────────────
 const Landing = () => {
   const navigate = useNavigate();
-  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const [scrolled, setScrolled]               = useState(false);
   const [activeTab, setActiveTab]             = useState(0);
   const [videoErrors, setVideoErrors]         = useState<Record<string, boolean>>({});
-  const [heroVideoFailed, setHeroVideoFailed] = useState(false);
   const [searchQuery, setSearchQuery]         = useState("");
-  const [hasSearched, setHasSearched]         = useState(false);
   const [placeholderText, setPlaceholderText] = useState("Find ");
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [withViolaVisible, setWithViolaVisible] = useState(false);
-  const withViolaRef = useRef<HTMLDivElement>(null);
-  const [testimonialIndex, setTestimonialIndex] = useState(0);
-  const touchStartX = useRef<number | null>(null);
-  const goToTestimonial = (i: number) =>
-    setTestimonialIndex(((i % testimonials.length) + testimonials.length) % testimonials.length);
-  const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(dx) > 50) goToTestimonial(testimonialIndex + (dx < 0 ? 1 : -1));
-    touchStartX.current = null;
-  };
   const featureRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  const whySection          = useInView(0.1);
-  const outcomesSection     = useInView(0.1);
-  const testimonialsSection = useInView(0.1);
-  const whoSection          = useInView(0.1);
 
   // Scroll-aware nav
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 60);
+    const fn = () => setScrolled(window.scrollY > 24);
+    fn();
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
-
-  // Flicker animation for "With Viola" card
-  useEffect(() => {
-    const el = withViolaRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setWithViolaVisible(true); }, { threshold: 0.3 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
 
   // Scroll-spy: highlight active feature tab as each feature scrolls into view
   useEffect(() => {
@@ -172,591 +259,489 @@ const Landing = () => {
       setPlaceholderText(`Find me ${phrase.slice(0, ci)}`);
       if (!del) { ci++; if (ci > phrase.length) del = true; }
       else { ci--; if (ci === 0) { del = false; pi = (pi + 1) % typingPhrases.length; } }
-    }, del ? 320 : 150);
+    }, 120);
     return () => clearInterval(id);
   }, []);
 
-  const handleMouseMove = useCallback((e: MouseEvent<HTMLButtonElement>, i: number) => {
-    const btn = buttonRefs.current[i];
-    if (!btn) return;
-    const r = btn.getBoundingClientRect();
-    btn.style.setProperty("--mouse-x", `${e.clientX - r.left}px`);
-    btn.style.setProperty("--mouse-y", `${e.clientY - r.top}px`);
-  }, []);
+  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    setHasSearched(true);
     setSearchQuery("");
     navigate("/waitlist");
   };
 
+  const renderVideo = (key: string, src: string, alt: string, className = "") =>
+    videoErrors[key] ? (
+      <img src={fallbackPoster} alt={alt} className="w-full h-full object-cover brightness-75" />
+    ) : (
+      <video autoPlay muted loop playsInline preload="metadata" poster={fallbackPoster} crossOrigin="anonymous"
+        onError={() => setVideoErrors(v => ({ ...v, [key]: true }))}
+        className={`w-full h-full object-cover ${className}`}
+      >
+        <source src={src} type="video/mp4" />
+      </video>
+    );
+
+  const primaryBtn = "group inline-flex items-center justify-center gap-2 rounded-full bg-[#e4ea04] text-black font-semibold transition-all duration-200 hover:bg-[#eef25a] hover:shadow-[0_0_32px_rgba(228,234,4,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e4ea04]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black";
+  const secondaryBtn = "inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.03] text-white/80 font-medium transition-all duration-200 hover:bg-white/[0.08] hover:text-white hover:border-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40";
+
   return (
-    <div className="relative min-h-screen text-white font-inter overflow-x-hidden">
+    <div className="relative min-h-screen bg-[#070709] text-white font-geist antialiased overflow-x-clip selection:bg-[#e4ea04] selection:text-black">
 
-      {/* ── Gradient backdrop (purple · orange · yellow) ── */}
-      <div
-        className="fixed inset-0 -z-10 pointer-events-none"
-        style={{
-          background: `
-            radial-gradient(circle at 12% 12%, rgba(108,36,232,0.40), transparent 38%),
-            radial-gradient(circle at 88% 28%, rgba(238,72,31,0.30), transparent 38%),
-            radial-gradient(circle at 50% 92%, rgba(228,234,4,0.24), transparent 42%),
-            #09090b
-          `,
-        }}
-      />
-      <div className="fixed inset-0 -z-10 pointer-events-none bg-gradient-to-b from-transparent via-[#09090b]/30 to-[#09090b]/70" />
-
-      {/* ── Keyframes ── */}
       <style>{`
-        @keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-50%) } }
-        .animate-marquee { animation: marquee 32s linear infinite; }
-        .animate-marquee:hover { animation-play-state: paused; }
-        @keyframes flicker-on {
-          0%   { opacity: 0; filter: brightness(0.8); }
-          20%  { opacity: 0.4; filter: brightness(1.1); }
-          60%  { opacity: 0.9; filter: brightness(1.05); }
-          100% { opacity: 1; filter: brightness(1); }
-        }
-        .flicker-on { animation: flicker-on 900ms ease-out forwards; }
-        @keyframes border-glow {
-          0%,100% { background-position: 0% 50%; }
-          50%     { background-position: 100% 50%; }
-        }
-        .glow-border {
-          background: linear-gradient(120deg,rgba(249,249,249,0.18),rgba(255,255,255,0.43),rgba(202,145,255,0.27),rgba(255,210,233,0.4));
-          background-size: 300% 300%;
-          animation: border-glow 6s linear infinite;
-          padding: 1px;
-          border-radius: 999px;
-          box-shadow: 0 0 40px rgba(255,255,255,0.3);
-        }
         @keyframes fade-up {
-          from { opacity: 0; transform: translateY(24px); }
+          from { opacity: 0; transform: translateY(16px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .fade-up { animation: fade-up 0.7s ease-out forwards; }
+        .fade-up { animation: fade-up 0.8s cubic-bezier(.2,.7,.2,1) forwards; }
+        @keyframes shine { to { background-position: 200% center; } }
+        .text-shine {
+          background: linear-gradient(110deg, #e4ea04 20%, #fbfdc2 40%, #e4ea04 60%);
+          background-size: 200% auto;
+          -webkit-background-clip: text; background-clip: text; color: transparent;
+          animation: shine 6s linear infinite;
+        }
+        .bg-grid {
+          background-image:
+            linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+          background-size: 56px 56px;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .fade-up { animation: none; opacity: 1; }
+          .text-shine { animation: none; }
+        }
       `}</style>
 
-      {/* ── Sticky Nav ── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-[#0e0e10]/90 backdrop-blur-xl border-b border-white/8 shadow-xl shadow-black/40" : "bg-transparent"}`}>
-        <div className="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <LogoMark className="h-7 w-auto" />
-            <div className="hidden md:flex items-center gap-6 text-sm text-white/50">
-              <button onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-white transition-colors duration-200">Features</button>
-              <button onClick={() => document.getElementById("outcomes")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-white transition-colors duration-200">Outcomes</button>
-              <button onClick={() => document.getElementById("faq")?.scrollIntoView({ behavior: "smooth" })} className="hover:text-white transition-colors duration-200">FAQ</button>
-            </div>
+      {/* ── Floating Nav ── */}
+      <header className="fixed inset-x-0 top-0 z-50 px-4 pt-3">
+        <nav className={`mx-auto flex max-w-5xl items-center justify-between rounded-full border px-3 py-2 pl-5 transition-all duration-300 ${scrolled ? "border-white/10 bg-[#0c0c0f]/75 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)]" : "border-transparent bg-transparent"}`}>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center gap-2.5" aria-label="Viola home">
+            <LogoMark className="h-5 w-auto text-white" />
+            <span className="text-[17px] font-semibold tracking-tight">viola</span>
+          </button>
+          <div className="hidden md:flex items-center gap-1 text-sm text-white/55">
+            {[["Features", "features"], ["Outcomes", "outcomes"], ["FAQ", "faq"]].map(([label, id]) => (
+              <button key={id} onClick={() => scrollTo(id)} className="rounded-full px-3.5 py-1.5 transition-colors hover:text-white hover:bg-white/[0.06]">{label}</button>
+            ))}
+            <button onClick={() => navigate("/demo/marketplace")} className="rounded-full px-3.5 py-1.5 transition-colors hover:text-white hover:bg-white/[0.06]">Demo</button>
           </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              className="hidden sm:flex text-white/60 hover:text-white hover:bg-white/8 text-sm px-4 py-2 h-auto rounded-lg"
-              onClick={() => window.location.href = "mailto:viola@theviola.co"}
-            >
-              Contact
-            </Button>
-            <Button
-              ref={(el) => (buttonRefs.current[0] = el)}
-              onMouseMove={(e) => handleMouseMove(e, 0)}
-              onClick={() => navigate("/waitlist")}
-              className="group relative bg-[#e4ea04] text-black hover:bg-[#e4ea04]/90 text-sm px-5 py-2 h-auto rounded-lg font-semibold overflow-hidden transition-all duration-200 hover:shadow-[0_0_20px_rgba(228,234,4,0.4)] focus-visible:ring-0 focus-visible:outline-none"
-            >
-              <span className="relative z-10 flex items-center gap-1.5">
-                Request Access
-                <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </span>
-            </Button>
-          </div>
-        </div>
-      </nav>
-
-      {/* ── Hero ── */}
-      <section className="relative pt-32 pb-0 px-5 overflow-hidden">
-        {!heroVideoFailed && (
-          <video autoPlay muted loop playsInline preload="metadata" crossOrigin="anonymous"
-            onError={() => setHeroVideoFailed(true)}
-            className="absolute invert top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl blur-[80px] opacity-20 pointer-events-none hidden sm:block"
-          >
-            <source src={heroVideo} type="video/mp4" />
-          </video>
-        )}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(228,234,4,0.07),transparent)] pointer-events-none" />
-
-        <div className="max-w-4xl mx-auto text-center relative z-10 space-y-6">
-          <h1 className="font-zen text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[1.08] tracking-tight opacity-0 fade-up [animation-delay:200ms]">
-            License music<br />
-            <span className="text-white/50 italic">effortlessly.</span>
-          </h1>
-
-          <p className="text-lg text-white max-w-2xl mx-auto leading-relaxed font-dm opacity-0 fade-up [animation-delay:350ms]">
-            Viola is the all-in-one platform and marketplace that makes music licensing simple, efficient, and accessible for everyone's creative projects.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 opacity-0 fade-up [animation-delay:500ms]">
-            <Button
-              ref={(el) => (buttonRefs.current[1] = el)}
-              onMouseMove={(e) => handleMouseMove(e, 1)}
-              onClick={() => navigate("/waitlist")}
-              className="group bg-[#e4ea04] text-black hover:bg-[#e4ea04]/90 px-7 py-3 h-auto text-base font-semibold rounded-xl transition-all duration-200 hover:shadow-[0_0_30px_rgba(228,234,4,0.35)] focus-visible:ring-0 focus-visible:outline-none"
-            >
-              <span className="flex items-center gap-2">
-                Join the Waitlist
-                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </span>
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => window.location.href = "mailto:viola@theviola.co"}
-              className="text-white/60 hover:text-white hover:bg-white/8 px-7 py-3 h-auto text-base rounded-xl transition-all duration-200 border border-white/10 hover:border-white/25"
-            >
-              Talk to Our Team
-            </Button>
-          </div>
-
-          <p className="font-dm text-white/30 text-xs tracking-widest uppercase opacity-0 fade-up [animation-delay:650ms]">
-            Built for Sync Teams · Music Supervisors · Record Labels · Music Publishing
-          </p>
-        </div>
-
-        {/* Hero product screenshot */}
-        <div className="relative mt-16 max-w-6xl mx-auto opacity-0 fade-up [animation-delay:800ms]">
-          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/60 shadow-[0_40px_120px_rgba(0,0,0,0.8)] aspect-video">
-            {videoErrors["hero"] ? (
-              <img src={fallbackPoster} alt="Viola product" className="w-full h-full object-cover brightness-75" />
-            ) : (
-              <video autoPlay muted loop playsInline preload="metadata" poster={fallbackPoster} crossOrigin="anonymous"
-                onError={() => setVideoErrors(v => ({ ...v, hero: true }))}
-                className="w-full h-full object-cover"
-              >
-                <source src={searchVideo} type="video/mp4" />
-              </video>
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
-            <button
-              onClick={() => navigate("/demo/marketplace")}
-              className="group absolute left-1/2 bottom-6 -translate-x-1/2 z-10 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#e4ea04] text-black text-sm font-semibold shadow-[0_8px_30px_rgba(228,234,4,0.4)] hover:bg-[#e4ea04]/90 hover:shadow-[0_0_36px_rgba(228,234,4,0.55)] transition-all duration-200"
-            >
-              Try the marketplace for free
-              <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+          <div className="flex items-center gap-1.5">
+            <a href="mailto:viola@theviola.co" className="hidden sm:inline-flex rounded-full px-3.5 py-1.5 text-sm text-white/55 transition-colors hover:text-white">Contact</a>
+            <button onClick={() => navigate("/waitlist")} className={`${primaryBtn} px-4 py-2 text-sm`}>
+              Request access
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </button>
           </div>
-          <div className="absolute -bottom-px left-0 right-0 h-32 bg-gradient-to-t from-[#0e0e10] to-transparent pointer-events-none" />
+        </nav>
+      </header>
+
+      {/* ── Hero ── */}
+      <section className="relative px-4 pt-36 sm:pt-44">
+        {/* backdrop: grid + light beam */}
+        <div className="pointer-events-none absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_70%_55%_at_50%_0%,black,transparent)]" />
+        <div className="pointer-events-none absolute left-1/2 top-[-260px] h-[620px] w-[1100px] max-w-[200vw] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(108,36,232,0.38),transparent)]" />
+        <div className="pointer-events-none absolute left-1/2 top-[-120px] h-[340px] w-[560px] max-w-[120vw] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(228,234,4,0.14),transparent)]" />
+
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
+          <button
+            onClick={() => navigate("/demo/marketplace")}
+            className="group mx-auto mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] p-1 pr-3.5 text-sm text-white/70 backdrop-blur transition-colors hover:border-white/20 hover:text-white opacity-0 fade-up"
+          >
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#e4ea04] px-2.5 py-0.5 text-xs font-semibold text-black">
+              <Sparkles className="h-3 w-3" /> Early access
+            </span>
+            Try the marketplace for free
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+          </button>
+
+          <h1 className="text-balance text-[44px] leading-[1.02] sm:text-7xl lg:text-[88px] font-semibold tracking-[-0.045em] opacity-0 fade-up [animation-delay:120ms]">
+            <span className="bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">License music</span>
+            <br />
+            <span className="font-serif italic font-normal tracking-[-0.02em] text-shine pr-2">effortlessly.</span>
+          </h1>
+
+          <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-white/60 opacity-0 fade-up [animation-delay:240ms]">
+            Viola is the marketplace that streamlines the inefficient roadblocks of the entire music licensing process for everyone's creative projects.
+          </p>
+
+          <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3 opacity-0 fade-up [animation-delay:360ms]">
+            <button onClick={() => navigate("/waitlist")} className={`${primaryBtn} w-full sm:w-auto px-7 py-3.5 text-[15px]`}>
+              Join the waitlist
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </button>
+            <button onClick={() => navigate("/demo/marketplace")} className={`${secondaryBtn} w-full sm:w-auto px-7 py-3.5 text-[15px]`}>
+              Explore the demo
+            </button>
+          </div>
+        </div>
+
+        {/* Product shot */}
+        <div className="relative z-10 mx-auto mt-16 sm:mt-20 max-w-6xl opacity-0 fade-up [animation-delay:500ms]">
+          <div className="pointer-events-none absolute -inset-x-10 top-10 bottom-0 rounded-[40px] bg-[radial-gradient(ellipse_at_center,rgba(108,36,232,0.35),transparent_65%)] blur-2xl" />
+          <div className="relative">
+            <BrowserFrame url="theviola.co/search">
+              <div className="relative aspect-video">
+                {renderVideo("hero", searchVideo, "Viola AI search")}
+              </div>
+            </BrowserFrame>
+          </div>
+          <div className="pointer-events-none absolute inset-x-0 -bottom-px h-40 bg-gradient-to-t from-[#070709] to-transparent" />
+        </div>
+
+        {/* Audience strip */}
+        <div className="relative z-10 mx-auto max-w-5xl pb-6 pt-4 text-center">
+          <p className="mb-4 text-xs text-white/35">Built for the people behind the soundtrack</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm sm:text-base font-medium text-white/50">
+            {["Sync Teams", "Music Supervisors", "Record Labels", "Music Publishers"].map(a => (
+              <span key={a} className="tracking-tight">{a}</span>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ── Problem ── */}
-      <section className="py-20 px-5">
-        <div className="max-w-3xl mx-auto">
-          <div className="inline-flex gap-2 px-3 py-2 rounded-full bg-white text-black mb-6 ring-1 ring-white/30">
-            <Bug className="w-4 h-4" />
-            <span className="text-xs font-medium">The Problem</span>
-          </div>
-          <h2 className="font-zen text-3xl md:text-4xl leading-tight text-white mb-6">
-            The work is creative.<br />The workflow still is not.
-          </h2>
+      <section className="px-4 py-24 sm:py-32">
+        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-20 items-start">
+          <Reveal className="lg:sticky lg:top-32">
+            <SectionHeader
+              align="left"
+              eyebrow="The problem"
+              title={<>The work is creative.<br /><span className="text-white/40">The workflow still isn't.</span></>}
+              sub="Viola gives you the tools to streamline the busy work."
+            />
+          </Reveal>
           <div className="space-y-3">
-            {[
-              "Can take Months to license a song for your project",
-              "Unorganized and inefficient communication for every music license negotiated",
-              "Inaccessible music licenses leave money on the table",
-            ].map((item) => (
-              <div key={item} className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/4 px-4 py-3.5 text-sm text-white/80">
-                <X className="w-4 h-4 text-[#ee481f] mt-0.5 flex-shrink-0" />
-                {item}
-              </div>
+            {problems.map((item, i) => (
+              <Reveal key={item} delay={i * 80}>
+                <div className="group flex items-start gap-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 transition-colors hover:border-white/15 hover:bg-white/[0.04]">
+                  <span className="font-mono text-xs text-white/30 pt-1">0{i + 1}</span>
+                  <div className="flex-1 text-base sm:text-lg leading-snug text-white/85">{item}</div>
+                  <span className="mt-0.5 inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#ee481f]/10 text-[#ee481f]">
+                    <X className="h-3.5 w-3.5" />
+                  </span>
+                </div>
+              </Reveal>
             ))}
           </div>
-          <p className="font-dm text-white/50 text-sm pt-6">Viola gives you the tools to streamline the busy work.</p>
         </div>
       </section>
 
-      {/* ── Why Viola — Features ── */}
-      <section id="features" ref={whySection.ref} className="py-24 px-5 border-t border-white/8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
-            <p className="text-white/40 text-xs uppercase tracking-widest font-dm mb-3">Features</p>
-            <h2 className="font-zen text-4xl md:text-5xl font-semibold text-white leading-tight">
-              Why Viola
-            </h2>
-          </div>
+      {/* ── Features ── */}
+      <section id="features" className="relative px-4 py-24 sm:py-32 border-t border-white/[0.06] scroll-mt-20">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Product"
+              title={<>Everything you need to go from <span className="font-serif italic font-normal">brief</span> to <span className="font-serif italic font-normal text-[#e4ea04]">licensed.</span></>}
+            />
+          </Reveal>
 
-          {/* Sticky jump-tabs — segmented control */}
-          <div className="sticky top-[72px] z-30 mb-16">
-            <div className="flex justify-center overflow-x-auto px-1 py-1">
-              <div className="inline-flex items-center gap-1 p-1 rounded-full border border-white/10 bg-[#0d0d10]/80 backdrop-blur-md shadow-lg shadow-black/30">
-                {featureTabs.map((tab, i) => (
+          {/* Sticky jump-tabs */}
+          <div className="sticky top-[76px] z-30 mt-12 mb-14 flex justify-center">
+            <div className="inline-flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-white/10 bg-[#0c0c0f]/80 p-1 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
+              {featureTabs.map((tab, i) => {
+                const Icon = tab.icon;
+                return (
                   <button
                     key={tab.id}
                     onClick={() => featureRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                      activeTab === i
-                        ? "bg-[#e4ea04] text-black shadow-[0_0_16px_rgba(228,234,4,0.35)]"
-                        : "text-white/50 hover:text-white"
+                    className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                      activeTab === i ? "bg-white text-black" : "text-white/50 hover:text-white"
                     }`}
                   >
-                    {tab.icon}
+                    <Icon className="h-4 w-4" />
                     {tab.label}
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* All features stacked */}
-          <div className="space-y-24 lg:space-y-32">
-            {featureTabs.map((tab, i) => (
-              <div
-                key={tab.id}
-                ref={(el) => (featureRefs.current[i] = el)}
-                className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center scroll-mt-32"
-              >
-                <div className={`space-y-5 ${i % 2 === 1 ? "lg:order-2" : ""}`}>
-                  <h3 className="font-zen text-3xl md:text-4xl font-semibold text-white leading-snug">
-                    {tab.headline}
-                  </h3>
-                  <p className="font-dm text-white/60 text-base leading-relaxed">
-                    {tab.body}
-                  </p>
-                  <button
-                    onClick={() => navigate("/waitlist")}
-                    className="inline-flex items-center gap-2 text-[#e4ea04] text-sm font-medium hover:gap-3 transition-all duration-200"
-                  >
-                    Join the Waitlist <ChevronRight className="w-4 h-4" />
-                  </button>
+          <div className="space-y-6">
+            {featureTabs.map((tab, i) => {
+              const Icon = tab.icon;
+              return (
+                <div key={tab.id} ref={(el) => (featureRefs.current[i] = el)} className="scroll-mt-40">
+                  <Reveal>
+                    <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-white/[0.01]">
+                      <div className="pointer-events-none absolute -top-40 right-0 h-80 w-80 rounded-full bg-[radial-gradient(closest-side,rgba(108,36,232,0.18),transparent)]" />
+                      <div className="relative grid items-center gap-10 p-6 sm:p-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14 lg:p-14">
+                        <div className={`space-y-6 ${i % 2 === 1 ? "lg:order-2" : ""}`}>
+                          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-white/60">
+                            <Icon className="h-3.5 w-3.5 text-[#e4ea04]" />
+                            0{i + 1} · {tab.label}
+                          </div>
+                          <h3 className="text-balance text-3xl md:text-4xl font-semibold tracking-[-0.03em] leading-[1.1]">{tab.headline}</h3>
+                          <p className="text-base leading-relaxed text-white/55">{tab.body}</p>
+                          <ul className="space-y-2.5">
+                            {tab.points.map(p => (
+                              <li key={p} className="flex items-center gap-3 text-sm text-white/75">
+                                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#e4ea04]/12 text-[#e4ea04]"><Check className="h-3 w-3" /></span>
+                                {p}
+                              </li>
+                            ))}
+                          </ul>
+                          <button onClick={() => navigate("/waitlist")} className="group inline-flex items-center gap-1.5 text-sm font-medium text-white hover:text-[#e4ea04] transition-colors">
+                            Get early access <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                          </button>
+                        </div>
+                        <div className={i % 2 === 1 ? "lg:order-1" : ""}>
+                          <BrowserFrame url={tab.url}>
+                            <div className="relative aspect-video overflow-hidden">
+                              {renderVideo(tab.id, tab.video, tab.label, "lg:-translate-y-4 md:-translate-y-3")}
+                            </div>
+                          </BrowserFrame>
+                        </div>
+                      </div>
+                    </div>
+                  </Reveal>
                 </div>
-                <div className={i % 2 === 1 ? "lg:order-1" : ""}>
-                  <div className="relative overflow-hidden rounded-xl border border-white/10 bg-black/50 shadow-[0_20px_60px_rgba(0,0,0,0.6)] aspect-video">
-                    {videoErrors[tab.id] ? (
-                      <img src={fallbackPoster} alt={tab.label} className="w-full h-full object-cover brightness-75 grayscale" />
-                    ) : (
-                      <video autoPlay muted loop playsInline preload="metadata" poster={fallbackPoster} crossOrigin="anonymous"
-                        onError={() => setVideoErrors(v => ({ ...v, [tab.id]: true }))}
-                        className="w-full h-full object-cover lg:-translate-y-4 md:-translate-y-3"
-                      >
-                        <source src={tab.video} type="video/mp4" />
-                      </video>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Statement + 3 steps ── */}
+      <section className="relative px-4 py-24 sm:py-32 overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-grid opacity-60 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,black,transparent)]" />
+        <div className="relative mx-auto max-w-5xl text-center">
+          <Reveal>
+            <Eyebrow>Locate · Listen · License</Eyebrow>
+            <h2 className="mt-6 text-balance text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-0.04em] leading-[1.05]">
+              From negotiation that feels endless to <span className="font-serif italic font-normal text-shine pr-1">licensed in minutes.</span>
+            </h2>
+          </Reveal>
+          <div className="relative mt-16 grid gap-4 sm:grid-cols-3">
+            <div className="pointer-events-none absolute left-[16%] right-[16%] top-9 hidden h-px bg-gradient-to-r from-transparent via-white/20 to-transparent sm:block" />
+            {steps.map((s, i) => {
+              const Icon = s.icon;
+              return (
+                <Reveal key={s.title} delay={i * 100}>
+                  <div className="relative flex flex-col items-center gap-4 px-4">
+                    <span className="relative inline-flex h-[72px] w-[72px] items-center justify-center rounded-2xl border border-white/10 bg-[#0e0e12] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+                      <Icon className="h-6 w-6 text-[#e4ea04]" />
+                    </span>
+                    <div>
+                      <p className="text-lg font-semibold tracking-tight">{s.title}</p>
+                      <p className="mt-1 text-sm text-white/50">{s.body}</p>
+                    </div>
+                  </div>
+                </Reveal>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Outcomes ── */}
+      <section id="outcomes" className="px-4 py-24 sm:py-32 border-t border-white/[0.06] scroll-mt-20">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Outcomes"
+              title="What changes when you use Viola"
+              sub={<>More of your day goes to <span className="font-serif italic text-white text-xl">music taste</span>, not paperwork and negotiation.</>}
+            />
+          </Reveal>
+
+          <div className="mt-14 grid gap-4 md:grid-cols-2">
+            <Reveal>
+              <div className="h-full rounded-3xl border border-white/[0.08] bg-white/[0.015] p-7 sm:p-9">
+                <div className="mb-8 flex items-center gap-2.5 text-sm font-medium text-white/50">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/[0.06]"><X className="h-3.5 w-3.5" /></span>
+                  Without Viola
+                </div>
+                <div className="space-y-8">
+                  {withoutViola.map(section => (
+                    <div key={section.group} className="space-y-3.5">
+                      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/35">{section.group}</p>
+                      <ul className="space-y-3">
+                        {section.items.map(item => (
+                          <li key={item} className="flex items-start gap-3 text-[15px] leading-snug text-white/50">
+                            <X className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#ee481f]/70" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
+
+            <Reveal delay={120}>
+              <div className="relative h-full rounded-3xl p-px bg-gradient-to-b from-[#e4ea04]/70 via-[#e4ea04]/20 to-white/[0.06]">
+                <div className="relative h-full overflow-hidden rounded-[23px] bg-[#0d0d0a] p-7 sm:p-9">
+                  <div className="pointer-events-none absolute -top-24 left-1/2 h-56 w-[120%] -translate-x-1/2 bg-[radial-gradient(closest-side,rgba(228,234,4,0.16),transparent)]" />
+                  <div className="relative mb-8 flex items-center gap-2.5 text-sm font-semibold text-[#e4ea04]">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#e4ea04] text-black"><Check className="h-3.5 w-3.5" /></span>
+                    With Viola
+                  </div>
+                  <div className="relative space-y-8">
+                    {withViola.map(section => (
+                      <div key={section.group} className="space-y-3.5">
+                        <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#e4ea04]/60">{section.group}</p>
+                        <ul className="space-y-3">
+                          {section.items.map(item => (
+                            <li key={item.main} className="flex items-start gap-3 text-[15px] leading-snug">
+                              <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#e4ea04]" />
+                              <span className="flex flex-col gap-0.5">
+                                <span className="font-medium text-white">{item.main}</span>
+                                {item.sub && <span className="text-white/50 text-sm">{item.sub}</span>}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
-            ))}
+            </Reveal>
           </div>
-        </div>
-      </section>
-
-      {/* ── Callout Banner ── */}
-      <section className="px-5 py-6">
-        <div className="max-w-6xl mx-auto overflow-hidden rounded-2xl bg-[#e4ea04] text-black py-16 px-8 text-center space-y-3">
-          <p className="uppercase tracking-[0.25em] text-xs font-dm opacity-60">Locate · Listen · License</p>
-          <h2 className="font-zen font-semibold text-2xl md:text-3xl lg:text-4xl leading-tight max-w-4xl mx-auto">
-            <span className="md:whitespace-nowrap">From Negotiation that feels Endless to</span>{" "}
-            <br className="hidden md:block" />
-            <span className="md:whitespace-nowrap">Licensed in Minutes</span>
-          </h2>
-        </div>
-      </section>
-
-      {/* ── Before / After ── */}
-      <section id="outcomes" ref={outcomesSection.ref} className="py-20 px-5">
-        <div className={`max-w-5xl mx-auto space-y-8 transition-all duration-700 ${outcomesSection.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <div className="text-center">
-            <p className="uppercase tracking-[0.2em] text-white/40 font-dm text-xs mb-3">Outcomes</p>
-            <h2 className="text-3xl md:text-4xl font-zen font-semibold text-white">What changes when you use Viola</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-5">
-            <div className="rounded-2xl border border-red-600/30 bg-gradient-to-br from-red-900/25 via-black/50 to-black/80 p-6 md:p-8 space-y-6">
-              <div className="inline-flex items-center gap-2 text-red-300 text-xs uppercase tracking-widest font-dm">
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-500/20 text-red-300"><X className="w-3.5 h-3.5" /></span>
-                Without Viola
-              </div>
-
-              {[
-                {
-                  group: "For Music Licensees",
-                  items: [
-                    "Delays in submitting a brief and receiving songs",
-                    "Inefficient back-and-forth negotiation wastes valuable time and energy",
-                    "Cannot fully own music taste",
-                  ],
-                },
-                {
-                  group: "For Record Labels & Publishing Companies",
-                  items: [
-                    "Inefficient manual music licensing processes mean missed sync orders and lost revenue at scale",
-                    "Manual music searching and pitch packaging per brief is time consuming",
-                    "Tight deadlines of up to 48 hours turnaround time for certain briefs",
-                  ],
-                },
-              ].map((section) => (
-                <div key={section.group} className="space-y-3">
-                  <p className="font-dm text-red-200/90 text-xs font-semibold uppercase tracking-wider">{section.group}</p>
-                  <ul className="space-y-2.5 text-white/60 text-sm list-none">
-                    {section.items.map((item) => (
-                      <li key={item} className="flex items-start gap-2.5">
-                        <X className="w-4 h-4 text-red-400/70 mt-0.5 flex-shrink-0" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-
-            <div
-              ref={withViolaRef}
-              className={`rounded-2xl border border-[#e4ea04]/50 bg-gradient-to-br from-[#e4ea04] via-[#e4ea04]/95 to-[#e4ea04] text-black p-6 md:p-8 space-y-5 shadow-[0_0_80px_rgba(228,234,4,0.45)] ${withViolaVisible ? "flicker-on" : "opacity-80"}`}
-            >
-              <div className="inline-flex items-center gap-2 text-black text-xs uppercase tracking-widest font-dm font-bold">
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-black shadow-sm"><Check className="w-3.5 h-3.5 text-[#e4ea04]" /></span>
-                With Viola
-              </div>
-
-              {[
-                {
-                  group: "For Music Licensees",
-                  items: [
-                    { main: "Complete briefs efficiently", sub: "Search, shortlist, clear songs, and checkout" },
-                    { main: "1 workspace for everything", sub: "Music licensing done in one platform" },
-                  ],
-                },
-                {
-                  group: "For Record Labels & Publishing Companies",
-                  items: [
-                    { main: "Goodbye to cluttered email inbox and messaging", sub: "No inefficient back-and-forth negotiation — clear songs faster" },
-                    { main: "Track sync orders, total revenue, and other analytics in one dashboard" },
-                    { main: "Fulfill sync orders that were once missed" },
-                    { main: "Maximize catalog revenue and focus efforts more wisely" },
-                  ],
-                },
-              ].map((section) => (
-                <div key={section.group} className="space-y-3">
-                  <p className="font-dm text-black/60 text-xs font-bold uppercase tracking-wider">{section.group}</p>
-                  <ul className="space-y-2.5 text-black text-sm list-none">
-                    {section.items.map((item) => (
-                      <li key={item.main} className="flex items-start gap-2.5">
-                        <Check className="w-4 h-4 text-black/80 mt-0.5 flex-shrink-0" />
-                        <span className="flex flex-col">
-                          <span className="font-semibold">{item.main}</span>
-                          {item.sub && <span className="text-black/60">{item.sub}</span>}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-          <p className="text-xl text-white/60 text-center font-dm">
-            More of your day goes to <span className="italic text-white">music taste,</span> not paperwork and negotiation.
-          </p>
         </div>
       </section>
 
       {/* ── Testimonials ── */}
-      <section ref={testimonialsSection.ref} className="py-20 px-5 border-t border-white/6">
-        <div className={`max-w-6xl mx-auto transition-all duration-700 ${testimonialsSection.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <div className="text-center mb-12">
-            <p className="text-white/40 text-xs uppercase tracking-widest font-dm mb-3">What People Say</p>
-            <h2 className="text-3xl md:text-4xl font-zen font-semibold text-white">Our Users weigh in</h2>
-          </div>
-
-          {/* Swipeable testimonial carousel */}
-          <div className="relative">
-            <div
-              className="overflow-hidden rounded-2xl border border-white/10 bg-white/3"
-              onTouchStart={onTouchStart}
-              onTouchEnd={onTouchEnd}
-            >
-              <div
-                className="flex transition-transform duration-500 ease-out"
-                style={{ transform: `translateX(-${testimonialIndex * 100}%)` }}
-              >
-                {testimonials.map((t) => (
-                  <div key={t.name} className="w-full flex-shrink-0 p-8 md:p-12">
-                    <div className="flex flex-col md:flex-row gap-8 md:gap-10 items-center max-w-4xl mx-auto">
-                      <div className="relative w-full md:w-2/5 flex-shrink-0">
-                        <div className="relative aspect-[4/3] bg-black/50 rounded-xl border border-white/10 overflow-hidden">
-                          <div className="absolute top-4 left-4 z-10">
-                            <LogoMark className="h-6 w-auto" />
-                          </div>
-                          <img src="/calloutImage.png" alt="Industry testimonial" className="w-full h-full object-cover" />
-                        </div>
-                      </div>
-                      <div className="space-y-5 select-none">
-                        <div className="flex gap-1">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <svg key={i} className="w-4 h-4 text-[#e4ea04]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                          ))}
-                        </div>
-                        <p className="font-zen text-xl md:text-2xl text-white/90 leading-relaxed">
-                          "{t.quote}"
-                        </p>
-                        <div className="flex items-center gap-3 text-sm text-white/45 font-dm">
-                          <div className="h-px w-8 bg-[#e4ea04]/60 flex-shrink-0" />
-                          <span>{t.name} · {t.role}{t.company ? ` @ ${t.company}` : ""}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Arrow controls */}
-            <button
-              aria-label="Previous testimonial"
-              onClick={() => goToTestimonial(testimonialIndex - 1)}
-              className="absolute left-0 md:-left-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-white/15 bg-[#0d0d10]/80 backdrop-blur-md flex items-center justify-center text-white/70 hover:text-black hover:bg-[#e4ea04] hover:border-[#e4ea04] transition-all duration-300"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              aria-label="Next testimonial"
-              onClick={() => goToTestimonial(testimonialIndex + 1)}
-              className="absolute right-0 md:-right-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-white/15 bg-[#0d0d10]/80 backdrop-blur-md flex items-center justify-center text-white/70 hover:text-black hover:bg-[#e4ea04] hover:border-[#e4ea04] transition-all duration-300"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Dots */}
-          <div className="flex justify-center gap-2 mt-8">
+      <section className="px-4 py-24 sm:py-32 border-t border-white/[0.06]">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <SectionHeader eyebrow="What people say" title="Loved by the industry's ears" />
+          </Reveal>
+          <div className="mt-14 grid gap-4 md:grid-cols-2">
             {testimonials.map((t, i) => (
-              <button
-                key={t.name}
-                aria-label={`Go to testimonial ${i + 1}`}
-                onClick={() => goToTestimonial(i)}
-                className={`h-2 rounded-full transition-all duration-300 ${i === testimonialIndex ? "w-8 bg-[#e4ea04]" : "w-2 bg-white/20 hover:bg-white/40"}`}
-              />
+              <Reveal key={t.name} delay={i * 120} className="h-full">
+                <figure className="flex h-full flex-col justify-between gap-10 rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-transparent p-8 sm:p-10">
+                  <div className="space-y-6">
+                    <Quote className="h-7 w-7 text-[#e4ea04]" />
+                    <blockquote className="text-xl sm:text-2xl leading-snug tracking-[-0.015em] text-white/90">
+                      {t.quote}
+                    </blockquote>
+                  </div>
+                  <figcaption className="flex items-center gap-4">
+                    <span className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#6c24e8] to-[#ee481f] text-sm font-semibold">
+                      {initials(t.name)}
+                    </span>
+                    <div className="text-sm">
+                      <p className="font-semibold text-white">{t.name}</p>
+                      <p className="text-white/45">{t.role}{t.company ? ` · ${t.company}` : ""}</p>
+                    </div>
+                  </figcaption>
+                </figure>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Who It's For ── */}
-      <section ref={whoSection.ref} className="py-20 px-5">
-        <div className={`max-w-5xl mx-auto space-y-10 transition-all duration-700 ${whoSection.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <div className="text-center">
-            <p className="text-white/40 text-xs uppercase tracking-widest font-dm mb-3">Who It's For</p>
-            <h2 className="text-3xl md:text-4xl font-zen font-semibold text-white">Built for people who have musical taste</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-5">
-            <div className="relative p-8 space-y-4 rounded-2xl border border-[#e4ea04]/25 bg-gradient-to-br from-[#e4ea04]/8 via-transparent to-transparent hover:border-[#e4ea04]/45 transition-all duration-300">
-              <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-[#e4ea04] shadow-[0_0_8px_rgba(228,234,4,0.8)]" />
-              <p className="text-[#e4ea04] text-xs uppercase tracking-widest font-zen font-semibold">Perfect if you are a</p>
-              <ul className="space-y-2.5 text-white/70 text-sm">
-                {["Music Supervisor", "Sync Licensing Manager", "Sync Agency Owner", "Record Label or Publishing Company Team Member"].map(r => (
-                  <li key={r} className="flex items-center gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-[#e4ea04] flex-shrink-0" />{r}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="relative p-8 space-y-4 rounded-2xl border border-[#ee481f]/25 bg-gradient-to-br from-[#ee481f]/8 via-transparent to-transparent hover:border-[#ee481f]/45 transition-all duration-300">
-              <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-[#ee481f] shadow-[0_0_8px_rgba(238,72,31,0.8)]" />
-              <p className="text-[#ee481f] text-xs uppercase tracking-widest font-zen font-semibold">And you're tired of</p>
-              <ul className="space-y-2.5 text-white/70 text-sm">
-                {["Digging through clunky library interfaces", "Unfulfilled and missed sync orders", "Losing months to the licensing negotiation process"].map(r => (
-                  <li key={r} className="flex items-center gap-2.5">
-                    <X className="w-4 h-4 text-[#ee481f] flex-shrink-0" />{r}
-                  </li>
-                ))}
-              </ul>
-            </div>
+      {/* ── Who it's for ── */}
+      <section className="px-4 py-24 sm:py-32 border-t border-white/[0.06]">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <SectionHeader eyebrow="Who it's for" title={<>Built for people who have <span className="font-serif italic font-normal">musical taste.</span></>} />
+          </Reveal>
+          <div className="mt-14 grid gap-4 md:grid-cols-2">
+            <Reveal>
+              <div className="h-full rounded-3xl border border-white/[0.08] bg-white/[0.02] p-8 sm:p-10">
+                <p className="text-sm font-medium text-white/50">Perfect if you are a</p>
+                <div className="mt-6 flex flex-wrap gap-2.5">
+                  {roles.map(r => (
+                    <span key={r} className="rounded-full border border-[#e4ea04]/25 bg-[#e4ea04]/[0.06] px-4 py-2 text-sm text-white/90">{r}</span>
+                  ))}
+                </div>
+              </div>
+            </Reveal>
+            <Reveal delay={120}>
+              <div className="h-full rounded-3xl border border-white/[0.08] bg-white/[0.02] p-8 sm:p-10">
+                <p className="text-sm font-medium text-white/50">And you're tired of</p>
+                <ul className="mt-6 space-y-4">
+                  {painPoints.map(r => (
+                    <li key={r} className="flex items-center gap-3 text-[15px] text-white/80">
+                      <span className="inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#ee481f]/10 text-[#ee481f]"><X className="h-3.5 w-3.5" /></span>
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* ── Try Our Demo ── */}
-      <section className="py-20 px-5 border-t border-white/6">
-        <div className="max-w-3xl mx-auto text-center space-y-5">
-          <p className="text-white/40 text-xs uppercase tracking-widest font-dm">Try Our Demo</p>
-          <h2 className="font-zen text-4xl md:text-6xl font-semibold text-white leading-tight">
-            See Viola in action.
-          </h2>
-          <p className="text-white/50 font-dm text-base max-w-md mx-auto">
-            Type a brief the way you actually write it and watch Viola go to work.
-          </p>
-          <form onSubmit={handleSearch} className="w-full max-w-xl mx-auto pt-2">
-            <div className="glow-border">
-              <div className="relative">
-                <img
-                  src="/flower.png"
-                  alt="Viola"
-                  className={`absolute invert left-4 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full object-cover transition-all duration-300 ${isSearchFocused ? "opacity-100 scale-100" : "opacity-0 scale-0"}`}
-                />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setIsSearchFocused(false)}
-                  placeholder={placeholderText}
-                  className={`h-14 text-base border-0 bg-white text-black placeholder:text-black/50 focus-visible:ring-1 focus-visible:ring-black rounded-full shadow-lg transition-all duration-300 ${isSearchFocused ? "pl-14 pr-12" : "pl-5 pr-5"}`}
-                />
-                {isSearchFocused && <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-black" />}
-              </div>
-            </div>
-            {!hasSearched && <p className="text-white/30 text-xs mt-3 tracking-widest uppercase font-dm">Locate, Listen, License.</p>}
-          </form>
+      {/* ── Demo CTA ── */}
+      <section className="px-4 py-16 sm:py-24">
+        <Reveal>
+          <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[32px] border border-white/10 bg-[#0b0b0e] px-6 py-20 sm:px-12 sm:py-24 text-center">
+            <div className="pointer-events-none absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_60%_70%_at_50%_100%,black,transparent)]" />
+            <div className="pointer-events-none absolute left-1/2 bottom-[-220px] h-[440px] w-[900px] max-w-[180vw] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(108,36,232,0.45),transparent)]" />
+            <div className="pointer-events-none absolute left-1/2 bottom-[-120px] h-[240px] w-[480px] max-w-[120vw] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(228,234,4,0.18),transparent)]" />
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-6">
-            <Button
-              ref={(el) => (buttonRefs.current[2] = el)}
-              onMouseMove={(e) => handleMouseMove(e, 2)}
-              onClick={() => navigate("/waitlist")}
-              className="group bg-[#e4ea04] text-black hover:bg-[#e4ea04]/90 px-8 py-4 h-auto text-base font-semibold rounded-xl transition-all duration-200 hover:shadow-[0_0_30px_rgba(228,234,4,0.4)] focus-visible:ring-0 focus-visible:outline-none min-w-[220px]"
-            >
-              <span className="flex items-center justify-center gap-2">
-                Join the Waitlist
-                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </span>
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => window.location.href = "mailto:viola@theviola.co?subject=Talk%20with%20Viola&body=Hi%20Viola%20team%2C%0A%0AI%27d%20love%20to%20connect."}
-              className="text-white/50 hover:text-white border border-white/10 hover:border-white/25 hover:bg-white/5 px-8 py-4 h-auto text-base rounded-xl transition-all duration-200 min-w-[220px]"
-            >
-              Talk to Our Team
-            </Button>
+            <div className="relative mx-auto max-w-2xl space-y-6">
+              <Eyebrow>Try our demo</Eyebrow>
+              <h2 className="text-balance text-4xl sm:text-6xl font-semibold tracking-[-0.04em] leading-[1.02]">
+                See Viola <span className="font-serif italic font-normal">in action.</span>
+              </h2>
+              <p className="mx-auto max-w-md text-white/55">Type a brief the way you actually write it and watch Viola go to work.</p>
+
+              <form onSubmit={handleSearch} className="mx-auto w-full max-w-xl pt-2">
+                <div className="relative rounded-full p-px bg-gradient-to-r from-white/30 via-[#e4ea04]/50 to-white/30 shadow-[0_0_50px_rgba(228,234,4,0.15)]">
+                  <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={placeholderText}
+                    aria-label="Describe your music brief"
+                    className="h-14 rounded-full border-0 bg-[#0e0e12] pl-14 pr-32 text-base text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
+                  <button type="submit" className={`${primaryBtn} absolute right-1.5 top-1/2 -translate-y-1/2 px-5 py-2.5 text-sm`}>
+                    Search <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </form>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+                <button onClick={() => navigate("/waitlist")} className={`${primaryBtn} w-full sm:w-auto px-7 py-3.5 text-[15px]`}>
+                  Join the waitlist <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </button>
+                <a href={CONTACT_MAILTO} className={`${secondaryBtn} w-full sm:w-auto px-7 py-3.5 text-[15px]`}>
+                  Talk to our team
+                </a>
+              </div>
+              <p className="text-xs text-white/35">No credit card required · Hands-on onboarding included</p>
+            </div>
           </div>
-          <p className="text-white/20 text-xs font-dm pt-2">No credit card required · Hands-on onboarding included</p>
-        </div>
+        </Reveal>
       </section>
 
       {/* ── FAQ ── */}
-      <section id="faq" className="py-20 px-5 border-t border-white/8">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-10 space-y-2">
-            <p className="text-white/40 text-xs uppercase tracking-widest font-dm">FAQ</p>
-            <h2 className="text-3xl md:text-4xl font-zen font-semibold text-white">Asked & answered</h2>
-            <p className="text-white/40 text-sm font-dm">Questions we've already heard tastemakers ask.</p>
-          </div>
-          <Accordion type="single" collapsible className="space-y-2.5">
-            {faqItems.map((item, idx) => (
-              <AccordionItem
-                key={item.q}
-                value={`item-${idx}`}
-                className="overflow-hidden rounded-xl border border-white/8 bg-white/3 transition-colors duration-200 data-[state=open]:bg-[#e4ea04] data-[state=open]:border-[#e4ea04]"
-              >
-                <AccordionTrigger className="px-5 py-4 text-left text-white text-sm font-semibold hover:no-underline group transition-colors duration-200 data-[state=open]:text-black">
-                  <span className="flex items-center gap-3">
-                    <span className="inline-flex h-6 w-6 p-4 items-center justify-center rounded-full bg-white/10 text-white text-xs transition-colors duration-200 group-data-[state=open]:bg-black/10 group-data-[state=open]:text-black">
-                      {idx + 1}
-                    </span>
+      <section id="faq" className="px-4 py-24 sm:py-32 scroll-mt-20">
+        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+          <Reveal>
+            <SectionHeader
+              align="left"
+              eyebrow="FAQ"
+              title="Asked & answered"
+              sub={<>Questions we've already heard tastemakers ask. Something else? <a href={CONTACT_MAILTO} className="text-white underline decoration-white/30 underline-offset-4 hover:decoration-[#e4ea04]">Email us</a>.</>}
+            />
+          </Reveal>
+          <Reveal delay={100}>
+            <Accordion type="single" collapsible className="border-t border-white/[0.08]">
+              {faqItems.map((item, idx) => (
+                <AccordionItem key={item.q} value={`item-${idx}`} className="border-b border-white/[0.08]">
+                  <AccordionTrigger className="py-6 text-left text-base sm:text-lg font-medium text-white/90 hover:text-white hover:no-underline [&>svg]:text-white/40">
                     {item.q}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-5 pb-4 text-sm leading-relaxed text-black data-[state=open]:text-black">
-                  {item.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-6 pr-8 text-[15px] leading-relaxed text-white/55">
+                    {item.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </Reveal>
         </div>
       </section>
 
