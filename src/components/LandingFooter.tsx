@@ -7,7 +7,7 @@ import { ArrowUpRight } from "lucide-react";
  * Features:
  * - Brand blurb + product / company link columns
  * - Social media links (Instagram, LinkedIn, Email)
- * - Oversized faded wordmark and copyright bar
+ * - Full-width viola wordmark and copyright bar
  */
 
 const socials = [
@@ -47,7 +47,6 @@ const LandingFooter = () => (
     <div className="mx-auto max-w-6xl px-4 pt-16 pb-10">
       <div className="grid gap-12 md:grid-cols-[1.5fr_1fr_1fr]">
         <div className="space-y-5">
-          <p className="text-xl font-semibold tracking-tight">viola</p>
           <p className="max-w-xs text-sm leading-relaxed text-white/50">
             The all-in-one platform and marketplace for licensing music. Locate, listen, license.
           </p>
@@ -92,9 +91,9 @@ const LandingFooter = () => (
       </div>
     </div>
 
-    {/* Oversized wordmark */}
-    <div aria-hidden="true" className="pointer-events-none select-none -mb-[0.22em] text-center text-[28vw] font-semibold leading-none tracking-[-0.06em] bg-gradient-to-b from-white/[0.07] to-transparent bg-clip-text text-transparent">
-      viola
+    {/* Wordmark */}
+    <div className="mx-auto max-w-6xl px-4 pb-12">
+      <img src="/viola_text.svg" alt="viola" className="w-full select-none" draggable={false} />
     </div>
   </footer>
 );
