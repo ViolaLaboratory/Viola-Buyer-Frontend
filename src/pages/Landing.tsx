@@ -110,7 +110,7 @@ const featureTabs = [
     id: "search",
     label: "AI Search",
     url: "demo.theviola.co/search",
-    headline: "Find the perfect track in seconds",
+    headline: "Find the Perfect Track in Seconds",
     body: "Type your brief in natural language, from mood, tempo, genre, and storyline. Viola understands the creative context and provides the best fitting songs.",
     points: ["Natural-language briefs", "Mood, tempo, and metadata", "Instant previews"],
     video: searchVideo,
@@ -120,7 +120,7 @@ const featureTabs = [
     id: "pitch",
     label: "Marketplace",
     url: "demo.theviola.co/marketplace",
-    headline: "License songs you want with ease",
+    headline: "License Songs You Want with Ease",
     body: "Browse through a marketplace of record label and publisher partnered catalogs.",
     points: ["Commercially recorded catalog", "Ready for sync licensing", "Browse available metadata for each song"],
     video: marketplaceVideo,
@@ -130,7 +130,7 @@ const featureTabs = [
     id: "catalog",
     label: "One Workspace",
     url: "demo.theviola.co/checkout",
-    headline: "Everything in one workspace",
+    headline: "Everything in One Workspace",
     body: "Complete the licensing process all in one place.",
     points: ["Find the song you want", "Select licensing terms", "Sign agreements", "Pay in one place"],
     video: workspaceVideo,
@@ -216,8 +216,8 @@ const testimonials = [
   },
 ];
 
-const roles = ["Music Supervisor", "Sync Licensing Manager", "Sync Agency Owner", "Record Label Team", "Publishing Company Team"];
-const painPoints = ["Digging through clunky library interfaces", "Unfulfilled and missed sync orders", "Losing months to the licensing negotiation process"];
+const roles = ["Music Supervisor", "Sync Licensing Manager", "Sync Agency Owner", "Record Label", "Publishing Company"];
+const painPoints = ["Digging through clunky library interfaces", "Unfulfilled and missed sync deals", "Losing months to the licensing negotiation process"];
 
 // ─── FAQ ──────────────────────────────────────────────────────────────────────
 const faqItems = [
@@ -356,9 +356,9 @@ const Landing = () => {
           </button>
 
           <h1 className="text-balance text-[44px] leading-[1.02] sm:text-7xl lg:text-[88px] font-semibold tracking-[-0.045em] opacity-0 fade-up [animation-delay:120ms]">
-            <span className="bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">License music</span>
+            <span className="bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">License Music</span>
             <br />
-            <span className="font-dm italic text-shine pr-2">effortlessly.</span>
+            <span className="font-dm italic text-shine pr-2">Effortlessly.</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-white/60 opacity-0 fade-up [animation-delay:240ms]">
@@ -407,7 +407,7 @@ const Landing = () => {
             <SectionHeader
               align="left"
               eyebrow="The problem"
-              title={<>The work is creative.<br /><span className="text-[#a77bff]">The workflow still isn't.</span></>}
+              title={<>The Work is Creative.<br /><span className="text-[#a77bff]">The Workflow Still Isn't.</span></>}
             />
           </Reveal>
           <div className="space-y-3">
@@ -432,7 +432,7 @@ const Landing = () => {
           <Reveal>
             <SectionHeader
               eyebrow="Product"
-              title={<>Everything you need to go from <span className="font-dm italic">brief</span> to <span className="font-dm italic text-[#e4ea04]">licensed.</span></>}
+              title={<>Everything You Need to Go from <span className="font-dm italic">Brief</span> to <span className="font-dm italic text-[#e4ea04]">Licensed.</span></>}
             />
           </Reveal>
 
@@ -484,7 +484,7 @@ const Landing = () => {
               <div className="space-y-4">
                 <Eyebrow>How it works</Eyebrow>
                 <h2 className="text-balance text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.035em] leading-[1.08]">
-                  From negotiation that feels endless to <span className="font-dm italic text-[#e4ea04]">licensed in minutes.</span>
+                  From Negotiation that Feels Endless to <span className="font-dm italic text-[#e4ea04]">Licensed in Minutes.</span>
                 </h2>
               </div>
               <p className="text-base leading-relaxed text-white/55 lg:pb-1.5">
@@ -526,7 +526,7 @@ const Landing = () => {
           <Reveal>
             <SectionHeader
               eyebrow="Outcomes"
-              title="What changes when you use Viola"
+              title="What Changes When You Use Viola"
               sub={<>More of your day goes to <span className="font-dm italic text-white">music taste</span>, not paperwork and negotiation.</>}
             />
           </Reveal>
@@ -589,11 +589,43 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* ── Who it's for ── */}
+      <section className="px-4 py-20 sm:py-28 border-t border-white/[0.06]">
+        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+          <Reveal className="lg:sticky lg:top-32 lg:self-start">
+            <SectionHeader align="left" eyebrow="Who it's for" title={<>Built for People Who Have <span className="font-dm italic">Musical Taste.</span></>} />
+          </Reveal>
+          <div>
+            <Reveal>
+              <p className="text-sm font-medium text-white/45">Perfect if you are a</p>
+              <ol className="mt-4 border-t border-white/[0.08]">
+                {roles.map((r, i) => (
+                  <li key={r} className="group flex items-baseline gap-5 border-b border-white/[0.08] py-4 sm:py-5">
+                    <span className="font-mono text-xs text-white/30 transition-colors group-hover:text-[#e4ea04]">0{i + 1}</span>
+                    <span className="text-2xl sm:text-3xl font-semibold tracking-[-0.03em] text-white/90 transition-colors group-hover:text-white">{r}</span>
+                  </li>
+                ))}
+              </ol>
+            </Reveal>
+            <Reveal delay={120}>
+              <p className="mt-12 text-sm font-medium text-white/45">And you're tired of</p>
+              <ul className="mt-4 space-y-3">
+                {painPoints.map(r => (
+                  <li key={r} className="text-lg sm:text-xl text-white/55 line-through decoration-[#ee481f] decoration-2 underline-offset-4">
+                    {r}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
       {/* ── Testimonials ── */}
       <section className="px-4 py-24 sm:py-32 border-t border-white/[0.06]">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <SectionHeader eyebrow="What people say" title="Loved by the industry's ears" />
+            <SectionHeader eyebrow="What people say" title="Loved by the Industry's Ears" />
           </Reveal>
           <div className="mt-14 grid gap-4 md:grid-cols-2">
             {testimonials.map((t, i) => (
@@ -621,40 +653,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── Who it's for ── */}
-      <section className="px-4 py-24 sm:py-32 border-t border-white/[0.06]">
-        <div className="mx-auto max-w-6xl">
-          <Reveal>
-            <SectionHeader eyebrow="Who it's for" title={<>Built for people who have <span className="font-dm italic">musical taste.</span></>} />
-          </Reveal>
-          <div className="mt-14 grid gap-4 md:grid-cols-2">
-            <Reveal>
-              <div className="h-full rounded-3xl border border-white/[0.08] bg-white/[0.02] p-8 sm:p-10">
-                <p className="text-sm font-medium text-white/50">Perfect if you are a</p>
-                <div className="mt-6 flex flex-wrap gap-2.5">
-                  {roles.map(r => (
-                    <span key={r} className="rounded-full border border-[#e4ea04]/25 bg-[#e4ea04]/[0.06] px-4 py-2 text-sm text-white/90">{r}</span>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
-            <Reveal delay={120}>
-              <div className="h-full rounded-3xl border border-white/[0.08] bg-white/[0.02] p-8 sm:p-10">
-                <p className="text-sm font-medium text-white/50">And you're tired of</p>
-                <ul className="mt-6 space-y-4">
-                  {painPoints.map(r => (
-                    <li key={r} className="flex items-center gap-3 text-[15px] text-white/80">
-                      <span className="inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#ee481f]/10 text-[#ee481f]"><X className="h-3.5 w-3.5" /></span>
-                      {r}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
       {/* ── Demo CTA ── */}
       <section className="px-4 py-16 sm:py-24">
         <Reveal>
@@ -666,7 +664,7 @@ const Landing = () => {
             <div className="relative mx-auto max-w-2xl space-y-6">
               <Eyebrow>Try our demo</Eyebrow>
               <h2 className="text-balance text-4xl sm:text-6xl font-semibold tracking-[-0.04em] leading-[1.02]">
-                See Viola <span className="font-dm italic">in action.</span>
+                See Viola <span className="font-dm italic">in Action.</span>
               </h2>
               <p className="mx-auto max-w-md text-white/55">Type a brief the way you actually write it and watch Viola go to work.</p>
 
@@ -707,7 +705,7 @@ const Landing = () => {
             <SectionHeader
               align="left"
               eyebrow="FAQ"
-              title="Asked & answered"
+              title="Asked & Answered"
               sub={<>Questions we've already heard tastemakers ask. Something else? <a href={CONTACT_MAILTO} className="text-white underline decoration-white/30 underline-offset-4 hover:decoration-[#e4ea04]">Email us</a>.</>}
             />
           </Reveal>
