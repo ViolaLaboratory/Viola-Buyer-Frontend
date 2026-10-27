@@ -169,7 +169,7 @@ const LicenseeMock = () => (
           <p className="truncate text-sm font-semibold">Blue Hour Avenue</p>
           <p className="truncate text-xs text-black/50">Viola Demo Ensemble · Ambient</p>
         </div>
-        <span className="text-sm font-semibold">$205</span>
+        <span className="text-sm font-semibold">$3,400.00</span>
       </div>
       <p className="mt-4 text-[11px] font-medium uppercase tracking-wider text-black/40">Usage type</p>
       <div className="mt-2 flex flex-wrap gap-1.5">
@@ -194,7 +194,7 @@ const LicenseeMock = () => (
         <span className="font-dm italic text-sm text-[#5a1fc4]">Jane Doe</span>
         <span className="text-[10px] font-medium text-[#5a1fc4]/70">Signed</span>
       </div>
-      <div className="mt-3 rounded-lg bg-[#0f0d18] py-2 text-center text-xs font-semibold text-white">Checkout · $205</div>
+      <div className="mt-3 rounded-lg bg-[#0f0d18] py-2 text-center text-xs font-semibold text-white">Checkout · $3,400.00</div>
     </div>
   </>
 );
@@ -227,7 +227,7 @@ const RightsMock = () => (
     </div>
     <div className={`${panel} absolute bottom-5 left-5 sm:bottom-7 sm:left-7 w-[200px] sm:w-[230px] p-4`}>
       <p className="text-[11px] font-medium uppercase tracking-wider text-black/40">Sync revenue</p>
-      <p className="mt-1 text-xl font-semibold tracking-tight">$274.50</p>
+      <p className="mt-1 text-xl font-semibold tracking-tight">$274,500.50</p>
       <div className="mt-3 flex h-14 items-end gap-1.5">
         {[18, 26, 22, 34, 30, 48, 62].map((h, i) => (
           <span key={i} style={{ height: `${h}px` }} className={`flex-1 rounded-t ${i === 6 ? "bg-[#6c24e8]" : "bg-[#6c24e8]/20"}`} />
