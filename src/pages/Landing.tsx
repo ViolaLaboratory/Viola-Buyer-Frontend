@@ -17,6 +17,7 @@ const workspaceVideo    = asset("demo-workspace.mp4");
 const searchPoster      = asset("demo-search.jpg");
 const marketplacePoster = asset("demo-marketplace.jpg");
 const workspacePoster   = asset("demo-workspace.jpg");
+const labelTeamPhoto    = asset("label-team.jpg");
 
 const CONTACT_MAILTO = "mailto:viola@theviola.co?subject=Talk%20with%20Viola&body=Hi%20Viola%20team%2C%0A%0AI%27d%20love%20to%20connect.";
 
@@ -69,8 +70,8 @@ const Reveal = ({ children, className = "", delay = 0 }: { children: ReactNode; 
 };
 
 const Eyebrow = ({ children }: { children: ReactNode }) => (
-  <p className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.2em] text-white/45">
-    <span className="h-1 w-1 rounded-full bg-[#e4ea04]" />
+  <p className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.2em] text-[#a77bff]">
+    <span className="h-1 w-1 rounded-full bg-[#a77bff]" />
     {children}
   </p>
 );
@@ -144,17 +145,97 @@ const sides = [
     label: "For licensees",
     title: "Locate, Listen, License",
     points: ["Search the marketplace with plain-language", "Select licensing terms: territory, exclusivity, duration, usage type, audience", "Sign the licensing agreement and pay in one checkout"],
-    image: asset("side-licensee.jpg"),
-    alt: "Vinyl record with a waveform flowing into a licence",
+    mock: "licensee",
   },
   {
     label: "For labels & publishers",
     title: "Set Terms Once, Approve with Confidence",
     points: ["Publish rate cards buyers can license from", "Review clearance requests with master and publisher approval", "Track sync orders and revenue in one dashboard"],
-    image: asset("side-rights.jpg"),
-    alt: "Approval seal over a stack of record sleeves",
+    mock: "rights",
   },
 ];
+
+// ─── How it works mockups (designed UI, based on the real demo flows) ───────
+const panel = "rounded-2xl bg-white text-[#0f0d18] shadow-[0_24px_60px_-12px_rgba(0,0,0,0.55)] ring-1 ring-black/5";
+const chip = (on: boolean) =>
+  `rounded-full border px-2.5 py-1 text-[11px] font-medium ${on ? "border-[#6c24e8] bg-[#6c24e8]/10 text-[#5a1fc4]" : "border-black/10 text-black/55"}`;
+
+const LicenseeMock = () => (
+  <>
+    <div className={`${panel} absolute right-5 top-5 left-12 sm:right-7 sm:top-7 sm:left-24 p-4 sm:p-5`}>
+      <div className="flex items-center gap-3">
+        <span className="h-10 w-10 flex-shrink-0 rounded-lg bg-gradient-to-br from-[#6c24e8] to-[#2b1470]" />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold">Blue Hour Avenue</p>
+          <p className="truncate text-xs text-black/50">Viola Demo Ensemble · Ambient</p>
+        </div>
+        <span className="text-sm font-semibold">$205</span>
+      </div>
+      <p className="mt-4 text-[11px] font-medium uppercase tracking-wider text-black/40">Usage type</p>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        <span className={chip(true)}>TV / Streaming</span>
+        <span className={chip(false)}>Commercial</span>
+        <span className={chip(false)}>Feature Film</span>
+      </div>
+      <p className="mt-3.5 text-[11px] font-medium uppercase tracking-wider text-black/40">Territory</p>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        <span className={chip(true)}>Worldwide</span>
+        <span className={chip(false)}>Country</span>
+      </div>
+    </div>
+    <div className={`${panel} absolute bottom-5 left-5 sm:bottom-7 sm:left-7 w-[220px] sm:w-[250px] p-4`}>
+      <p className="text-sm font-semibold">Licence agreement</p>
+      <div className="mt-3 space-y-1.5">
+        <span className="block h-1.5 w-full rounded-full bg-black/[0.07]" />
+        <span className="block h-1.5 w-11/12 rounded-full bg-black/[0.07]" />
+        <span className="block h-1.5 w-4/5 rounded-full bg-black/[0.07]" />
+      </div>
+      <div className="mt-3 flex items-center justify-between rounded-lg border border-dashed border-[#6c24e8]/40 bg-[#6c24e8]/[0.06] px-3 py-2">
+        <span className="font-dm italic text-sm text-[#5a1fc4]">Jane Doe</span>
+        <span className="text-[10px] font-medium text-[#5a1fc4]/70">Signed</span>
+      </div>
+      <div className="mt-3 rounded-lg bg-[#0f0d18] py-2 text-center text-xs font-semibold text-white">Checkout · $205</div>
+    </div>
+  </>
+);
+
+const clearanceRows = [
+  { track: "Blue Hour Avenue", project: "Sample documentary", fee: "$184.50", status: "Approved", tone: "bg-emerald-50 text-emerald-700 ring-emerald-600/20" },
+  { track: "Afterglow Study",  project: "Festival trailer",   fee: "$189.00", status: "Pending",  tone: "bg-amber-50 text-amber-700 ring-amber-600/20" },
+  { track: "Lantern Walk",     project: "Brand campaign",     fee: "$130.50", status: "Review",   tone: "bg-violet-50 text-violet-700 ring-violet-600/20" },
+];
+
+const RightsMock = () => (
+  <>
+    <div className={`${panel} absolute right-5 top-5 left-12 sm:right-7 sm:top-7 sm:left-24 p-4 sm:p-5`}>
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-semibold">Clearance requests</p>
+        <span className="rounded-md bg-[#0f0d18] px-2.5 py-1 text-[11px] font-semibold text-white">Review all</span>
+      </div>
+      <div className="mt-3 divide-y divide-black/[0.06]">
+        {clearanceRows.map(r => (
+          <div key={r.track} className="flex items-center gap-3 py-2.5">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[13px] font-medium">{r.track}</p>
+              <p className="truncate text-[11px] text-black/45">{r.project}</p>
+            </div>
+            <span className="hidden sm:inline text-[12px] font-medium text-black/70">{r.fee}</span>
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset ${r.tone}`}>{r.status}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div className={`${panel} absolute bottom-5 left-5 sm:bottom-7 sm:left-7 w-[200px] sm:w-[230px] p-4`}>
+      <p className="text-[11px] font-medium uppercase tracking-wider text-black/40">Sync revenue</p>
+      <p className="mt-1 text-xl font-semibold tracking-tight">$274.50</p>
+      <div className="mt-3 flex h-14 items-end gap-1.5">
+        {[18, 26, 22, 34, 30, 48, 62].map((h, i) => (
+          <span key={i} style={{ height: `${h}px` }} className={`flex-1 rounded-t ${i === 6 ? "bg-[#6c24e8]" : "bg-[#6c24e8]/20"}`} />
+        ))}
+      </div>
+    </div>
+  </>
+);
 
 const problems = [
   "Can take months to license a song for your project",
@@ -358,7 +439,7 @@ const Landing = () => {
           <h1 className="text-balance text-[44px] leading-[1.02] sm:text-7xl lg:text-[88px] font-semibold tracking-[-0.045em] opacity-0 fade-up [animation-delay:120ms]">
             <span className="bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">License Music</span>
             <br />
-            <span className="font-dm italic text-shine pr-2">Effortlessly.</span>
+            <span className="font-dm italic text-shine pr-2">Effortlessly</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-white/60 opacity-0 fade-up [animation-delay:240ms]">
@@ -407,7 +488,7 @@ const Landing = () => {
             <SectionHeader
               align="left"
               eyebrow="The problem"
-              title={<>The Work is Creative.<br /><span className="text-[#a77bff]">The Workflow Still Isn't.</span></>}
+              title={<>The Work is Creative<br /><span className="text-[#a77bff]">The Workflow Still Isn't</span></>}
             />
           </Reveal>
           <div className="space-y-3">
@@ -432,7 +513,7 @@ const Landing = () => {
           <Reveal>
             <SectionHeader
               eyebrow="Product"
-              title={<>Everything You Need to Go from <span className="font-dm italic">Brief</span> to <span className="font-dm italic text-[#e4ea04]">Licensed.</span></>}
+              title={<>Everything You Need to Go from <span className="font-dm italic">Brief</span> to <span className="font-dm italic text-[#e4ea04]">Licensed</span></>}
             />
           </Reveal>
 
@@ -484,7 +565,7 @@ const Landing = () => {
               <div className="space-y-4">
                 <Eyebrow>How it works</Eyebrow>
                 <h2 className="text-balance text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.035em] leading-[1.08]">
-                  From Negotiation that Feels Endless to <span className="font-dm italic text-[#e4ea04]">Licensed in Minutes.</span>
+                  From Negotiation that Feels Endless to <span className="font-dm italic text-[#e4ea04]">Licensed in Minutes</span>
                 </h2>
               </div>
               <p className="text-base leading-relaxed text-white/55 lg:pb-1.5">
@@ -509,8 +590,8 @@ const Landing = () => {
                       ))}
                     </ul>
                   </div>
-                  <div className="relative mt-auto aspect-[16/9] overflow-hidden border-t border-white/[0.06] bg-[#0b0b0e]">
-                    <img src={side.image} alt={side.alt} loading="lazy" className="h-full w-full object-cover" />
+                  <div aria-hidden="true" className="relative mt-auto h-[360px] sm:h-[380px] overflow-hidden border-t border-white/[0.06] bg-[radial-gradient(120%_90%_at_100%_0%,#3b1d86_0%,#1c1040_45%,#0d0b16_100%)]">
+                    {side.mock === "licensee" ? <LicenseeMock /> : <RightsMock />}
                   </div>
                 </article>
               </Reveal>
@@ -521,7 +602,7 @@ const Landing = () => {
       </section>
 
       {/* ── Outcomes ── */}
-      <section id="outcomes" className="px-4 py-24 sm:py-32 border-t border-white/[0.06] scroll-mt-20">
+      <section id="outcomes" className="px-4 py-16 sm:py-20 border-t border-white/[0.06] scroll-mt-20">
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <SectionHeader
@@ -531,7 +612,7 @@ const Landing = () => {
             />
           </Reveal>
 
-          <div className="mt-14 grid gap-4 md:grid-cols-2">
+          <div className="mt-10 grid gap-4 md:grid-cols-2">
             <Reveal>
               <div className="h-full rounded-3xl border border-white/[0.08] bg-white/[0.015] p-7 sm:p-9">
                 <div className="mb-8 flex items-center gap-2.5 text-sm font-medium text-white/50">
@@ -590,10 +671,13 @@ const Landing = () => {
       </section>
 
       {/* ── Who it's for ── */}
-      <section className="px-4 py-20 sm:py-28 border-t border-white/[0.06]">
+      <section className="px-4 py-16 sm:py-20 border-t border-white/[0.06]">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
           <Reveal className="lg:sticky lg:top-32 lg:self-start">
-            <SectionHeader align="left" eyebrow="Who it's for" title={<>Built for People Who Have <span className="font-dm italic">Musical Taste.</span></>} />
+            <SectionHeader align="left" eyebrow="Who it's for" title={<>Built for People Who Have <span className="font-dm italic">Musical Taste</span></>} />
+            <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.08]">
+              <img src={labelTeamPhoto} alt="Record label team in their studio office" loading="lazy" className="aspect-[4/3] w-full object-cover" />
+            </div>
           </Reveal>
           <div>
             <Reveal>
@@ -622,12 +706,12 @@ const Landing = () => {
       </section>
 
       {/* ── Testimonials ── */}
-      <section className="px-4 py-24 sm:py-32 border-t border-white/[0.06]">
+      <section className="px-4 py-16 sm:py-20 border-t border-white/[0.06]">
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <SectionHeader eyebrow="What people say" title="Loved by the Industry's Ears" />
           </Reveal>
-          <div className="mt-14 grid gap-4 md:grid-cols-2">
+          <div className="mt-10 grid gap-4 md:grid-cols-2">
             {testimonials.map((t, i) => (
               <Reveal key={t.name} delay={i * 120} className="h-full">
                 <figure className="flex h-full flex-col justify-between gap-10 rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-transparent p-8 sm:p-10">
@@ -654,7 +738,7 @@ const Landing = () => {
       </section>
 
       {/* ── Demo CTA ── */}
-      <section className="px-4 py-16 sm:py-24">
+      <section className="px-4 pt-6 pb-16 sm:pt-8 sm:pb-20">
         <Reveal>
           <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[32px] border border-white/10 bg-[#0b0b0e] px-6 py-20 sm:px-12 sm:py-24 text-center">
             <div className="pointer-events-none absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_60%_70%_at_50%_100%,black,transparent)]" />
@@ -664,7 +748,7 @@ const Landing = () => {
             <div className="relative mx-auto max-w-2xl space-y-6">
               <Eyebrow>Try our demo</Eyebrow>
               <h2 className="text-balance text-4xl sm:text-6xl font-semibold tracking-[-0.04em] leading-[1.02]">
-                See Viola <span className="font-dm italic">in Action.</span>
+                See Viola <span className="font-dm italic">in Action</span>
               </h2>
               <p className="mx-auto max-w-md text-white/55">Type a brief the way you actually write it and watch Viola go to work.</p>
 
