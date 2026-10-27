@@ -71,7 +71,7 @@ const LandingFooter = () => (
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/35">Product</p>
           <ul className="space-y-3">
             <li><Link to="/demo/marketplace" className={linkClass}>Marketplace demo</Link></li>
-            <li><Link to="/waitlist" className={linkClass}>Join the waitlist</Link></li>
+            <li><Link to="/waitlist" className={linkClass}>Join the Waitlist</Link></li>
             <li><Link to="/login" className={linkClass}>Log in</Link></li>
           </ul>
         </div>

@@ -281,6 +281,47 @@ const withViola = [
   },
 ];
 
+// Expandable before/after card: problems show first, Viola's outcomes reveal on click
+const OutcomeCard = ({ group, before, after }: { group: string; before: string[]; after: { main: string; sub?: string }[] }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={`rounded-3xl border transition-colors duration-300 ${open ? "border-[#e4ea04]/40 bg-[#0d0d0a]" : "border-white/[0.08] bg-white/[0.02] hover:border-white/15"}`}>
+      <button type="button" onClick={() => setOpen(o => !o)} aria-expanded={open} className="w-full p-7 sm:p-8 text-left">
+        <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#a77bff]">{group}</p>
+        <ul className="mt-5 space-y-2.5">
+          {before.map(item => (
+            <li key={item} className="text-[15px] leading-snug text-white/80 line-through decoration-[#ee481f] decoration-2">{item}</li>
+          ))}
+        </ul>
+        <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-[#e4ea04]">
+          {open ? "Hide what changes" : "See what changes"}
+          <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full border border-[#e4ea04]/50 transition-transform duration-300 ${open ? "rotate-45" : ""}`}>
+            <span className="text-base leading-none">+</span>
+          </span>
+        </span>
+      </button>
+      <div className={`grid transition-[grid-template-rows] duration-500 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+        <div className="overflow-hidden">
+          <div className="mx-7 sm:mx-8 border-t border-[#e4ea04]/15 pb-7 sm:pb-8 pt-6">
+            <p className="flex items-center gap-2 text-sm font-semibold text-[#e4ea04]">
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#e4ea04] text-black"><Check className="h-3 w-3" /></span>
+              With Viola
+            </p>
+            <ul className="mt-4 space-y-3">
+              {after.map(item => (
+                <li key={item.main} className="flex flex-col gap-0.5 text-[15px] leading-snug">
+                  <span className="font-medium text-white">{item.main}</span>
+                  {item.sub && <span className="text-sm text-white/55">{item.sub}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 const testimonials = [
   {
@@ -448,11 +489,11 @@ const Landing = () => {
 
           <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3 opacity-0 fade-up [animation-delay:360ms]">
             <button onClick={() => navigate("/waitlist")} className={`${primaryBtn} w-full sm:w-auto px-7 py-3.5 text-[15px]`}>
-              Join the waitlist
+              Join the Waitlist
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </button>
             <button onClick={() => navigate("/demo/marketplace")} className={`${secondaryBtn} w-full sm:w-auto px-7 py-3.5 text-[15px]`}>
-              Explore the demo
+              Explore the Demo
             </button>
           </div>
         </div>
@@ -561,16 +602,11 @@ const Landing = () => {
       <section className="border-t border-white/[0.06] px-4 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-end lg:gap-16">
-              <div className="space-y-4">
-                <Eyebrow>How it works</Eyebrow>
-                <h2 className="text-balance text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.035em] leading-[1.08]">
-                  From Negotiation that Feels Endless to <span className="font-dm italic text-[#e4ea04]">Licensed in Minutes</span>
-                </h2>
-              </div>
-              <p className="text-base leading-relaxed text-white/55 lg:pb-1.5">
-                Licensees and rights holders work in the same deal, so there's nothing to chase over email.
-              </p>
+            <div className="max-w-3xl space-y-4">
+              <Eyebrow>How it works</Eyebrow>
+              <h2 className="text-balance text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.035em] leading-[1.08]">
+                From Negotiation that Feels Endless to <span className="font-dm italic text-[#e4ea04]">Licensed in Minutes</span>
+              </h2>
             </div>
           </Reveal>
 
@@ -601,112 +637,8 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── Outcomes ── */}
-      <section id="outcomes" className="px-4 py-16 sm:py-20 border-t border-white/[0.06] scroll-mt-20">
-        <div className="mx-auto max-w-6xl">
-          <Reveal>
-            <SectionHeader
-              eyebrow="Outcomes"
-              title="What Changes When You Use Viola"
-              sub={<>More of your day goes to <span className="font-dm italic text-[#e4ea04]">music taste</span>, not paperwork and negotiation.</>}
-            />
-          </Reveal>
-
-          <div className="mt-10 grid gap-4 md:grid-cols-2">
-            <Reveal>
-              <div className="h-full rounded-3xl border border-white/[0.08] bg-white/[0.015] p-7 sm:p-9">
-                <div className="mb-8 flex items-center gap-2.5 text-sm font-medium text-white/50">
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/[0.06]"><X className="h-3.5 w-3.5" /></span>
-                  Without Viola
-                </div>
-                <div className="space-y-8">
-                  {withoutViola.map(section => (
-                    <div key={section.group} className="space-y-3.5">
-                      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/35">{section.group}</p>
-                      <ul className="space-y-3">
-                        {section.items.map(item => (
-                          <li key={item} className="flex items-start gap-3 text-[15px] leading-snug text-white/50">
-                            <X className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#ee481f]/70" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
-
-            <Reveal delay={120}>
-              <div className="relative h-full rounded-3xl p-px bg-gradient-to-b from-[#e4ea04]/70 via-[#e4ea04]/20 to-white/[0.06]">
-                <div className="relative h-full overflow-hidden rounded-[23px] bg-[#0d0d0a] p-7 sm:p-9">
-                  <div className="pointer-events-none absolute -top-24 left-1/2 h-56 w-[120%] -translate-x-1/2 bg-[radial-gradient(closest-side,rgba(228,234,4,0.16),transparent)]" />
-                  <div className="relative mb-8 flex items-center gap-2.5 text-sm font-semibold text-[#e4ea04]">
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#e4ea04] text-black"><Check className="h-3.5 w-3.5" /></span>
-                    With Viola
-                  </div>
-                  <div className="relative space-y-8">
-                    {withViola.map(section => (
-                      <div key={section.group} className="space-y-3.5">
-                        <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#e4ea04]/60">{section.group}</p>
-                        <ul className="space-y-3">
-                          {section.items.map(item => (
-                            <li key={item.main} className="flex items-start gap-3 text-[15px] leading-snug">
-                              <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#e4ea04]" />
-                              <span className="flex flex-col gap-0.5">
-                                <span className="font-medium text-white">{item.main}</span>
-                                {item.sub && <span className="text-white/50 text-sm">{item.sub}</span>}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Who it's for ── */}
-      <section className="px-4 py-16 sm:py-20 border-t border-white/[0.06]">
-        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
-          <Reveal className="lg:sticky lg:top-32 lg:self-start">
-            <SectionHeader align="left" eyebrow="Who it's for" title={<>Built for People Who Have <span className="font-dm italic">Musical Taste</span></>} />
-            <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.08]">
-              <img src={labelTeamPhoto} alt="Record label team in their studio office" loading="lazy" className="aspect-[4/3] w-full object-cover" />
-            </div>
-          </Reveal>
-          <div>
-            <Reveal>
-              <p className="text-sm font-medium text-[#e4ea04]">Perfect if you are a</p>
-              <ol className="mt-4 border-t border-white/[0.08]">
-                {roles.map((r, i) => (
-                  <li key={r} className="group flex items-baseline gap-5 border-b border-white/[0.08] py-4 sm:py-5">
-                    <span className="font-mono text-xs text-white/30 transition-colors group-hover:text-[#e4ea04]">0{i + 1}</span>
-                    <span className="text-2xl sm:text-3xl font-semibold tracking-[-0.03em] text-white/90 transition-colors group-hover:text-white">{r}</span>
-                  </li>
-                ))}
-              </ol>
-            </Reveal>
-            <Reveal delay={120}>
-              <p className="mt-12 text-sm font-medium text-[#e4ea04]">And you're tired of</p>
-              <ul className="mt-4 space-y-3">
-                {painPoints.map(r => (
-                  <li key={r} className="text-lg sm:text-xl text-white line-through decoration-[#ee481f] decoration-2 underline-offset-4">
-                    {r}
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
       {/* ── Testimonials ── */}
-      <section className="px-4 py-16 sm:py-20 border-t border-white/[0.06]">
+      <section className="px-4 py-12 sm:py-16 border-t border-white/[0.06]">
         <div className="mx-auto max-w-6xl">
           <Reveal>
             <SectionHeader eyebrow="What people say" title="Loved by the Industry's Ears" />
@@ -737,8 +669,92 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* ── Outcomes ── */}
+      <section id="outcomes" className="px-4 py-12 sm:py-16 border-t border-white/[0.06] scroll-mt-20">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <SectionHeader
+              eyebrow="Outcomes"
+              title="What Changes When You Use Viola"
+              sub={<>More of your day goes to <span className="font-dm italic text-[#e4ea04]">music taste</span>, not paperwork and negotiation.</>}
+            />
+          </Reveal>
+
+          <div className="mt-10 grid gap-4 md:grid-cols-2 md:items-start">
+            {withoutViola.map((section, i) => (
+              <Reveal key={section.group} delay={i * 120}>
+                <OutcomeCard group={section.group} before={section.items} after={withViola[i].items} />
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Who it's for ── */}
+      <section className="px-4 py-12 sm:py-16 border-t border-white/[0.06]">
+        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+          <Reveal className="lg:sticky lg:top-32 lg:self-start">
+            <SectionHeader align="left" eyebrow="Who it's for" title={<>Built for People Who Have <span className="font-dm italic">Musical Taste</span></>} />
+            <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.08]">
+              <img src={labelTeamPhoto} alt="Record label team in their studio office" loading="lazy" className="aspect-[16/10] w-full object-cover" />
+            </div>
+          </Reveal>
+          <div>
+            <Reveal>
+              <p className="text-sm font-medium text-[#e4ea04]">Perfect if you are a</p>
+              <ol className="mt-4 border-t border-white/[0.08]">
+                {roles.map((r, i) => (
+                  <li key={r} className="group flex items-baseline gap-5 border-b border-white/[0.08] py-4 sm:py-5">
+                    <span className="font-mono text-xs text-white/30 transition-colors group-hover:text-[#e4ea04]">0{i + 1}</span>
+                    <span className="text-2xl sm:text-3xl font-semibold tracking-[-0.03em] text-white/90 transition-colors group-hover:text-white">{r}</span>
+                  </li>
+                ))}
+              </ol>
+            </Reveal>
+            <Reveal delay={120}>
+              <p className="mt-12 text-sm font-medium text-[#e4ea04]">And you're tired of</p>
+              <ul className="mt-4 space-y-3">
+                {painPoints.map(r => (
+                  <li key={r} className="text-lg sm:text-xl text-white line-through decoration-[#ee481f] decoration-2 underline-offset-4">
+                    {r}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section id="faq" className="px-4 py-12 sm:py-16 border-t border-white/[0.06] scroll-mt-20">
+        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+          <Reveal>
+            <SectionHeader
+              align="left"
+              eyebrow="FAQ"
+              title="Asked & Answered"
+              sub={<>Got Something Else To Ask Us? <a href={CONTACT_MAILTO} className="text-white underline decoration-white/30 underline-offset-4 hover:decoration-[#e4ea04]">Email us</a>.</>}
+            />
+          </Reveal>
+          <Reveal delay={100}>
+            <Accordion type="single" collapsible className="border-t border-white/[0.08]">
+              {faqItems.map((item, idx) => (
+                <AccordionItem key={item.q} value={`item-${idx}`} className="border-b border-white/[0.08]">
+                  <AccordionTrigger className="py-6 text-left text-base sm:text-lg font-medium text-white/90 hover:text-white hover:no-underline [&>svg]:text-white/40">
+                    {item.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-6 pr-8 text-[15px] leading-relaxed text-white/55">
+                    {item.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </Reveal>
+        </div>
+      </section>
+
       {/* ── Demo CTA ── */}
-      <section className="px-4 pt-6 pb-16 sm:pt-8 sm:pb-20">
+      <section className="px-4 pt-2 pb-16 sm:pt-4 sm:pb-20">
         <Reveal>
           <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[32px] border border-white/10 bg-[#0b0b0e] px-6 py-20 sm:px-12 sm:py-24 text-center">
             <div className="pointer-events-none absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_60%_70%_at_50%_100%,black,transparent)]" />
@@ -770,7 +786,7 @@ const Landing = () => {
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
                 <button onClick={() => navigate("/waitlist")} className={`${primaryBtn} w-full sm:w-auto px-7 py-3.5 text-[15px]`}>
-                  Join the waitlist <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  Join the Waitlist <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </button>
                 <a href={CONTACT_MAILTO} className={`${secondaryBtn} w-full sm:w-auto px-7 py-3.5 text-[15px]`}>
                   Talk to our team
@@ -780,34 +796,6 @@ const Landing = () => {
             </div>
           </div>
         </Reveal>
-      </section>
-
-      {/* ── FAQ ── */}
-      <section id="faq" className="px-4 py-24 sm:py-32 scroll-mt-20">
-        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
-          <Reveal>
-            <SectionHeader
-              align="left"
-              eyebrow="FAQ"
-              title="Asked & Answered"
-              sub={<>Questions we've already heard tastemakers ask. Something else? <a href={CONTACT_MAILTO} className="text-white underline decoration-white/30 underline-offset-4 hover:decoration-[#e4ea04]">Email us</a>.</>}
-            />
-          </Reveal>
-          <Reveal delay={100}>
-            <Accordion type="single" collapsible className="border-t border-white/[0.08]">
-              {faqItems.map((item, idx) => (
-                <AccordionItem key={item.q} value={`item-${idx}`} className="border-b border-white/[0.08]">
-                  <AccordionTrigger className="py-6 text-left text-base sm:text-lg font-medium text-white/90 hover:text-white hover:no-underline [&>svg]:text-white/40">
-                    {item.q}
-                  </AccordionTrigger>
-                  <AccordionContent className="pb-6 pr-8 text-[15px] leading-relaxed text-white/55">
-                    {item.a}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </Reveal>
-        </div>
       </section>
 
       <LandingFooter />
