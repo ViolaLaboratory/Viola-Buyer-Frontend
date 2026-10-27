@@ -440,7 +440,6 @@ const Landing = () => {
         <nav className={`mx-auto flex max-w-5xl items-center justify-between rounded-full border px-3 py-2 pl-5 transition-all duration-300 ${scrolled ? "border-white/10 bg-[#0c0c0f]/75 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)]" : "border-transparent bg-transparent"}`}>
           <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center gap-2.5" aria-label="Viola home">
             <LogoMark className="h-5 w-auto text-white" />
-            <span className="text-[17px] font-semibold tracking-tight">viola</span>
           </button>
           <div className="hidden md:flex items-center gap-1 text-sm text-white/55">
             {[["Features", "features"], ["Outcomes", "outcomes"], ["FAQ", "faq"]].map(([label, id]) => (
