@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, FormEvent, ReactNode } from "react";
 import { Input } from "@/components/ui/input";
 import {
   ArrowRight, ArrowUpRight, X, Check, Search,
-  Headphones, FileCheck2, Quote, Sparkles,
+  Quote, Sparkles,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import LandingFooter from "@/components/LandingFooter";
@@ -138,10 +138,22 @@ const featureTabs = [
   },
 ];
 
-const steps = [
-  { icon: Search,     title: "Locate",  body: "Describe the brief the way you'd write it." },
-  { icon: Headphones, title: "Listen",  body: "Shortlist sync-ready tracks from partnered catalogs." },
-  { icon: FileCheck2, title: "License", body: "Pick terms, sign, and pay — in one place." },
+// Two-sided "How it works": what each side of a licence does
+const sides = [
+  {
+    label: "For licensees",
+    title: "Locate, Listen, License",
+    points: ["Search the marketplace with plain-language", "Select licensing terms: territory, exclusivity, duration, usage type, audience", "Sign the licensing agreement and pay in one checkout"],
+    image: asset("side-licensee.jpg"),
+    alt: "Music supervisor reviewing a cue in an editing suite",
+  },
+  {
+    label: "For labels & publishers",
+    title: "Set Terms Once, Approve with Confidence",
+    points: ["Publish rate cards buyers can license from", "Review clearance requests with master and publisher approval", "Track sync orders and revenue in one dashboard"],
+    image: asset("side-rights.jpg"),
+    alt: "Label team reviewing a licence request together",
+  },
 ];
 
 const problems = [
@@ -464,35 +476,47 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── Statement + 3 steps ── */}
-      <section className="relative px-4 py-24 sm:py-32 overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-grid opacity-60 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,black,transparent)]" />
-        <div className="relative mx-auto max-w-5xl text-center">
+      {/* ── How it works: two sides, one agreement ── */}
+      <section className="border-t border-white/[0.06] px-4 py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl">
           <Reveal>
-            <Eyebrow>Locate · Listen · License</Eyebrow>
-            <h2 className="mt-6 text-balance text-4xl sm:text-5xl md:text-6xl font-semibold tracking-[-0.04em] leading-[1.05]">
-              From negotiation that feels endless to <span className="font-dm italic text-shine pr-1">licensed in minutes.</span>
-            </h2>
+            <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-end lg:gap-16">
+              <div className="space-y-4">
+                <Eyebrow>How it works</Eyebrow>
+                <h2 className="text-balance text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.035em] leading-[1.08]">
+                  From negotiation that feels endless to <span className="font-dm italic text-[#e4ea04]">licensed in minutes.</span>
+                </h2>
+              </div>
+              <p className="text-base leading-relaxed text-white/55 lg:pb-1.5">
+                Licensees and rights holders work in the same deal, so there's nothing to chase over email.
+              </p>
+            </div>
           </Reveal>
-          <div className="relative mt-16 grid gap-4 sm:grid-cols-3">
-            <div className="pointer-events-none absolute left-[16%] right-[16%] top-9 hidden h-px bg-gradient-to-r from-transparent via-white/20 to-transparent sm:block" />
-            {steps.map((s, i) => {
-              const Icon = s.icon;
-              return (
-                <Reveal key={s.title} delay={i * 100}>
-                  <div className="relative flex flex-col items-center gap-4 px-4">
-                    <span className="relative inline-flex h-[72px] w-[72px] items-center justify-center rounded-2xl border border-white/10 bg-[#0e0e12] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-                      <Icon className="h-6 w-6 text-[#e4ea04]" />
-                    </span>
-                    <div>
-                      <p className="text-lg font-semibold tracking-tight">{s.title}</p>
-                      <p className="mt-1 text-sm text-white/50">{s.body}</p>
-                    </div>
+
+          <div className="mt-10 grid gap-4 md:grid-cols-2">
+            {sides.map((side, i) => (
+              <Reveal key={side.label} delay={i * 100} className="h-full">
+                <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02]">
+                  <div className="p-6 sm:p-8">
+                    <p className={`text-xs font-medium uppercase tracking-[0.16em] ${i === 0 ? "text-[#e4ea04]" : "text-[#a77bff]"}`}>{side.label}</p>
+                    <h3 className="mt-3 text-xl sm:text-2xl font-semibold tracking-tight">{side.title}</h3>
+                    <ul className="mt-5 space-y-2.5">
+                      {side.points.map(pt => (
+                        <li key={pt} className="flex items-start gap-3 text-[15px] leading-snug text-white/70">
+                          <Check className={`mt-0.5 h-4 w-4 flex-shrink-0 ${i === 0 ? "text-[#e4ea04]" : "text-[#a77bff]"}`} />
+                          {pt}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                </Reveal>
-              );
-            })}
+                  <div className="relative mt-auto aspect-[16/9] overflow-hidden border-t border-white/[0.06] bg-[#0b0b0e]">
+                    <img src={side.image} alt={side.alt} loading="lazy" className="h-full w-full object-cover" />
+                  </div>
+                </article>
+              </Reveal>
+            ))}
           </div>
+
         </div>
       </section>
 
