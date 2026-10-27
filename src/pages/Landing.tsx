@@ -145,14 +145,14 @@ const sides = [
     title: "Locate, Listen, License",
     points: ["Search the marketplace with plain-language", "Select licensing terms: territory, exclusivity, duration, usage type, audience", "Sign the licensing agreement and pay in one checkout"],
     image: asset("side-licensee.jpg"),
-    alt: "Music supervisor reviewing a cue in an editing suite",
+    alt: "Vinyl record with a waveform flowing into a licence",
   },
   {
     label: "For labels & publishers",
     title: "Set Terms Once, Approve with Confidence",
     points: ["Publish rate cards buyers can license from", "Review clearance requests with master and publisher approval", "Track sync orders and revenue in one dashboard"],
     image: asset("side-rights.jpg"),
-    alt: "Label team reviewing a licence request together",
+    alt: "Approval seal over a stack of record sleeves",
   },
 ];
 
