@@ -488,7 +488,7 @@ const Landing = () => {
             <SectionHeader
               align="left"
               eyebrow="The problem"
-              title={<>The Work is Creative<br /><span className="text-[#a77bff]">The Workflow Still Isn't</span></>}
+              title={<>The Work is Creative<br /><span className="text-[#e4ea04]">The Workflow Still Isn't</span></>}
             />
           </Reveal>
           <div className="space-y-3">
@@ -608,7 +608,7 @@ const Landing = () => {
             <SectionHeader
               eyebrow="Outcomes"
               title="What Changes When You Use Viola"
-              sub={<>More of your day goes to <span className="font-dm italic text-white">music taste</span>, not paperwork and negotiation.</>}
+              sub={<>More of your day goes to <span className="font-dm italic text-[#e4ea04]">music taste</span>, not paperwork and negotiation.</>}
             />
           </Reveal>
 
@@ -681,7 +681,7 @@ const Landing = () => {
           </Reveal>
           <div>
             <Reveal>
-              <p className="text-sm font-medium text-white/45">Perfect if you are a</p>
+              <p className="text-sm font-medium text-[#e4ea04]">Perfect if you are a</p>
               <ol className="mt-4 border-t border-white/[0.08]">
                 {roles.map((r, i) => (
                   <li key={r} className="group flex items-baseline gap-5 border-b border-white/[0.08] py-4 sm:py-5">
@@ -692,10 +692,10 @@ const Landing = () => {
               </ol>
             </Reveal>
             <Reveal delay={120}>
-              <p className="mt-12 text-sm font-medium text-white/45">And you're tired of</p>
+              <p className="mt-12 text-sm font-medium text-[#e4ea04]">And you're tired of</p>
               <ul className="mt-4 space-y-3">
                 {painPoints.map(r => (
-                  <li key={r} className="text-lg sm:text-xl text-white/55 line-through decoration-[#ee481f] decoration-2 underline-offset-4">
+                  <li key={r} className="text-lg sm:text-xl text-white line-through decoration-[#ee481f] decoration-2 underline-offset-4">
                     {r}
                   </li>
                 ))}
