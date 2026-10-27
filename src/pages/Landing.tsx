@@ -248,15 +248,16 @@ const withoutViola = [
     group: "For music licensees",
     items: [
       "Delays in submitting a brief and receiving songs",
-      "Inefficient back-and-forth negotiation wastes valuable time and energy",
+      "Inefficient back-and-forth negotiation",
       "Cannot fully own music taste",
     ],
   },
   {
     group: "For record labels & publishers",
     items: [
-      "Inefficient manual music licensing processes mean missed sync orders and lost revenue at scale",
-      "Manual music searching and pitch packaging per brief is time consuming",
+      "Inefficient manual licensing processes",
+      "Missed sync deals and revenue at scale",
+      "Time Consuming Search and Pitch Packaging Process",
       "Tight deadlines of up to 48 hours turnaround time for certain briefs",
     ],
   },
@@ -267,7 +268,7 @@ const withViola = [
     group: "For music licensees",
     items: [
       { main: "Complete briefs efficiently", sub: "Search, shortlist, clear songs, and checkout" },
-      { main: "1 workspace for everything", sub: "Music licensing done in one platform" },
+      { main: "One workspace for everything", sub: "Music licensing done in one platform" },
     ],
   },
   {
@@ -276,7 +277,7 @@ const withViola = [
       { main: "Goodbye to cluttered inboxes", sub: "No back-and-forth negotiation — clear songs faster" },
       { main: "Track sync orders, revenue, and analytics in one dashboard" },
       { main: "Fulfill sync orders that were once missed" },
-      { main: "Maximize catalog revenue and focus efforts more wisely" },
+      { main: "Maximize catalog licensing revenue" },
     ],
   },
 ];
@@ -288,11 +289,19 @@ const OutcomeCard = ({ group, before, after }: { group: string; before: string[]
     <div className={`rounded-3xl border transition-colors duration-300 ${open ? "border-[#e4ea04]/40 bg-[#0d0d0a]" : "border-white/[0.08] bg-white/[0.02] hover:border-white/15"}`}>
       <button type="button" onClick={() => setOpen(o => !o)} aria-expanded={open} className="w-full p-7 sm:p-8 text-left">
         <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#a77bff]">{group}</p>
-        <ul className="mt-5 space-y-2.5">
-          {before.map(item => (
-            <li key={item} className="text-[15px] leading-snug text-white/80 line-through decoration-[#ee481f] decoration-2">{item}</li>
-          ))}
-        </ul>
+        <div className={`transition-opacity duration-500 ${open ? "opacity-50" : "opacity-100"}`}>
+          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.14em] text-[#ff7a5c]">Without Viola</p>
+          <ul className="mt-3 space-y-3">
+            {before.map(item => (
+              <li key={item} className="flex items-start gap-3 text-[15px] leading-snug text-white/85">
+                <span className="mt-px inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#ee481f]/12 text-[#ee481f]">
+                  <X className="h-3 w-3" />
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
         <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-[#e4ea04]">
           {open ? "Hide what changes" : "See what changes"}
           <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full border border-[#e4ea04]/50 transition-transform duration-300 ${open ? "rotate-45" : ""}`}>
@@ -408,7 +417,7 @@ const Landing = () => {
   const secondaryBtn = "inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.03] text-white/80 font-medium transition-all duration-200 hover:bg-white/[0.08] hover:text-white hover:border-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40";
 
   return (
-    <div className="relative min-h-screen bg-[#070709] text-white font-geist antialiased overflow-x-clip selection:bg-[#e4ea04] selection:text-black">
+    <div className="relative isolate min-h-screen bg-[#070709] text-white font-geist antialiased overflow-x-clip selection:bg-[#e4ea04] selection:text-black">
 
       <style>{`
         @keyframes fade-up {
@@ -429,11 +438,37 @@ const Landing = () => {
             linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
           background-size: 56px 56px;
         }
+        @keyframes aurora-drift {
+          0%   { transform: translate3d(0, 0, 0) scale(1); }
+          50%  { transform: translate3d(6%, 3%, 0) scale(1.12); }
+          100% { transform: translate3d(-5%, -2%, 0) scale(0.95); }
+        }
+        .aurora-blob { animation: aurora-drift 22s ease-in-out infinite alternate; will-change: transform; }
         @media (prefers-reduced-motion: reduce) {
           .fade-up { animation: none; opacity: 1; }
           .text-shine { animation: none; }
+          .aurora-blob { animation: none; }
         }
       `}</style>
+
+      {/* ── Page-wide flowing purple gradient (sits behind every section) ── */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        {[
+          { top: "3%",  left: "-20%", size: "max(75vw, 640px)", color: "rgba(108,36,232,0.55)", delay: "0s" },
+          { top: "14%", left: "40%",  size: "max(65vw, 560px)", color: "rgba(150,70,255,0.40)", delay: "-6s" },
+          { top: "27%", left: "-25%", size: "max(70vw, 600px)", color: "rgba(94,28,210,0.48)",  delay: "-11s" },
+          { top: "40%", left: "35%",  size: "max(75vw, 640px)", color: "rgba(124,52,245,0.45)", delay: "-3s" },
+          { top: "53%", left: "-20%", size: "max(65vw, 560px)", color: "rgba(108,36,232,0.45)", delay: "-15s" },
+          { top: "66%", left: "30%",  size: "max(70vw, 600px)", color: "rgba(150,70,255,0.40)", delay: "-8s" },
+          { top: "79%", left: "-15%", size: "max(70vw, 600px)", color: "rgba(94,28,210,0.45)",  delay: "-18s" },
+        ].map((b, i) => (
+          <div
+            key={i}
+            className="aurora-blob absolute rounded-full blur-[90px]"
+            style={{ top: b.top, left: b.left, width: b.size, height: b.size, background: `radial-gradient(closest-side, ${b.color}, transparent)`, animationDelay: b.delay }}
+          />
+        ))}
+      </div>
 
       {/* ── Floating Nav ── */}
       <header className="fixed inset-x-0 top-0 z-50 px-4 pt-3">
