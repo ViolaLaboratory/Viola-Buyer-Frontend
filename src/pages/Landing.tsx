@@ -338,14 +338,94 @@ const testimonials = [
     name: "Michael Chen",
     role: "Coordinator, Creative Marketing — Film & TV",
     company: "Sony Music Publishing",
+    photo: asset("michael-chen.jpg"),
   },
-  {
-    quote: "Viola is the kind of tool the industry has needed for years. Getting the right song in front of the right project — fast — is everything, and this makes it effortless.",
-    name: "Alex Magnus Karlsson",
-    role: "52x Billboard No. 1 Producer",
-    company: "",
-  },
+  // Placeholder slide until more quotes are in
+  { placeholder: true, quote: "", name: "coming-soon", role: "", company: "", photo: "" },
+  // Hidden for now — restore to bring back the second slide:
+  // {
+  //   quote: "Viola is the kind of tool the industry has needed for years. Getting the right song in front of the right project — fast — is everything, and this makes it effortless.",
+  //   name: "Alex Magnus Karlsson",
+  //   role: "52x Billboard No. 1 Producer",
+  //   company: "",
+  //   photo: "",
+  // },
 ];
+
+// Testimonial carousel: photo + quote slides that auto-advance every 6s (paused on hover);
+// arrows and dots appear once there are 2+ slides
+const TestimonialCarousel = () => {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const touchX = useRef<number | null>(null);
+  const count = testimonials.length;
+  const go = (i: number) => setIndex(((i % count) + count) % count);
+  useEffect(() => {
+    if (count < 2 || paused) return;
+    const id = setInterval(() => setIndex(i => (i + 1) % count), 6000);
+    return () => clearInterval(id);
+  }, [count, paused]);
+  return (
+    <div className="mx-auto max-w-4xl" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+      <div
+        className="overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0c0b12]/80"
+        onTouchStart={e => { touchX.current = e.touches[0].clientX; }}
+        onTouchEnd={e => {
+          if (touchX.current === null) return;
+          const dx = e.changedTouches[0].clientX - touchX.current;
+          if (Math.abs(dx) > 50) go(index + (dx < 0 ? 1 : -1));
+          touchX.current = null;
+        }}
+      >
+        <div className="flex transition-transform duration-500 ease-out" style={{ transform: `translateX(-${index * 100}%)` }}>
+          {testimonials.map(t => "placeholder" in t ? (
+            <figure key={t.name} className="grid w-full flex-shrink-0 grid-cols-[38%_1fr] sm:grid-cols-[42%_1fr]">
+              <div className="relative flex min-h-[220px] sm:min-h-[260px] items-center justify-center bg-[radial-gradient(120%_100%_at_30%_20%,#3b1d86_0%,#1c1040_55%,#0d0b16_100%)]">
+                <LogoMark className="h-10 w-auto text-white/25" />
+              </div>
+              <div className="flex flex-col justify-center gap-3 p-5 sm:p-8">
+                <Quote className="h-6 w-6 text-white/20" />
+                <p className="text-[15px] sm:text-lg md:text-xl leading-snug tracking-[-0.01em] text-white/40">More stories coming soon</p>
+              </div>
+            </figure>
+          ) : (
+            <figure key={t.name} className="grid w-full flex-shrink-0 grid-cols-[38%_1fr] sm:grid-cols-[42%_1fr]">
+              <div className="relative min-h-[220px] sm:min-h-[260px]">
+                <img src={t.photo} alt={t.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover object-[62%_center]" />
+              </div>
+              <div className="flex flex-col justify-center gap-5 p-5 sm:p-8">
+                <Quote className="h-6 w-6 text-[#e4ea04]" />
+                <blockquote className="text-[15px] sm:text-lg md:text-xl leading-snug tracking-[-0.01em] text-white">
+                  {t.quote}
+                </blockquote>
+                <figcaption className="text-xs sm:text-sm">
+                  <p className="font-semibold text-white">{t.name}</p>
+                  <p className="mt-0.5 text-white/55">{t.role}</p>
+                  {t.company && <p className="text-[#a77bff]">{t.company}</p>}
+                </figcaption>
+              </div>
+            </figure>
+          ))}
+        </div>
+      </div>
+      {count > 1 && (
+        <div className="mt-6 flex items-center justify-center gap-4">
+          <button type="button" aria-label="Previous testimonial" onClick={() => go(index - 1)} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors hover:border-[#e4ea04] hover:bg-[#e4ea04] hover:text-black">
+            <ArrowRight className="h-4 w-4 rotate-180" />
+          </button>
+          <div className="flex gap-2">
+            {testimonials.map((t, i) => (
+              <button key={t.name} type="button" aria-label={`Show testimonial ${i + 1}`} onClick={() => go(i)} className={`h-2 rounded-full transition-all duration-300 ${i === index ? "w-8 bg-[#e4ea04]" : "w-2 bg-white/25 hover:bg-white/45"}`} />
+            ))}
+          </div>
+          <button type="button" aria-label="Next testimonial" onClick={() => go(index + 1)} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors hover:border-[#e4ea04] hover:bg-[#e4ea04] hover:text-black">
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const roles = ["Music Supervisor", "Sync Licensing Manager", "Sync Agency Owner", "Record Label", "Publishing Company"];
 const painPoints = ["Digging through clunky library interfaces", "Unfulfilled and missed sync deals", "Losing months to the licensing negotiation process"];
@@ -356,10 +436,9 @@ const faqItems = [
   { q: "Who is Viola intended for?", a: "Viola is intended for users who need to locate and license commercially recorded music that best fits their creative projects in a streamlined and efficient manner." },
   { q: "Do we have to move our whole catalog into Viola?", a: "We partner with record labels and publishing companies to help with the catalog integration process." },
   { q: "How technical is it to get started?", a: "If you can type a brief, you can use Viola. We handle the setup and give you a live onboarding session." },
-  { q: "What does early access include?", a: "Hands-on onboarding, direct feedback channel with our team, and preferred pricing when we launch public plans." },
+  { q: "What does early access include for labels and publishers?", a: "Hands-on onboarding, direct feedback channel with our team, and a set of marketing materials when we launch." },
 ];
 
-const initials = (name: string) => name.split(" ").map(p => p[0]).slice(0, 2).join("");
 
 // ─── Landing ──────────────────────────────────────────────────────────────────
 const Landing = () => {
@@ -677,29 +756,9 @@ const Landing = () => {
           <Reveal>
             <SectionHeader eyebrow="What people say" title="Loved by the Industry's Ears" />
           </Reveal>
-          <div className="mt-10 grid gap-4 md:grid-cols-2">
-            {testimonials.map((t, i) => (
-              <Reveal key={t.name} delay={i * 120} className="h-full">
-                <figure className="flex h-full flex-col justify-between gap-10 rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-transparent p-8 sm:p-10">
-                  <div className="space-y-6">
-                    <Quote className="h-7 w-7 text-[#e4ea04]" />
-                    <blockquote className="text-xl sm:text-2xl leading-snug tracking-[-0.015em] text-white/90">
-                      {t.quote}
-                    </blockquote>
-                  </div>
-                  <figcaption className="flex items-center gap-4">
-                    <span className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#6c24e8] to-[#ee481f] text-sm font-semibold">
-                      {initials(t.name)}
-                    </span>
-                    <div className="text-sm">
-                      <p className="font-semibold text-white">{t.name}</p>
-                      <p className="text-white/45">{t.role}{t.company ? ` · ${t.company}` : ""}</p>
-                    </div>
-                  </figcaption>
-                </figure>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal className="mt-10">
+            <TestimonialCarousel />
+          </Reveal>
         </div>
       </section>
 
