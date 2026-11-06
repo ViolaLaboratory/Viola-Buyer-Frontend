@@ -1,9 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useRef, useEffect, FormEvent, ReactNode } from "react";
-import { Input } from "@/components/ui/input";
+import { useState, useRef, useEffect, ReactNode } from "react";
 import {
-  ArrowRight, ArrowUpRight, X, Check, Search,
-  Quote, Sparkles,
+  ArrowRight, ArrowUpRight, X, Check, Quote,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import LandingFooter from "@/components/LandingFooter";
@@ -20,14 +18,6 @@ const workspacePoster   = asset("demo-workspace.jpg");
 const labelTeamPhoto    = asset("label-team.jpg");
 
 const CONTACT_MAILTO = "mailto:viola@theviola.co?subject=Talk%20with%20Viola&body=Hi%20Viola%20team%2C%0A%0AI%27d%20love%20to%20connect.";
-
-// ─── Typing phrases ───────────────────────────────────────────────────────────
-const typingPhrases = [
-  "spooky choirs...",
-  "dark synths...",
-  "a spicy melody...",
-  "cinematic builds...",
-];
 
 // ─── Logo mark ────────────────────────────────────────────────────────────────
 const LogoMark = ({ className = "h-7 w-auto" }: { className?: string }) => (
@@ -446,8 +436,6 @@ const Landing = () => {
 
   const [scrolled, setScrolled]               = useState(false);
   const [videoErrors, setVideoErrors]         = useState<Record<string, boolean>>({});
-  const [searchQuery, setSearchQuery]         = useState("");
-  const [placeholderText, setPlaceholderText] = useState("Find ");
 
   // Scroll-aware nav
   useEffect(() => {
@@ -459,26 +447,7 @@ const Landing = () => {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  // Typing animation
-  useEffect(() => {
-    let pi = 0, ci = 0, del = false;
-    const id = setInterval(() => {
-      const phrase = typingPhrases[pi];
-      setPlaceholderText(`Find me ${phrase.slice(0, ci)}`);
-      if (!del) { ci++; if (ci > phrase.length) del = true; }
-      else { ci--; if (ci === 0) { del = false; pi = (pi + 1) % typingPhrases.length; } }
-    }, 120);
-    return () => clearInterval(id);
-  }, []);
-
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-
-  const handleSearch = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-    setSearchQuery("");
-    navigate("/waitlist");
-  };
 
   const renderVideo = (key: string, src: string, poster: string, alt: string) =>
     videoErrors[key] ? (
@@ -493,7 +462,6 @@ const Landing = () => {
     );
 
   const primaryBtn = "group inline-flex items-center justify-center gap-2 rounded-full bg-[#e4ea04] text-black font-semibold transition-all duration-200 hover:bg-[#eef25a] hover:shadow-[0_0_32px_rgba(228,234,4,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e4ea04]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black";
-  const secondaryBtn = "inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.03] text-white/80 font-medium transition-all duration-200 hover:bg-white/[0.08] hover:text-white hover:border-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40";
 
   return (
     <div className="relative isolate min-h-screen bg-[#070709] text-white font-geist antialiased overflow-x-clip selection:bg-[#e4ea04] selection:text-black">
@@ -559,7 +527,6 @@ const Landing = () => {
             {[["Features", "features"], ["Outcomes", "outcomes"], ["FAQ", "faq"]].map(([label, id]) => (
               <button key={id} onClick={() => scrollTo(id)} className="rounded-full px-3.5 py-1.5 transition-colors hover:text-white hover:bg-white/[0.06]">{label}</button>
             ))}
-            <button onClick={() => navigate("/demo/marketplace")} className="rounded-full px-3.5 py-1.5 transition-colors hover:text-white hover:bg-white/[0.06]">Demo</button>
           </div>
           <div className="flex items-center gap-1.5">
             <a href="mailto:viola@theviola.co" className="hidden sm:inline-flex rounded-full px-3.5 py-1.5 text-sm text-white/55 transition-colors hover:text-white">Contact</a>
@@ -579,17 +546,6 @@ const Landing = () => {
         <div className="pointer-events-none absolute left-1/2 top-[-120px] h-[340px] w-[560px] max-w-[120vw] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(228,234,4,0.14),transparent)]" />
 
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <button
-            onClick={() => navigate("/demo/marketplace")}
-            className="group mx-auto mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] p-1 pr-3.5 text-sm text-white/70 backdrop-blur transition-colors hover:border-white/20 hover:text-white opacity-0 fade-up"
-          >
-            <span className="inline-flex items-center gap-1 rounded-full bg-[#e4ea04] px-2.5 py-0.5 text-xs font-semibold text-black">
-              <Sparkles className="h-3 w-3" /> Early access
-            </span>
-            Try the marketplace for free
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-          </button>
-
           <h1 className="text-balance text-[44px] leading-[1.02] sm:text-7xl lg:text-[88px] font-semibold tracking-[-0.045em] opacity-0 fade-up [animation-delay:120ms]">
             <span className="bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">License Music</span>
             <br />
@@ -604,9 +560,6 @@ const Landing = () => {
             <button onClick={() => navigate("/waitlist")} className={`${primaryBtn} w-full sm:w-auto px-7 py-3.5 text-[15px]`}>
               Join the Waitlist
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </button>
-            <button onClick={() => navigate("/demo/marketplace")} className={`${secondaryBtn} w-full sm:w-auto px-7 py-3.5 text-[15px]`}>
-              Explore the Demo
             </button>
           </div>
         </div>
@@ -846,46 +799,29 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ── Demo CTA ── */}
+      {/* ── Waitlist CTA ── */}
       <section className="px-4 pt-2 pb-16 sm:pt-4 sm:pb-20">
         <Reveal>
-          <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[32px] border border-white/10 bg-[#0b0b0e] px-6 py-20 sm:px-12 sm:py-24 text-center">
+          <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[32px] border border-white/10 bg-[#0b0b0e] px-6 py-16 sm:px-12 sm:py-20 text-center">
             <div className="pointer-events-none absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_60%_70%_at_50%_100%,black,transparent)]" />
             <div className="pointer-events-none absolute left-1/2 bottom-[-220px] h-[440px] w-[900px] max-w-[180vw] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(108,36,232,0.45),transparent)]" />
             <div className="pointer-events-none absolute left-1/2 bottom-[-120px] h-[240px] w-[480px] max-w-[120vw] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(228,234,4,0.18),transparent)]" />
 
             <div className="relative mx-auto max-w-2xl space-y-6">
-              <Eyebrow>Try our demo</Eyebrow>
+              <Eyebrow>Early access</Eyebrow>
               <h2 className="text-balance text-4xl sm:text-6xl font-semibold tracking-[-0.04em] leading-[1.02]">
-                See Viola <span className="font-dm italic">in Action</span>
+                Ready to License Music <span className="font-dm italic text-[#e4ea04]">Effortlessly?</span>
               </h2>
-              <p className="mx-auto max-w-md text-white/55">Type a brief the way you actually write it and watch Viola go to work.</p>
-
-              <form onSubmit={handleSearch} className="mx-auto w-full max-w-xl pt-2">
-                <div className="relative rounded-full p-px bg-gradient-to-r from-white/30 via-[#e4ea04]/50 to-white/30 shadow-[0_0_50px_rgba(228,234,4,0.15)]">
-                  <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
-                  <Input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={placeholderText}
-                    aria-label="Describe your music brief"
-                    className="h-14 rounded-full border-0 bg-[#0e0e12] pl-14 pr-32 text-base text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
-                  <button type="submit" className={`${primaryBtn} absolute right-1.5 top-1/2 -translate-y-1/2 px-5 py-2.5 text-sm`}>
-                    Search <ArrowRight className="h-4 w-4" />
-                  </button>
-                </div>
-              </form>
-
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+              <p className="mx-auto max-w-md text-white/55">Join our waitlist to streamline the music licensing process.</p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                 <button onClick={() => navigate("/waitlist")} className={`${primaryBtn} w-full sm:w-auto px-7 py-3.5 text-[15px]`}>
                   Join the Waitlist <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </button>
-                <a href={CONTACT_MAILTO} className={`${secondaryBtn} w-full sm:w-auto px-7 py-3.5 text-[15px]`}>
-                  Talk to our team
+                <a href={CONTACT_MAILTO} className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.03] px-7 py-3.5 text-[15px] font-medium text-white/80 transition-all duration-200 hover:bg-white/[0.08] hover:text-white hover:border-white/25">
+                  Talk to Our Team
                 </a>
               </div>
-              <p className="text-xs text-white/35">No credit card required · Hands-on onboarding included</p>
+              <p className="text-xs text-white/35">Hands-on onboarding included</p>
             </div>
           </div>
         </Reveal>
