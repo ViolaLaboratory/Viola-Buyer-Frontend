@@ -12,6 +12,11 @@ const CLAP_API_URL = import.meta.env.VITE_CLAP_API_URL ?? '';
 export const API_ENDPOINTS = {
   // Django Backend APIs
   WAITLIST_SUBMIT: `${API_BASE_URL}/waitlist/submit/`,
+  // Google Apps Script web app that appends signups to the "Waitlist Final" sheet
+  // (see google-apps-script/waitlist-sheet.gs). Public by design; override with VITE_WAITLIST_SHEET_URL.
+  WAITLIST_SHEET:
+    import.meta.env.VITE_WAITLIST_SHEET_URL ||
+    'https://script.google.com/macros/s/AKfycbxsyWAIDASzEaR0BCQOvuQqlnB2rRUJ_BYZpRgXWtqYMe2CzEIQ9rwoz64aXe-6JHCd6A/exec',
   TRACK_DETAILS: (trackId: string) => `${API_BASE_URL}/music/tracks/${trackId}/`,
   TRACK_AUDIO: (trackId: string) => `${API_BASE_URL}/music/tracks/${trackId}/audio/`,
   SONGS_UPLOAD: `${API_BASE_URL}/music/songs/upload/`,
